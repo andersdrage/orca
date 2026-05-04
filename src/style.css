@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .site-header nav a {
+    @apply text-zinc-600 transition-colors hover:text-zinc-900;
+  }
+
+  .site-header nav a[aria-current='page'] {
+    @apply font-semibold text-zinc-900;
+  }
+}
+
+/*
+  Egen kolonne som ikke avhenger av @apply / content-scan.
+  Sørger for at header, innhold og footer aldri blir bredere enn 800px.
+*/
+#site-layout {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  min-height: 100svh;
+}
+
+#site-layout > header,
+#site-layout > main,
+#site-layout > footer {
+  min-width: 0;
+}
+
+@media print {
+  #site-layout {
+    max-width: none;
+    padding-inline: 2rem;
+  }
+}
