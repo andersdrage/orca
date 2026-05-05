@@ -3,13 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/drage-logo.svg" type="image/svg+xml" sizes="any" />
+    <link rel="preload" href="/drage-logo.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Regular.woff" as="font" type="font/woff" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Semibold.woff" as="font" type="font/woff" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/Eurostile-ext-bold.woff" as="font" type="font/woff" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
       content="Anders Drage — founding designer across product, brand, and marketing."
     />
+    <meta property="og:title" content="Anders Drage" />
+    <meta property="og:description" content="Product, brand, and marketing design by Anders Drage." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/sharing-img.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/images/sharing-img.png" />
     <title>Anders Drage</title>
     <link rel="stylesheet" href="/layout.css" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/font-theme.css" />
   </head>
   <body
     class="min-h-svh bg-zinc-50 font-sans text-[17px] leading-relaxed text-zinc-700 antialiased print:bg-white print:text-black"
@@ -39,7 +53,7 @@
 
       <main id="innhold" class="flex-1 py-14 md:py-20 print:py-10">
       <header class="border-b border-zinc-200 pb-10">
-        <p class="font-display text-[0.5625rem] font-semibold leading-tight tracking-tight text-zinc-800 md:text-[0.625rem]">
+        <p class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           Designer · Product · Brand · Marketing
         </p>
         <div class="mt-4 max-w-xl space-y-4 text-pretty text-zinc-600">
@@ -61,7 +75,7 @@
       </header>
 
       <section class="mt-12" aria-labelledby="strengths-heading">
-        <h2 id="strengths-heading" class="font-label text-xs font-bold uppercase tracking-widest text-zinc-500">
+        <h2 id="strengths-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           In a nutshell
         </h2>
         <ul class="mt-4 space-y-3 text-zinc-600">
@@ -84,7 +98,7 @@
         class="mt-12 border-t border-zinc-200 pt-16"
         aria-labelledby="recently-heading"
       >
-        <h2 id="recently-heading" class="font-label text-xs font-bold uppercase tracking-widest text-zinc-500">
+        <h2 id="recently-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           Recently
         </h2>
         <div class="mt-6 space-y-10">
@@ -120,7 +134,7 @@
         class="mt-12 border-t border-zinc-200 pt-16"
         aria-labelledby="highlights-heading"
       >
-        <h2 id="highlights-heading" class="font-label text-xs font-bold uppercase tracking-widest text-zinc-500">
+        <h2 id="highlights-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           Highlights
         </h2>
         <ul class="mt-4 space-y-2 text-zinc-600">
@@ -156,12 +170,12 @@
         class="mt-12 border-t border-zinc-200 pt-16"
         aria-labelledby="work-heading"
       >
-        <h2 id="work-heading" class="font-label text-xs font-bold uppercase tracking-widest text-zinc-500">
-          Selected collaborations
+        <h2 id="work-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+          Selected companies
         </h2>
         <p class="mt-3 text-sm text-zinc-500">
-          Brands and products I’ve shaped—usually across brand, UX, and digital touchpoints. No year lanes;
-          get in touch if you want detail on a specific project.
+          Alongside founder-led work, I’ve worked with established companies and brands across product, brand,
+          UX, and digital.
         </p>
         <figure class="mt-6">
           <img
@@ -180,89 +194,89 @@
         class="mt-16 border-t border-zinc-200 pt-16"
         aria-labelledby="employments-heading"
       >
-        <h2 id="employments-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500 sm:text-[11px]">
+        <h2 id="employments-heading" class="font-label text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           Employments
         </h2>
         <div class="mt-5 overflow-x-auto print:overflow-visible">
           <table
             dir="ltr"
-            class="employments-table w-full border-collapse font-sans text-[12px] leading-normal text-zinc-800"
+            class="employments-table w-full border-collapse text-zinc-800"
           >
             <caption class="sr-only">
               Chronological list of employments
             </caption>
             <tbody>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Boligmappa AS</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Boligmappa AS</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2023–present
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Head of design</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Head of design</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Micromilspec AS</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Micromilspec AS</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2019–2024
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Creative director</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Creative director</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Sidekick AS</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Sidekick AS</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2014–2023
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Design director and co-founder</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Design director and co-founder</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Brevio AS</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Brevio AS</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2017–2019
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Design director</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Design director</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Off Market AS</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Off Market AS</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2017–2018
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Head of product and co-founder</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Head of product and co-founder</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Int</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Int</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2014
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Senior designer</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Senior designer</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Jimmy Royal</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Jimmy Royal</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2012–2014
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Designer</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Designer</td>
               </tr>
               <tr class="border-b border-zinc-200 align-baseline">
-                <td role="rowheader" class="py-2 pr-5 text-left font-semibold sm:pr-8">Soulpolice</td>
+                <td role="rowheader" class="py-3 pr-5 text-left font-display text-[15px] font-semibold leading-tight text-zinc-900 sm:pr-8">Soulpolice</td>
                 <td
-                  class="py-2 pr-5 text-left text-[10px] tabular-nums tracking-tight text-zinc-600 sm:whitespace-nowrap sm:pr-8"
+                  class="py-3 pr-5 text-left font-label text-[10px] uppercase tabular-nums tracking-wide text-zinc-500 sm:whitespace-nowrap sm:pr-8"
                 >
                   2012
                 </td>
-                <td class="py-2 pl-8 text-left sm:pl-10">Jr. designer</td>
+                <td class="py-3 pl-8 text-left font-label text-[10px] uppercase tracking-wide text-zinc-500 sm:pl-10">Jr. designer</td>
               </tr>
             </tbody>
           </table>

@@ -1,6 +1,3 @@
-import './style.css'
-import './font-theme.css'
-
 const header = document.querySelector('.site-header')
 
 function updateHeaderScrollState() {

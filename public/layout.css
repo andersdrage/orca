@@ -4,6 +4,8 @@
 /* Unngå default body-margin før Tailwind base laster — kan gi «hopp» i bredde/layout. */
 body {
   margin: 0;
+  background-color: #fafafa;
+  color: #3f3f46;
 }
 
 /* Skip-link må ikke avhenge av Tailwind (som lastes async via Vite) — unngår FOUC/blink ved navigasjon. */
@@ -63,6 +65,13 @@ body {
 
 .site-header {
   box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(228, 228, 231, 0.9);
+  background-color: rgba(250, 250, 250, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
@@ -80,12 +89,7 @@ body {
   overflow: hidden;
 }
 
-/*
- * Header-rad + navigasjon må ikke avhenge av Tailwind. Tailwind lastes først når
- * Vite kjører type="module" (main.js/about.js → style.css), så utility-klasser som
- * flex/gap/text-sm er inaktive i første millisekunder — da havner «Work» og «About»
- * som uformatert tekst ved logoen (FOUC).
- */
+/* Kritisk header-layout ligger her også, så headeren er stabil før øvrig CSS/JS er klar. */
 .site-header > div {
   position: relative;
   display: flex;
@@ -96,7 +100,6 @@ body {
   padding-right: 0;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  transition: padding 180ms ease;
 }
 
 .site-header.is-scrolled > div {
@@ -115,6 +118,8 @@ body {
 
 .site-header nav a {
   color: #52525b;
+  font-weight: 400;
+  position: relative;
   text-decoration: none;
   transition: color 150ms ease;
 }
@@ -124,8 +129,18 @@ body {
 }
 
 .site-header nav a[aria-current='page'] {
-  font-weight: 600;
   color: #18181b;
+}
+
+.site-header nav a[aria-current='page']::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.35rem;
+  left: 0;
+  height: 1px;
+  border-radius: 999px;
+  background-color: currentColor;
+  content: '';
 }
 
 .site-header__project-title {
