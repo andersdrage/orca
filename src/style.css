@@ -1,8 +1,44 @@
 @import 'tailwindcss';
 
+@font-face {
+  /* Ett symbolnavn uten mellomrom — minify fjerner anførselstegn; mellomrom i navn bryter @font-face-matching. */
+  font-family: DrageEurostile;
+  src: url('./assets/fonts/Eurostile-ext-regular.woff') format('woff');
+  font-weight: 100 499;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: DrageEurostile;
+  src: url('./assets/fonts/Eurostile-ext-bold.woff') format('woff');
+  font-weight: 500 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: DragePlantin;
+  /* Url relativ til denne fila — Vite omskriver til riktig sti ved dev/build (unngår ødelagte /fonts/ ved base/preview). */
+  src: url('./assets/fonts/PlantinMTPro-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: DragePlantin;
+  src: url('./assets/fonts/PlantinMTPro-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: DragePlantin, Georgia, 'Times New Roman', serif;
+  --font-display: DragePlantin, Georgia, 'Times New Roman', serif;
+  /* Små uppercase-etiketter + About-hovednavn */
+  --font-label: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -26,30 +62,4 @@
   }
 }
 
-/*
-  Egen kolonne som ikke avhenger av @apply / content-scan.
-  Sørger for at header, innhold og footer aldri blir bredere enn 800px.
-*/
-#site-layout {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 800px;
-  margin-inline: auto;
-  padding-inline: 1.5rem;
-  min-height: 100svh;
-}
-
-#site-layout > header,
-#site-layout > main,
-#site-layout > footer {
-  min-width: 0;
-}
-
-@media print {
-  #site-layout {
-    max-width: none;
-    padding-inline: 2rem;
-  }
-}
+/* Layout-kolonne: se public/layout.css (linkes fra HTML, ikke behandlet av Tailwind). */

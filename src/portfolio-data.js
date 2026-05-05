@@ -1,16 +1,16 @@
-/** @typedef {{ file: string, alt?: string }} MediaItem */
+/** @typedef {{ file: string, alt?: string, caption?: string }} MediaItem */
 
 /**
  * Order: MICROMILSPEC → Off Market → misc (Uber first).
  * `span` matches filename: full | half
- * `type` optional — inferred from extension if omitted
+ * `caption` – valgfri kort tekst under bildet/video (10px, sentrert, zinc-600)
  */
 export const portfolioCases = [
   {
     id: 'micromilspec',
     title: 'MICROMILSPEC',
     intro:
-      'Brand, digital, and physical design from zero—custom pieces and production at scale.',
+      'Co-built the brand, product, and operations — scaling to ~40 MNOK in sales across bespoke and military projects in three years.',
     items: [
       { file: 'micromilspec-1-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-2-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
@@ -28,7 +28,8 @@ export const portfolioCases = [
   {
     id: 'off-market',
     title: 'Off Market',
-    intro: 'Product and brand work from the co-founding years.',
+    intro:
+      'Co-founded Off Market, a real-estate marketplace matching buyers and sellers before homes reached the open market — leading product, design, and marketing.',
     items: [
       { file: 'offmarket-1-full.jpg', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-2-full.jpg', span: 'full', alt: 'Off Market' },

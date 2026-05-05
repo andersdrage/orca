@@ -1,0 +1,13 @@
+/* Importeres etter ./style.css — overstyrer Tailwinds standard --font-sans (DM Sans i dev). */
+:root,
+:host {
+  --font-sans: DragePlantin, Georgia, 'Times New Roman', serif;
+  --font-display: DragePlantin, Georgia, 'Times New Roman', serif;
+}
+
+/* Sist i kjeden: Eurostile-seksjonstitler — tvinger 700 og lettere tykkere rendering enn body antialiased. */
+main h2.font-label {
+  font-weight: 700 !important;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+}
