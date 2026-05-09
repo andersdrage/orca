@@ -7,44 +7,8 @@ if (root) {
 }
 
 function initProjectAudio() {
-  const button = document.querySelector('[data-project-audio-button]')
-  const audio = document.querySelector('[data-project-audio]')
-  const time = document.querySelector('[data-audio-time]')
-  const container = button?.closest('.project-audio')
-  const sentinel = document.querySelector('[data-project-audio-sentinel]')
-  const projectSection = button?.closest('section')
-  const nextProjectSection = projectSection?.nextElementSibling
-  if (!button || !audio || !time) return
-
-  const fallbackDuration = 141
-  let hasActivatedAudio = false
-  let isOriginalVisible = true
-  let isWithinProjectArea = true
-  let scrollTicking = false
-
-  function updateDockedState() {
-    const shouldDock = hasActivatedAudio && !isOriginalVisible && (!audio.paused || isWithinProjectArea)
-    container?.classList.toggle('is-docked', shouldDock)
-  }
-
-  function updateProjectAreaState() {
-    if (!projectSection) return
-
-    const rect = projectSection.getBoundingClientRect()
-    const nextRect = nextProjectSection?.getBoundingClientRect()
-    isWithinProjectArea = rect.top < window.innerHeight && (!nextRect || nextRect.top > window.innerHeight)
-    updateDockedState()
-  }
-
-  function scheduleProjectAreaUpdate() {
-    if (scrollTicking) return
-
-    scrollTicking = true
-    window.requestAnimationFrame(() => {
-      scrollTicking = false
-      updateProjectAreaState()
-    })
-  }
+  const containers = [...document.querySelectorAll('.project-audio')]
+  if (containers.length === 0) return
 
   function formatTime(seconds) {
     const safeSeconds = Math.max(0, Math.ceil(seconds))
@@ -53,113 +17,165 @@ function initProjectAudio() {
     return `${minutes}:${rest}`
   }
 
-  function updateRemainingTime() {
-    const duration = Number.isFinite(audio.duration) ? audio.duration : fallbackDuration
-    time.textContent = formatTime(duration - audio.currentTime)
-  }
+  containers.forEach((container) => {
+    const button = container.querySelector('[data-project-audio-button]')
+    const audio = container.querySelector('[data-project-audio]')
+    const time = container.querySelector('[data-audio-time]')
+    const sentinel = container.previousElementSibling?.matches('[data-project-audio-sentinel]')
+      ? container.previousElementSibling
+      : null
+    const projectSection = button?.closest('section')
+    const nextProjectSection = projectSection?.nextElementSibling
+    if (!button || !audio || !time) return
 
-  function setPlayingState(isPlaying) {
-    button.classList.toggle('is-playing', isPlaying)
-    button.setAttribute('aria-pressed', String(isPlaying))
-    button.setAttribute(
-      'aria-label',
-      isPlaying ? 'Pause audio story about MICROMILSPEC' : 'Play audio story about MICROMILSPEC',
-    )
-    if (!isPlaying) updateRemainingTime()
-    updateDockedState()
-  }
+    const fallbackDuration = Number(audio.dataset.audioFallbackDuration) || 141
+    const audioTitle = audio.dataset.audioTitle || 'this project'
+    let hasActivatedAudio = false
+    let isOriginalVisible = true
+    let isWithinProjectArea = true
+    let scrollTicking = false
 
-  if (container && sentinel && 'IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isOriginalVisible = entry.isIntersecting
-        updateProjectAreaState()
-        updateDockedState()
-      },
-      { rootMargin: '-96px 0px -24px 0px' },
-    )
-
-    observer.observe(sentinel)
-  }
-
-  button.addEventListener('click', async () => {
-    if (audio.paused) {
-      try {
-        await audio.play()
-        hasActivatedAudio = true
-        setPlayingState(true)
-      } catch {
-        setPlayingState(false)
-      }
-      return
+    function updateDockedState() {
+      const shouldDock = hasActivatedAudio && !isOriginalVisible && (!audio.paused || isWithinProjectArea)
+      container.classList.toggle('is-docked', shouldDock)
     }
 
-    audio.pause()
-    setPlayingState(false)
-  })
+    function updateProjectAreaState() {
+      if (!projectSection) return
 
-  audio.addEventListener('ended', () => {
-    audio.currentTime = 0
-    hasActivatedAudio = false
-    setPlayingState(false)
+      const rect = projectSection.getBoundingClientRect()
+      const nextRect = nextProjectSection?.getBoundingClientRect()
+      isWithinProjectArea =
+        rect.top < window.innerHeight && rect.bottom > 120 && (!nextRect || nextRect.top > window.innerHeight)
+      updateDockedState()
+    }
+
+    function scheduleProjectAreaUpdate() {
+      if (scrollTicking) return
+
+      scrollTicking = true
+      window.requestAnimationFrame(() => {
+        scrollTicking = false
+        updateProjectAreaState()
+      })
+    }
+
+    function updateRemainingTime() {
+      const duration = Number.isFinite(audio.duration) ? audio.duration : fallbackDuration
+      time.textContent = formatTime(duration - audio.currentTime)
+    }
+
+    function setPlayingState(isPlaying) {
+      button.classList.toggle('is-playing', isPlaying)
+      button.setAttribute('aria-pressed', String(isPlaying))
+      button.setAttribute(
+        'aria-label',
+        isPlaying ? `Pause audio story about ${audioTitle}` : `Play audio story about ${audioTitle}`,
+      )
+      if (!isPlaying) updateRemainingTime()
+      updateDockedState()
+    }
+
+    if (sentinel && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          isOriginalVisible = entry.isIntersecting
+          updateProjectAreaState()
+          updateDockedState()
+        },
+        { rootMargin: '-96px 0px -24px 0px' },
+      )
+
+      observer.observe(sentinel)
+    }
+
+    button.addEventListener('click', async () => {
+      if (audio.paused) {
+        try {
+          document.querySelectorAll('[data-project-audio]').forEach((otherAudio) => {
+            if (otherAudio !== audio) otherAudio.pause()
+          })
+          await audio.play()
+          hasActivatedAudio = true
+          setPlayingState(true)
+        } catch {
+          setPlayingState(false)
+        }
+        return
+      }
+
+      audio.pause()
+      setPlayingState(false)
+    })
+
+    audio.addEventListener('ended', () => {
+      audio.currentTime = 0
+      hasActivatedAudio = false
+      setPlayingState(false)
+    })
+    audio.addEventListener('pause', () => setPlayingState(false))
+    audio.addEventListener('loadedmetadata', updateRemainingTime)
+    audio.addEventListener('timeupdate', updateRemainingTime)
+    window.addEventListener('scroll', scheduleProjectAreaUpdate, { passive: true })
+    window.addEventListener('resize', scheduleProjectAreaUpdate)
+    updateRemainingTime()
+    updateProjectAreaState()
+    updateDockedState()
   })
-  audio.addEventListener('pause', () => setPlayingState(false))
-  audio.addEventListener('loadedmetadata', updateRemainingTime)
-  audio.addEventListener('timeupdate', updateRemainingTime)
-  window.addEventListener('scroll', scheduleProjectAreaUpdate, { passive: true })
-  window.addEventListener('resize', scheduleProjectAreaUpdate)
-  updateRemainingTime()
-  updateProjectAreaState()
-  updateDockedState()
 }
 
 initProjectAudio()
 
 function initProjectTranscript() {
-  const openButton = document.querySelector('[data-transcript-open]')
-  const modal = document.querySelector('[data-transcript-modal]')
-  const closeButton = document.querySelector('[data-transcript-close]')
-  if (!openButton || !modal || !closeButton) return
+  const containers = [...document.querySelectorAll('.project-audio')]
+  if (containers.length === 0) return
 
-  function closeTranscript() {
-    if (!modal.open || modal.classList.contains('is-closing')) return
+  containers.forEach((container) => {
+    const openButton = container.querySelector('[data-transcript-open]')
+    const modal = container.querySelector('[data-transcript-modal]')
+    const closeButton = container.querySelector('[data-transcript-close]')
+    if (!openButton || !modal || !closeButton) return
 
-    modal.classList.add('is-closing')
-    window.setTimeout(() => {
-      modal.classList.remove('is-closing')
-      modal.close()
-      openButton.focus()
-    }, 120)
-  }
+    function closeTranscript() {
+      if (!modal.open || modal.classList.contains('is-closing')) return
 
-  function handleTranscriptKeydown(event) {
-    if (event.key !== 'Escape') return
-
-    event.preventDefault()
-    closeTranscript()
-  }
-
-  openButton.addEventListener('click', () => {
-    if (typeof modal.showModal === 'function') {
-      modal.showModal()
-      closeButton.focus()
-      window.addEventListener('keydown', handleTranscriptKeydown)
+      modal.classList.add('is-closing')
+      window.setTimeout(() => {
+        modal.classList.remove('is-closing')
+        modal.close()
+        openButton.focus()
+      }, 120)
     }
-  })
 
-  closeButton.addEventListener('click', closeTranscript)
+    function handleTranscriptKeydown(event) {
+      if (event.key !== 'Escape') return
 
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) closeTranscript()
-  })
+      event.preventDefault()
+      closeTranscript()
+    }
 
-  modal.addEventListener('cancel', (event) => {
-    event.preventDefault()
-    closeTranscript()
-  })
+    openButton.addEventListener('click', () => {
+      if (typeof modal.showModal === 'function') {
+        modal.showModal()
+        closeButton.focus()
+        window.addEventListener('keydown', handleTranscriptKeydown)
+      }
+    })
 
-  modal.addEventListener('close', () => {
-    window.removeEventListener('keydown', handleTranscriptKeydown)
+    closeButton.addEventListener('click', closeTranscript)
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeTranscript()
+    })
+
+    modal.addEventListener('cancel', (event) => {
+      event.preventDefault()
+      closeTranscript()
+    })
+
+    modal.addEventListener('close', () => {
+      window.removeEventListener('keydown', handleTranscriptKeydown)
+    })
   })
 }
 
@@ -194,4 +210,10 @@ if (header && stickyTitle) {
   updateStickyWorkTitle()
   window.addEventListener('scroll', updateStickyWorkTitle, { passive: true })
   window.addEventListener('resize', updateStickyWorkTitle)
+}
+
+if (import.meta.hot) {
+  import.meta.hot.accept('./portfolio-render.js', () => {
+    location.reload()
+  })
 }
