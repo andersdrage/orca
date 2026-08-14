@@ -11,18 +11,22 @@ function isVideo(file) {
   return /\.(mp4|webm|mov)$/i.test(file)
 }
 
-function mediaHtml(item) {
+function mediaHtml(item, eager = false) {
   const src = `/images/${item.file}`
   const alt = item.alt ?? ''
   /* Samme som bilder: full bredde, naturlig høyde — unngår letterboxing mot figure-bakgrunnen. */
   const mediaClasses = 'h-auto w-full'
 
   if (isVideo(item.file)) {
-    return `<video class="${mediaClasses}" playsinline muted loop autoplay preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-label="${escapeAttr(alt)}">
+    /* Poster = første frame (scripts genererer <navn>-poster.jpg) — noe synlig umiddelbart
+       mens selve videofilen (opptil ~15MB) strømmer inn. */
+    const poster = src.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')
+    return `<video class="${mediaClasses}" playsinline muted loop autoplay preload="${eager ? 'auto' : 'metadata'}" poster="${poster}" disablepictureinpicture disableremoteplayback tabindex="-1" aria-label="${escapeAttr(alt)}">
       <source src="${src}" type="video/mp4" />
     </video>`
   }
-  return `<img src="${src}" alt="${escapeAttr(alt)}" class="${mediaClasses}" loading="lazy" decoding="async" />`
+  const loadingAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
+  return `<img src="${src}" alt="${escapeAttr(alt)}" class="${mediaClasses}" ${loadingAttrs} decoding="async" />`
 }
 
 function escapeAttr(s) {
@@ -45,10 +49,10 @@ function captionHtml(item) {
 }
 
 /** @param {typeof portfolioCases[number]['items'][number]} item */
-function wrapFigure(item) {
+function wrapFigure(item, eager = false) {
   return `<div class="portfolio-item w-full">
   <figure class="portfolio-asset w-full overflow-hidden rounded-[24px] bg-zinc-100">
-    ${mediaHtml(item)}
+    ${mediaHtml(item, eager)}
   </figure>${captionHtml(item)}
   </div>`
 }
@@ -194,29 +198,42 @@ function layoutRows(items) {
 function caseSection(singleCase, index) {
   const isFirst = index === 0
   const rows = layoutRows(singleCase.items)
-  const blocks = rows
-    .map((row) => {
-      if (row.kind === 'full') {
-        return wrapFigure(row.items[0])
-      }
-      const cells = row.items.map((item) => `<div class="portfolio-half min-w-0">${wrapFigure(item)}</div>`).join('')
-      return `<div class="w-full">
-        <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-4">${cells}</div>
-      </div>`
-    })
-    .join('\n')
+  const blocks = rows.map((row, rowIndex) => {
+    /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
+    const eager = rowIndex === 0
+    if (row.kind === 'full') {
+      return wrapFigure(row.items[0], eager)
+    }
+    const cells = row.items
+      .map((item) => `<div class="portfolio-half min-w-0">${wrapFigure(item, eager)}</div>`)
+      .join('')
+    return `<div class="w-full">
+      <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-4">${cells}</div>
+    </div>`
+  })
+
+  /* Første bilde øverst; tittel, intro og lydspiller under det; så resten av mediene. */
+  const [firstBlock, ...restBlocks] = blocks
 
   return `<section id="${singleCase.id}" class="scroll-mt-24 ${isFirst ? 'pt-8' : ''}" aria-labelledby="title-${singleCase.id}">
     ${isFirst ? '' : '<div class="work-narrow work-section-rule" aria-hidden="true"></div>'}
-    <div class="work-narrow mb-8 w-full">
+    <div class="work-media case-cover-hero flex flex-col gap-3 sm:gap-4 md:gap-6">${firstBlock}</div>
+    <div class="work-narrow mt-10 mb-8 w-full md:mt-14">
       <h2 id="title-${singleCase.id}" class="font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${projectAudioHtml(singleCase)}
     </div>
-    <div class="work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${blocks}</div>
+    <div class="work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
   </section>`
 }
 
 export function buildPortfolioHtml() {
   return portfolioCases.map((c, i) => caseSection(c, i)).join('\n')
+}
+
+/** Én enkelt case som egen side (index 0 → toppluft, ingen seksjonsskille). */
+export function buildCaseHtml(caseId) {
+  const singleCase = portfolioCases.find((c) => c.id === caseId)
+  if (!singleCase) return ''
+  return caseSection(singleCase, 0)
 }

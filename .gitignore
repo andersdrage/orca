@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Iterasjons-skjermbilder (~12MB per runde) — fjern linjen hvis de skal versjoneres
+screenshots/

@@ -26,13 +26,13 @@
     <link rel="stylesheet" href="/src/font-theme.css" />
   </head>
   <body
-    class="min-h-svh bg-zinc-50 font-sans text-[16px] leading-relaxed text-zinc-800 antialiased selection:bg-zinc-200"
+    class="page-home min-h-svh bg-zinc-50 font-sans text-[16px] leading-relaxed text-zinc-800 antialiased selection:bg-zinc-200"
   >
-    <a href="#work" class="skip-link">Skip to work</a>
+    <a href="#home" class="skip-link">Skip to content</a>
 
     <div id="site-layout">
       <header
-        class="site-header sticky top-0 z-40 border-b border-zinc-200/90 bg-zinc-50/85 backdrop-blur-md supports-[backdrop-filter]:bg-zinc-50/70 print:hidden"
+        class="site-header print:hidden"
       >
         <div class="flex items-center justify-between gap-6 py-4">
           <a href="/" class="site-header__brand" aria-label="Anders Drage — home">
@@ -43,38 +43,28 @@
               />
             </svg>
           </a>
-          <span class="site-header__project-title" data-sticky-work-title aria-hidden="true">MICROMILSPEC</span>
+          <span class="site-header__project-title" data-sticky-work-title aria-hidden="true"></span>
           <nav class="flex items-center gap-8 text-sm" aria-label="Primary">
-            <a href="/" aria-current="page">Work</a>
             <a href="/about/">About</a>
             <a href="/praise/">Praise</a>
           </nav>
         </div>
       </header>
 
-      <main id="work" class="flex flex-1 flex-col pb-20 md:pb-28">
-        <p class="work-intro work-narrow">
-          Hi, I'm Anders.<br />
-          I work across product, brand, and growth — helping fast-moving teams sharpen
-          the experience and make strong products even better.
-        </p>
-        <div data-portfolio-root class="flex flex-col gap-4 md:gap-6"></div>
-      </main>
-
-      <footer class="site-footer">
-        <div class="site-footer__inner">
-          <img class="site-footer__logo" src="/drage-logo.svg" alt="" width="55" height="42" loading="lazy" decoding="async" aria-hidden="true" />
-          <p class="site-footer__story">
-            Drage means dragon in Norwegian.<br />
-            A name that’s a bit much to live up to — which is exactly the point.
-          </p>
-          <p class="site-footer__contact">
-            <a href="mailto:anders@dra.ge">anders@dra.ge</a>
-            <span aria-hidden="true">·</span>
-            <a href="tel:+4799597073">+47 99 59 70 73</a>
-          </p>
+      <main id="home" class="timeline-main">
+        <div
+          class="timeline-scroller"
+          data-timeline
+          tabindex="0"
+          role="region"
+          aria-label="Selected projects — scroll sideways or use arrow keys"
+        ></div>
+        <div class="scroll-hint" data-scroll-hint aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 14 14" fill="none"><path d="M4.5 2.5 10 7l-5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg width="28" height="28" viewBox="0 0 14 14" fill="none"><path d="M4.5 2.5 10 7l-5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg width="28" height="28" viewBox="0 0 14 14" fill="none"><path d="M4.5 2.5 10 7l-5.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </div>
-      </footer>
+      </main>
     </div>
 
     <script type="module" src="/src/main.js"></script>

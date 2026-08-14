@@ -12,17 +12,18 @@ export const portfolioCases = [
     intro:
       'Co-built the brand, product, and operations — scaling to ~40 MNOK in sales across bespoke and military projects in three years.',
     items: [
+      /* Hero = samme bilde som tidslinje-tilen — morphen lander sømløst i seg selv. */
+      { file: 'micromilspec-6-half.jpg', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-1-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-3-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-4-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-5-full.jpg', span: 'full', alt: 'MICROMILSPEC' },
-      { file: 'micromilspec-6-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-7-half.mp4', span: 'half', alt: 'MICROMILSPEC' },
-      { file: 'micromilspec-2-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-8-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
+      { file: 'micromilspec-2-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-9-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-10-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
-      { file: 'micromilspec-11-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
+      { file: 'micromilspec-11-half.jpg', span: 'full', alt: 'MICROMILSPEC' },
     ],
   },
   {

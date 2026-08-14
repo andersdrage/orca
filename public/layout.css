@@ -63,30 +63,26 @@ body {
   max-height: 24px;
 }
 
+/* Flytende header: logo oppe til venstre, meny oppe til høyre, ingen linje/bar.
+   Full-bleed ut av 800px-kolonnen; frostet bakgrunn kun når siden er scrollet. */
 .site-header {
   box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid rgba(228, 228, 231, 0.9);
-  background-color: rgba(250, 250, 250, 0.85);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background-color: transparent;
   transition:
     background-color 180ms ease,
-    border-color 180ms ease,
-    border-radius 180ms ease,
-    box-shadow 180ms ease,
-    top 180ms ease;
+    box-shadow 180ms ease;
 }
 
 .site-header.is-scrolled {
-  top: 0.75rem !important;
-  border-bottom-color: transparent !important;
-  border-radius: 100px;
-  background-color: rgba(250, 250, 250, 0.88) !important;
+  background-color: rgba(250, 250, 250, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   box-shadow: 0 10px 24px rgba(24, 24, 27, 0.06);
-  overflow: hidden;
 }
 
 /* Kritisk header-layout ligger her også, så headeren er stabil før øvrig CSS/JS er klar. */
@@ -96,36 +92,18 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  min-height: 70px;
+  box-sizing: border-box;
+  padding: 30px 30px 16px;
 }
 
-.site-header.is-scrolled > div {
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-@media (max-width: 767px) {
-  .site-header {
-    top: 0 !important;
-  }
-
-  .site-header.is-scrolled {
-    top: 0 !important;
-    border-bottom-color: rgba(228, 228, 231, 0.9) !important;
-    border-radius: 0;
-    box-shadow: none;
-    overflow: visible;
-  }
-
-  .site-header.is-scrolled > div {
-    padding-left: 0;
-    padding-right: 0;
-  }
+/* Forsiden: headeren tar ikke plass i flyten — tidslinjen sentreres i hele viewporten.
+   Logo/lenker hører til oversikten og zoomer ut av bildet sammen med den. */
+.page-home .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-left: 0;
 }
 
 .site-header nav {
@@ -197,7 +175,8 @@ body {
   left: 50%;
   max-width: min(50vw, 24rem);
   overflow: hidden;
-  transform: translate(-50%, 4px);
+  top: 50%;
+  transform: translate(-50%, -50%);
   color: #18181b;
   font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
@@ -695,6 +674,14 @@ body {
   }
 }
 
+/* Ytelse: innhold under folden rendres først når det nærmer seg viewporten —
+   case-siden slipper å style/paint'e hele den lange siden mens zoomen spilles.
+   Hero-en (første rad) er unntatt; den er selve morph-målet. */
+#work .work-media:not(.case-cover-hero) .portfolio-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
 .portfolio-asset {
   border-radius: 24px;
   overflow: hidden;
@@ -714,5 +701,680 @@ body {
     max-width: none;
     padding-left: 2rem;
     padding-right: 2rem;
+  }
+}
+
+/* ---- Horisontal tidslinje (forsiden) ---- */
+
+/* Forsiden scroller kun horisontalt — vertikal scroll er skrudd av. */
+.page-home {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.page-home #site-layout {
+  height: 100%;
+  min-height: 0;
+}
+
+.timeline-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.timeline-main .work-intro {
+  flex: none;
+}
+
+/* Full-bleed scroller: bryter ut av 800px-kolonnen til hele viewport-bredden. */
+.timeline-scroller {
+  flex: 1;
+  min-height: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Wrap-hoppene (± kopibredde) må være instant — smooth ville animert over hele loopen. */
+  scroll-behavior: auto;
+  overscroll-behavior-x: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timeline-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-scroller:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+/* Hver kopi bærer sømgapet som padding-right: et markert større mellomrom mellom
+   siste og første tile, så det er tydelig at man har nådd slutten og loopen starter på nytt. */
+.timeline-copy {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding-right: clamp(240px, 45vw, 600px);
+}
+
+.timeline-tile {
+  flex: none;
+}
+
+.timeline-tile {
+  position: relative;
+  display: block;
+  height: var(--tile-h, 38svh);
+  aspect-ratio: var(--tile-ratio, 1);
+  border-radius: clamp(14px, 2vw, 22px);
+  background: var(--tile-bg, #e4e4e7);
+  overflow: hidden;
+}
+
+.timeline-tile__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Bildet er tilen — ingen bakgrunnsflate bak (unngår svart rektangel i snapshots). */
+.timeline-tile--image {
+  background: none;
+}
+
+.timeline-tile__title {
+  z-index: 1;
+}
+
+/* Scroll-hint: tre chevroner nede til høyre som pulserer i tur — «her scroller man».
+   Fader ut første gang brukeren faktisk scroller. */
+.scroll-hint {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  color: #52525b;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+/* Chevron-inken fyller bare midten av viewBoxen — negativ margin trekker
+   pilene tett sammen som «⟩⟩⟩». */
+.scroll-hint svg + svg {
+  margin-left: -17px;
+}
+
+.scroll-hint.is-hidden {
+  opacity: 0;
+}
+
+.scroll-hint svg {
+  animation: scroll-hint-pulse 1.8s ease-in-out infinite;
+}
+
+.scroll-hint svg:nth-child(2) {
+  animation-delay: 200ms;
+}
+
+.scroll-hint svg:nth-child(3) {
+  animation-delay: 400ms;
+}
+
+@keyframes scroll-hint-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint svg {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+a.timeline-tile {
+  transition: transform 240ms cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+a.timeline-tile:hover {
+  transform: translateY(-4px);
+}
+
+a.timeline-tile:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 4px;
+}
+
+.timeline-tile__title {
+  position: absolute;
+  left: 1.1rem;
+  bottom: 1rem;
+  color: #fafafa;
+  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.timeline-tile {
+    transition: none;
+  }
+}
+
+/* Lukkeknapp på case-sider — flytende, frostet, under headeren. */
+.case-close {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid rgba(228, 228, 231, 0.9);
+  border-radius: 9999px;
+  /* Ingen backdrop-filter her: i view transitions blurrer den laget BAK seg i
+     pseudo-stakken (synlig som uskarp flekk oppe til høyre), selv ved opacity 0. */
+  background: rgba(250, 250, 250, 0.92);
+  cursor: pointer;
+  transition: transform 200ms cubic-bezier(0.32, 0.08, 0.24, 1), background-color 160ms ease;
+}
+
+.case-close:hover {
+  background: rgba(244, 244, 245, 0.95);
+  transform: scale(1.06);
+}
+
+.case-close:active {
+  transform: scale(0.96);
+}
+
+.case-close:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 2px;
+}
+
+.case-close img {
+  display: block;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-close {
+    transition: none;
+  }
+}
+
+/* Animasjon-inspektør (dev): åpnes/lukkes med S. */
+.debug-panel {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 100;
+  padding: 14px 16px;
+  border: 1px solid rgba(228, 228, 231, 0.9);
+  border-radius: 12px;
+  background: rgba(250, 250, 250, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #3f3f46;
+  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.debug-panel__title {
+  margin: 0 0 10px;
+  color: #18181b;
+}
+
+.debug-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.debug-panel__row input {
+  accent-color: #18181b;
+}
+
+.debug-panel__hint {
+  margin: 10px 0 0;
+  color: #a1a1aa;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+/* ---- View transitions: cover ↔ case-side (morph) ---- */
+
+@view-transition {
+  navigation: auto;
+}
+
+/* Hero-bildet øverst på case-siden matcher den klikkede tilen (JS setter samme navn
+   på tilen ved klikk). Med samme bilde begge steder morpher coveret inn i seg selv. */
+.case-cover-hero {
+  view-transition-name: case-cover;
+}
+
+/* Hero 40% mindre enn full media-bredde, fortsatt sentrert. */
+#work .work-media.case-cover-hero {
+  width: min(900px, calc((100vw - 3rem) * 0.6));
+}
+
+@media (max-width: 767px) {
+  #work .work-media.case-cover-hero {
+    width: calc(100vw - 4rem);
+  }
+}
+
+::view-transition-group(case-cover) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+/* Zoom-konseptet: kameraet dytter inn mot klikket cover (forover) og trekker ut igjen (tilbake).
+   JS setter --vt-origin til tilens senterpunkt + klassen vt-zoom-in/vt-zoom-out på <html>
+   i pagereveal, så skaleringen ankres i selve coveret. Resten (cover→side-morphen)
+   gjør ::view-transition-group(case-cover) over. */
+html.vt-zoom-in::view-transition-old(root) {
+  transform-origin: var(--vt-origin, 50% 50%);
+  animation: vt-zoom-in-old 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-zoom-in-old {
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+html.vt-zoom-out::view-transition-new(root) {
+  transform-origin: var(--vt-origin, 50% 50%);
+  animation: vt-zoom-out-new 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-zoom-out-new {
+  from {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Case-sider har mørk grå bakgrunn — root-crossfaden i overgangen fader mellom
+   tonene og signaliserer tydelig at man er «et annet sted». */
+body.page-case {
+  background-color: #27272a;
+}
+
+.page-case #site-layout > main::before {
+  background: #27272a;
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.4);
+}
+
+/* Tekst og chrome tilpasset mørk flate. Transkript-modalen forblir lys
+   (selektorene under treffer kun direkte barn / elementer utenfor dialogen). */
+.page-case #work h2 {
+  color: #f4f4f5;
+}
+
+.page-case #work section > .work-narrow > p {
+  color: #a1a1aa;
+}
+
+.page-case #work .work-media p {
+  color: #9d9da6;
+}
+
+.page-case .site-header.is-scrolled {
+  background-color: rgba(39, 39, 42, 0.85);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.page-case .site-header__project-title {
+  color: #f4f4f5;
+}
+
+.page-case .case-close {
+  border-color: rgba(82, 82, 91, 0.9);
+  background: rgba(63, 63, 70, 0.92);
+}
+
+.page-case .case-close:hover {
+  background: rgba(82, 82, 91, 0.95);
+}
+
+.page-case .case-close img {
+  filter: invert(1);
+  opacity: 0.9;
+}
+
+.page-case .project-audio__transcript-trigger {
+  color: #a1a1aa;
+}
+
+.page-case .site-footer {
+  background: #1f1f23;
+  color: #a1a1aa;
+}
+
+.page-case .site-footer__story {
+  color: #a1a1aa;
+}
+
+.page-case .site-footer__contact {
+  color: #8b8b93;
+}
+
+.page-case .site-footer__contact a:hover,
+.page-case .site-footer__contact a:focus-visible {
+  color: #fafafa;
+}
+
+.page-case .site-footer__logo {
+  filter: invert(1);
+  opacity: 0.85;
+}
+
+/* Fysisk verden: synlige nabokort flytter seg ut av veien når kortet zoomer inn
+   (JS setter push-l1…l4 / push-r1…r4 på dem ved klikk), og glir tilbake ved retur.
+   De beveger seg — fader ikke — så verden føles solid. */
+html.vt-zoom-in::view-transition-old(push-l1),
+html.vt-zoom-in::view-transition-old(push-l2),
+html.vt-zoom-in::view-transition-old(push-l3),
+html.vt-zoom-in::view-transition-old(push-l4) {
+  animation: vt-push-left-out 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-in::view-transition-old(push-r1),
+html.vt-zoom-in::view-transition-old(push-r2),
+html.vt-zoom-in::view-transition-old(push-r3),
+html.vt-zoom-in::view-transition-old(push-r4) {
+  animation: vt-push-right-out 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-out::view-transition-new(push-l1),
+html.vt-zoom-out::view-transition-new(push-l2),
+html.vt-zoom-out::view-transition-new(push-l3),
+html.vt-zoom-out::view-transition-new(push-l4) {
+  animation: vt-push-left-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-out::view-transition-new(push-r1),
+html.vt-zoom-out::view-transition-new(push-r2),
+html.vt-zoom-out::view-transition-new(push-r3),
+html.vt-zoom-out::view-transition-new(push-r4) {
+  animation: vt-push-right-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-push-left-out {
+  to {
+    transform: translateX(-75vw);
+  }
+}
+
+@keyframes vt-push-right-out {
+  to {
+    transform: translateX(75vw);
+  }
+}
+
+@keyframes vt-push-left-in {
+  from {
+    transform: translateX(-75vw);
+  }
+}
+
+@keyframes vt-push-right-in {
+  from {
+    transform: translateX(75vw);
+  }
+}
+
+/* Logo og meny er del av oversikts-verdenen: ved zoom-inn beveger de seg fysisk ut
+   av viewporten (logo opp-venstre, meny opp-høyre) i stedet for å klippes bort —
+   og glir tilbake på plass ved retur. Navnene ligger på alle sider, så vanlige
+   navigasjoner (f.eks. til About) morpher dem statisk i stedet. */
+.site-header__brand {
+  view-transition-name: site-brand;
+}
+
+.site-header nav {
+  view-transition-name: site-nav;
+}
+
+html.vt-zoom-in::view-transition-old(site-brand) {
+  animation: vt-brand-out 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-in::view-transition-old(site-nav) {
+  animation: vt-nav-out 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-out::view-transition-new(site-brand) {
+  animation: vt-brand-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-zoom-out::view-transition-new(site-nav) {
+  animation: vt-nav-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-brand-out {
+  to {
+    transform: translate(-140px, -140px);
+  }
+}
+
+@keyframes vt-nav-out {
+  to {
+    transform: translate(200px, -140px);
+  }
+}
+
+@keyframes vt-brand-in {
+  from {
+    transform: translate(-140px, -140px);
+  }
+}
+
+@keyframes vt-nav-in {
+  from {
+    transform: translate(200px, -140px);
+  }
+}
+
+/* Lukkeknappen er del av koreografien: den ankommer på skrå nedenfra-venstre mot
+   hjørnet sitt — skalerer opp fra liten og fader inn — først når zoomen nesten har
+   landet. Ved lukking spiller den samme bevegelsen baklengs før verden zoomer ut. */
+.case-close {
+  view-transition-name: case-close;
+}
+
+html.vt-zoom-in::view-transition-new(case-close) {
+  animation: vt-case-close-in 300ms cubic-bezier(0.32, 0.08, 0.24, 1) 120ms both;
+}
+
+html.vt-zoom-out::view-transition-old(case-close) {
+  animation: vt-case-close-out 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-case-close-in {
+  from {
+    transform: translate(-36px, 36px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes vt-case-close-out {
+  to {
+    transform: translate(-36px, 36px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Sidetittel på About/Praise: selve morph-målet for nav-lenken. Samme tekst og
+   font som lenken — lenken «vokser» fysisk inn i tittelen. */
+.page-title {
+  view-transition-name: nav-focus;
+  margin: 0 0 2.5rem;
+  color: #18181b;
+  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.75rem, 7vw, 4.25rem);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+
+::view-transition-group(nav-focus) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+/* Innholdet under tittelen animerer inn nedenfra i kaskade — kun når siden
+   ankommer via nav-zoom (JS setter .page-entering); direktebesøk viser alt statisk. */
+.page-entering #site-layout > main > :not(.page-title) {
+  animation: page-content-in 480ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+  animation-delay: 460ms;
+}
+
+.page-entering #site-layout > main > :nth-child(2) {
+  animation-delay: 220ms;
+}
+
+.page-entering #site-layout > main > :nth-child(3) {
+  animation-delay: 300ms;
+}
+
+.page-entering #site-layout > main > :nth-child(4) {
+  animation-delay: 380ms;
+}
+
+@keyframes page-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-entering #site-layout > main > :not(.page-title) {
+    animation: none;
+  }
+}
+
+/* Nav-zoom (hjem ↔ about/praise): samme kamerabevegelse som case-zoomen, men
+   mildere (1.25) og forankret i tekstlenken man klikket. Logo/meny har egne lag
+   og står stille mens verden bak flytter seg. */
+html.vt-navzoom-in::view-transition-old(root) {
+  transform-origin: var(--vt-origin, 50% 50%);
+  animation: vt-navzoom-in-old 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-navzoom-in::view-transition-new(root) {
+  animation: vt-fade-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-navzoom-out::view-transition-new(root) {
+  transform-origin: var(--vt-origin, 50% 50%);
+  animation: vt-navzoom-out-new 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-navzoom-in-old {
+  to {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+@keyframes vt-navzoom-out-new {
+  from {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).
+   Med ulikt innhold + skalering lysner komposittet synlig midtveis — oppleves som
+   at bakgrunnen skifter farge. Vanlig alfa-blanding fjerner det. */
+html.vt-zoom-in::view-transition-image-pair(root),
+html.vt-zoom-out::view-transition-image-pair(root),
+html.vt-navzoom-in::view-transition-image-pair(root),
+html.vt-navzoom-out::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+html.vt-zoom-in::view-transition-old(root),
+html.vt-zoom-in::view-transition-new(root),
+html.vt-zoom-out::view-transition-old(root),
+html.vt-zoom-out::view-transition-new(root),
+html.vt-navzoom-in::view-transition-old(root),
+html.vt-navzoom-in::view-transition-new(root),
+html.vt-navzoom-out::view-transition-old(root),
+html.vt-navzoom-out::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+/* Ny side fader inn over den zoomende gamle — full dekning hele veien. */
+html.vt-zoom-in::view-transition-new(root) {
+  animation: vt-fade-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+::view-transition-old(case-cover),
+::view-transition-new(case-cover) {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+/* Én og samme flate gjennom hele morphen: old-snapshotet (lavoppløselig raster av
+   tilen) skjules helt, og new-laget — samme bildefil i full oppløsning — står alene
+   fra første frame. Ingen crossfade, ingen skarphets-pop, bildet KAN ikke endre seg. */
+::view-transition-old(case-cover) {
+  display: none;
+}
+
+::view-transition-new(case-cover) {
+  animation: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
   }
 }
