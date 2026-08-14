@@ -25,3 +25,4 @@ dist-ssr
 
 # Iterasjons-skjermbilder (~12MB per runde) — fjern linjen hvis de skal versjoneres
 screenshots/
+.vercel
