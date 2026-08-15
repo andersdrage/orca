@@ -143,6 +143,12 @@ body {
   margin-left: 0;
 }
 
+/* Undersider med sidetittel (About/Praise): menyen sitter til venstre, inntil
+   logoen — pan-overgangen flytter den dit i samme bevegelse som siden. */
+body:has(.page-title) .site-header > div {
+  justify-content: flex-start;
+}
+
 .site-header nav {
   display: flex;
   align-items: center;
@@ -1373,44 +1379,14 @@ html.vt-pan-back::view-transition-new(root) {
   }
 }
 
-/* I pan panorerer også logo og meny med siden sin — gamle sidens header glir ut
-   sammen med innholdet, nye sidens header inn — hele flaten bytter som én enhet. */
-html.vt-pan-fwd::view-transition-old(site-brand),
-html.vt-pan-fwd::view-transition-old(site-nav) {
-  animation: vt-pan-exit-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-fwd::view-transition-new(site-brand),
-html.vt-pan-fwd::view-transition-new(site-nav) {
-  animation: vt-pan-enter-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-back::view-transition-old(site-brand),
-html.vt-pan-back::view-transition-old(site-nav) {
-  animation: vt-pan-exit-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-back::view-transition-new(site-brand),
-html.vt-pan-back::view-transition-new(site-nav) {
-  animation: vt-pan-enter-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-fwd::view-transition-image-pair(site-brand),
-html.vt-pan-fwd::view-transition-image-pair(site-nav),
-html.vt-pan-back::view-transition-image-pair(site-brand),
-html.vt-pan-back::view-transition-image-pair(site-nav) {
-  isolation: auto;
-}
-
-html.vt-pan-fwd::view-transition-old(site-brand),
-html.vt-pan-fwd::view-transition-new(site-brand),
-html.vt-pan-fwd::view-transition-old(site-nav),
-html.vt-pan-fwd::view-transition-new(site-nav),
-html.vt-pan-back::view-transition-old(site-brand),
-html.vt-pan-back::view-transition-new(site-brand),
-html.vt-pan-back::view-transition-old(site-nav),
-html.vt-pan-back::view-transition-new(site-nav) {
-  mix-blend-mode: normal;
+/* Pan: logoen står bom stille (eget lag, samme posisjon på alle sider), mens
+   About/Praise-lenkene rir med sideflyttingen — de morpher fra høyre (forsiden)
+   til plassen sin ved siden av logoen (undersidene), i samme retning og tempo
+   som panoreringen. Selve layouten: se body:has(.page-title)-regelen ved headeren. */
+html.vt-pan-fwd::view-transition-group(site-nav),
+html.vt-pan-back::view-transition-group(site-nav) {
+  animation-duration: 500ms;
+  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
 /* 2) PORTAL: den nye siden blåser seg opp fra nav-lenkens rektangel (clip-path);

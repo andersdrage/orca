@@ -73,6 +73,11 @@ function initNavTransitions(header) {
     link.addEventListener('click', (event) => {
       const toPath = new URL(link.href).pathname
 
+      /* Portal trenger rektangelet der brukeren faktisk klikket — nav-lenkene
+         står nå på ulik side på forside vs. undersider, så destinasjonssidens
+         egen lenkeposisjon kan ikke brukes som anker for åpningen. */
+      sessionStorage.setItem('nav:click-rect', linkInset(link))
+
       /* Klikk på lenken til siden man allerede står på (f.eks. logoen på
          forsiden) skal ikke re-navigere — det utløser en full reload med
          crossfade og tidslinje-reset, som ser ut som at innholdet «hopper».
@@ -147,9 +152,16 @@ function initNavTransitions(header) {
     if (variant === 'pan') {
       addClass(forward ? 'vt-pan-fwd' : 'vt-pan-back')
     } else if (variant === 'portal') {
-      /* Portalen åpner/lukker seg fra nav-lenken til siden det gjelder. */
-      const anchor = header.querySelector(`nav a[href="${forward ? location.pathname : fromPath}"]`)
-      if (anchor) root.style.setProperty('--vt-clip-rect', linkInset(anchor))
+      /* Åpning: fra rektangelet der brukeren klikket (lagret på forrige side);
+         lukking: inn i denne sidens lenke som peker dit vi kom fra. */
+      const clickRect = forward ? sessionStorage.getItem('nav:click-rect') : null
+      if (clickRect) {
+        root.style.setProperty('--vt-clip-rect', clickRect)
+      } else {
+        const anchor = header.querySelector(`nav a[href="${forward ? location.pathname : fromPath}"]`)
+        if (anchor) root.style.setProperty('--vt-clip-rect', linkInset(anchor))
+      }
+      sessionStorage.removeItem('nav:click-rect')
       addClass(forward ? 'vt-portal-in' : 'vt-portal-out')
     } else if (variant === 'title') {
       if (forward) {
