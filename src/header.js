@@ -75,9 +75,15 @@ function initNavTransitions(header) {
 
       /* Klikk på lenken til siden man allerede står på (f.eks. logoen på
          forsiden) skal ikke re-navigere — det utløser en full reload med
-         crossfade og tidslinje-reset, som ser ut som at innholdet «hopper». */
+         crossfade og tidslinje-reset, som ser ut som at innholdet «hopper».
+         Dragen jigglier i stedet: «vi fikk touchen din, men du er allerede her». */
       if (toPath === location.pathname) {
         event.preventDefault()
+        if (link.classList.contains('site-header__brand')) {
+          link.classList.remove('is-jiggling')
+          void link.offsetWidth
+          link.classList.add('is-jiggling')
+        }
         return
       }
 
