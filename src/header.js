@@ -69,11 +69,20 @@ function initNavTransitions(header) {
 
   const links = [...header.querySelectorAll('.site-header__brand, nav a')]
 
-  /* Variant «spa»: klikk til About/Praise intercepts — samme dokument, ekte FLIP. */
   links.forEach((link) => {
     link.addEventListener('click', (event) => {
-      if (getNavVariant() !== 'spa') return
       const toPath = new URL(link.href).pathname
+
+      /* Klikk på lenken til siden man allerede står på (f.eks. logoen på
+         forsiden) skal ikke re-navigere — det utløser en full reload med
+         crossfade og tidslinje-reset, som ser ut som at innholdet «hopper». */
+      if (toPath === location.pathname) {
+        event.preventDefault()
+        return
+      }
+
+      /* Variant «spa»: klikk til About/Praise intercepts — samme dokument, ekte FLIP. */
+      if (getNavVariant() !== 'spa') return
       if (toPath !== '/about/' && toPath !== '/praise/') return
       event.preventDefault()
       spaNavigate(link)

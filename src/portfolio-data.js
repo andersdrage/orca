@@ -30,9 +30,7 @@ export const portfolioCases = [
     id: 'hjemla',
     title: 'Hjemla',
     intro: 'Case study in the works — more on this project soon.',
-    /* Hero/tile-cover: legg mockupen som public/images/hjemla-1-full.jpg, så
-       kobles den på her og i tidslinje-tilen. */
-    items: [],
+    items: [{ file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' }],
   },
   {
     id: 'off-market',
