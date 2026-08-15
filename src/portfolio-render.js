@@ -212,8 +212,9 @@ function caseSection(singleCase, index) {
     </div>`
   })
 
-  /* Første bilde øverst; tittel, intro og lydspiller under det; så resten av mediene. */
-  const [firstBlock, ...restBlocks] = blocks
+  /* Første bilde øverst; tittel, intro og lydspiller under det; så resten av mediene.
+     (Case uten media ennå → tom hero-wrapper, kun tittel/intro.) */
+  const [firstBlock = '', ...restBlocks] = blocks
 
   return `<section id="${singleCase.id}" class="scroll-mt-24 ${isFirst ? 'pt-8' : ''}" aria-labelledby="title-${singleCase.id}">
     ${isFirst ? '' : '<div class="work-narrow work-section-rule" aria-hidden="true"></div>'}

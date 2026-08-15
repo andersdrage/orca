@@ -1237,10 +1237,15 @@ html.vt-zoom-out::view-transition-old(case-close) {
   }
 }
 
-/* Sidetittel på About/Praise: selve morph-målet for nav-lenken. Samme tekst og
-   font som lenken — lenken «vokser» fysisk inn i tittelen. */
-.page-title {
+/* Sidetittel på About/Praise: selve morph-målet for nav-lenken i variantene
+   «title» og «editorial» — kun der får den eget transition-lag; i pan/portal/spa
+   er den del av roten og beveger seg med siden. */
+html[data-nav-variant='title'] .page-title,
+html[data-nav-variant='editorial'] .page-title {
   view-transition-name: nav-focus;
+}
+
+.page-title {
   margin: 0 0 2.5rem;
   color: #18181b;
   font-family: DragePlantin, Georgia, 'Times New Roman', serif;
@@ -1287,35 +1292,224 @@ html.vt-zoom-out::view-transition-old(case-close) {
   }
 }
 
-/* Nav-zoom (hjem ↔ about/praise): samme kamerabevegelse som case-zoomen, men
-   mildere (1.25) og forankret i tekstlenken man klikket. Logo/meny har egne lag
-   og står stille mens verden bak flytter seg. */
-html.vt-navzoom-in::view-transition-old(root) {
-  transform-origin: var(--vt-origin, 50% 50%);
-  animation: vt-navzoom-in-old 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+/* ---- Transition-lab: fem varianter for hjem ↔ About/Praise ----
+   Felles verdensmodell: forsiden → About → Praise ligger fra venstre mot høyre. */
+
+/* 1) PAN: hele viewporten dollyer sidelengs; header-lagene (logo/meny) står i ro. */
+html.vt-pan-fwd::view-transition-old(root) {
+  animation: vt-pan-exit-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
 }
 
-html.vt-navzoom-in::view-transition-new(root) {
-  animation: vt-fade-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+html.vt-pan-fwd::view-transition-new(root) {
+  animation: vt-pan-enter-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
 }
 
-html.vt-navzoom-out::view-transition-new(root) {
-  transform-origin: var(--vt-origin, 50% 50%);
-  animation: vt-navzoom-out-new 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+html.vt-pan-back::view-transition-old(root) {
+  animation: vt-pan-exit-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
 }
 
-@keyframes vt-navzoom-in-old {
+html.vt-pan-back::view-transition-new(root) {
+  animation: vt-pan-enter-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-pan-exit-left {
   to {
-    transform: scale(1.25);
+    transform: translateX(-100vw);
+  }
+}
+
+@keyframes vt-pan-enter-right {
+  from {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes vt-pan-exit-right {
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes vt-pan-enter-left {
+  from {
+    transform: translateX(-100vw);
+  }
+}
+
+/* 2) PORTAL: den nye siden blåser seg opp fra nav-lenkens rektangel (clip-path);
+   ved retur trekker den gamle siden seg sammen inn i lenken igjen. */
+html.vt-portal-in::view-transition-new(root) {
+  animation: vt-portal-open 550ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-portal-in::view-transition-old(root) {
+  animation: vt-portal-recede 550ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-portal-out::view-transition-old(root) {
+  animation: vt-portal-close 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+  z-index: 1;
+}
+
+html.vt-portal-out::view-transition-new(root) {
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes vt-portal-open {
+  from {
+    clip-path: var(--vt-clip-rect, inset(45% 45% 45% 45% round 18px));
+  }
+  to {
+    clip-path: inset(0 round 0);
+  }
+}
+
+@keyframes vt-portal-close {
+  from {
+    clip-path: inset(0 round 0);
+  }
+  to {
+    clip-path: var(--vt-clip-rect, inset(45% 45% 45% 45% round 18px));
+  }
+}
+
+@keyframes vt-portal-recede {
+  to {
+    transform: scale(0.98);
+    opacity: 0.6;
+  }
+}
+
+/* 3) TITLE: én skarp flate — kun destinasjonens fullopppløste tittel animeres
+   fra lenkeboksen til tittelboksen (old-snapshotet skjules). Rolig root. */
+html.vt-title-in::view-transition-old(nav-focus),
+html.vt-title-out::view-transition-old(nav-focus) {
+  display: none;
+}
+
+html.vt-title-in::view-transition-new(nav-focus),
+html.vt-title-out::view-transition-new(nav-focus) {
+  animation: none;
+  opacity: 1;
+}
+
+html.vt-title-in::view-transition-old(root) {
+  animation: vt-title-recede 400ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-title-in::view-transition-new(root),
+html.vt-title-out::view-transition-new(root) {
+  animation: vt-fade-in 400ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-title-recede {
+  to {
+    transform: scale(0.985);
     opacity: 0;
   }
 }
 
-@keyframes vt-navzoom-out-new {
-  from {
-    transform: scale(1.25);
+/* 4) EDITORIAL: ingen flight — verden trekker seg rolig tilbake, tittelen
+   avdekkes bak grunnlinjen (clip + løft), innholdet kaskaderer inn. */
+html.vt-editorial-in::view-transition-old(root) {
+  animation: vt-editorial-recede 380ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-editorial-in::view-transition-new(root) {
+  animation: vt-fade-in 320ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+html.vt-editorial-in::view-transition-new(nav-focus) {
+  animation: vt-editorial-title 620ms cubic-bezier(0.32, 0.08, 0.24, 1) 100ms both;
+}
+
+html.vt-editorial-out::view-transition-old(nav-focus) {
+  animation: vt-editorial-title-exit 300ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+@keyframes vt-editorial-recede {
+  to {
+    transform: scale(0.99) translateY(-8px);
     opacity: 0;
   }
+}
+
+@keyframes vt-editorial-title {
+  from {
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(0.45em);
+  }
+  to {
+    clip-path: inset(-5% 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes vt-editorial-title-exit {
+  to {
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(0.45em);
+    opacity: 0;
+  }
+}
+
+/* 5) SPA: flyvende FLIP-klon (ekte DOM, fjær-easing i JS). */
+.spa-flip-clone {
+  position: fixed;
+  z-index: 90;
+  margin: 0;
+  transform-origin: top left;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Bryteren nederst på forsiden. */
+.vt-switcher {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid rgba(228, 228, 231, 0.9);
+  border-radius: 9999px;
+  background: rgba(250, 250, 250, 0.92);
+  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vt-switcher__label {
+  padding: 0 8px;
+  color: #a1a1aa;
+}
+
+.vt-switcher__option {
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: #52525b;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.vt-switcher__option:hover {
+  color: #18181b;
+}
+
+.vt-switcher__option[aria-pressed='true'] {
+  background: #18181b;
+  color: #fafafa;
 }
 
 /* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).

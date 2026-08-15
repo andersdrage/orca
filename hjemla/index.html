@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/drage-logo.svg" type="image/svg+xml" sizes="any" />
+    <link rel="preload" href="/drage-logo.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Regular.woff" as="font" type="font/woff" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Semibold.woff" as="font" type="font/woff" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/Eurostile-ext-bold.woff" as="font" type="font/woff" crossorigin />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Hjemla — product design by Anders Drage."
+    />
+    <meta property="og:title" content="Hjemla – Anders Drage" />
+    <meta property="og:description" content="Product, brand, and marketing design by Anders Drage." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/sharing-img.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/images/sharing-img.png" />
+    <title>Hjemla – Anders Drage</title>
+    <link rel="stylesheet" href="/layout.css" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="stylesheet" href="/src/font-theme.css" />
+  </head>
+  <body
+    class="page-case min-h-svh bg-zinc-50 font-sans text-[16px] leading-relaxed text-zinc-800 antialiased selection:bg-zinc-200"
+  >
+    <a href="#work" class="skip-link">Skip to work</a>
+
+    <div id="site-layout">
+      <header
+        class="site-header print:hidden"
+      >
+        <div class="flex items-center justify-between gap-6 py-4">
+           <span class="site-header__project-title" data-sticky-work-title aria-hidden="true"></span>
+           </div>
+      </header>
+
+      <main id="work" class="case-main flex flex-1 flex-col pb-20 md:pb-28">
+        <div data-case-root data-case-id="hjemla" class="flex flex-col gap-4 md:gap-6"></div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="site-footer__inner">
+          <img class="site-footer__logo" src="/drage-logo.svg" alt="" width="55" height="42" loading="lazy" decoding="async" aria-hidden="true" />
+          <p class="site-footer__story">
+            Drage means dragon in Norwegian.<br />
+            A name that’s a bit much to live up to — which is exactly the point.
+          </p>
+          <p class="site-footer__contact">
+            <a href="mailto:anders@dra.ge">anders@dra.ge</a>
+            <span aria-hidden="true">·</span>
+            <a href="tel:+4799597073">+47 99 59 70 73</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/case.js"></script>
+  </body>
+</html>

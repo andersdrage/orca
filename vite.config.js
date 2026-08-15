@@ -14,6 +14,7 @@ export default defineConfig({
         about: resolve(__dirname, 'about/index.html'),
         praise: resolve(__dirname, 'praise/index.html'),
         micromilspec: resolve(__dirname, 'micromilspec/index.html'),
+        hjemla: resolve(__dirname, 'hjemla/index.html'),
         offMarket: resolve(__dirname, 'off-market/index.html'),
         misc: resolve(__dirname, 'misc/index.html'),
       },

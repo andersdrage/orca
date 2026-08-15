@@ -15,7 +15,7 @@ const TILES = [
     h: '44svh',
   },
   { id: 'p2', color: '#b65c3f', ratio: '1 / 1', h: '30svh' },
-  { id: 'p3', color: '#6b7f5c', ratio: '16 / 10', h: '34svh' },
+  { id: 'hjemla', title: 'Hjemla', href: '/hjemla/', color: '#f5c542', ratio: '3 / 2', h: '34svh' },
   { id: 'off-market', title: 'Off Market', href: '/off-market/', color: '#2c3e5d', ratio: '3 / 2', h: '40svh' },
   { id: 'p5', color: '#c9a227', ratio: '9 / 16', h: '42svh' },
   { id: 'p6', color: '#6d597a', ratio: '5 / 4', h: '28svh' },
@@ -169,7 +169,7 @@ export function initTimeline() {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|hjemla)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }

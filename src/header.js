@@ -1,7 +1,12 @@
 import { initAnimationInspector } from './debug-panel.js'
 import { portfolioCases } from './portfolio-data.js'
+import { applyNavVariantAttribute, getNavVariant } from './nav-variant.js'
+import { initSpaNav, spaNavigate } from './spa-nav.js'
 
-const CASE_PATH = /^\/(micromilspec|off-market|misc)\/?$/
+const CASE_PATH = /^\/(micromilspec|off-market|misc|hjemla)\/?$/
+
+/* Rekkefølgen i «verden»: forsiden lengst til venstre, så About, så Praise. */
+const PAGE_ORDER = { '/': 0, '/about/': 1, '/praise/': 2 }
 
 /* Speculation Rules: prefetch alle hovedsider umiddelbart (kun HTML, noen få KB),
    og prerender ved hover-intensjon — da er case-siden ferdig rendret (inkl. bilder)
@@ -14,7 +19,7 @@ function initSpeculationRules() {
   const script = document.createElement('script')
   script.type = 'speculationrules'
   script.textContent = JSON.stringify({
-    prefetch: [{ urls: ['/', '/micromilspec/', '/off-market/', '/misc/', '/about/', '/praise/'], eagerness: 'immediate' }],
+    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/off-market/', '/misc/', '/about/', '/praise/'], eagerness: 'immediate' }],
     prerender: [{ where: { href_matches: '/*' }, eagerness: 'moderate' }],
   })
   document.head.append(script)
@@ -47,25 +52,38 @@ function scheduleWarmup() {
    Klikk på About/Praise → verden skalerer svakt (1.25) mot lenken og fader;
    tilbake → verden kommer inn igjen fra samme punkt. Logo-klikk (hjem) leses som
    retur og zoomer ut. Logo/meny har egne transition-lag og står i ro imens. */
-function initNavZoom(header) {
-  const links = header.querySelectorAll('.site-header__brand, nav a')
+/* Transition-lab for hjem ↔ About/Praise: fem varianter, valgt i bryteren på
+   forsiden (data-nav-variant på <html>). Alle beregner geometri fra nav-lenkene
+   ved reveal — headeren er identisk på tvers av sidene, så posisjonene stemmer. */
+
+function linkInset(link) {
+  const rect = link.getBoundingClientRect()
+  const right = Math.max(0, Math.round(window.innerWidth - rect.right))
+  const bottom = Math.max(0, Math.round(window.innerHeight - rect.bottom))
+  return `inset(${Math.round(rect.top)}px ${right}px ${bottom}px ${Math.round(rect.left)}px round 18px)`
+}
+
+function initNavTransitions(header) {
+  applyNavVariantAttribute()
+  initSpaNav()
+
+  const links = [...header.querySelectorAll('.site-header__brand, nav a')]
+
+  /* Variant «spa»: klikk til About/Praise intercepts — samme dokument, ekte FLIP. */
   links.forEach((link) => {
-    link.addEventListener('click', () => {
-      const rect = link.getBoundingClientRect()
-      sessionStorage.setItem(
-        'nav:zoom-origin',
-        `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`,
-      )
-      sessionStorage.setItem('nav:zoom-dir', new URL(link.href).pathname === '/' ? 'out' : 'in')
-      sessionStorage.setItem('nav:zoom', '1')
+    link.addEventListener('click', (event) => {
+      if (getNavVariant() !== 'spa') return
+      const toPath = new URL(link.href).pathname
+      if (toPath !== '/about/' && toPath !== '/praise/') return
+      event.preventDefault()
+      spaNavigate(link)
     })
   })
 
-  /* Før snapshot av siden vi forlater: gi nav-lenken som peker dit vi skal navnet
-     nav-focus — den morpher da fysisk inn i destinasjonens store sidetittel.
-     (h1-en på denne siden må samtidig gi fra seg navnet, ellers kolliderer de.) */
+  /* Variant «title»: lenken vi forlater via må løftes til eget lag FØR snapshot. */
   window.addEventListener('pageswap', (event) => {
     if (!event.viewTransition) return
+    if (getNavVariant() !== 'title') return
     let toPath = null
     try {
       toPath = new URL(event.activation?.entry?.url ?? '', location.origin).pathname
@@ -96,52 +114,51 @@ function initNavZoom(header) {
       fromPath = null
     }
     /* Hjem ↔ case eies av case-zoomen (timeline.js / case.js). */
-    if (fromPath && CASE_PATH.test(fromPath)) return
-    if (CASE_PATH.test(location.pathname)) return
+    if (fromPath === null || CASE_PATH.test(fromPath) || CASE_PATH.test(location.pathname)) return
 
+    const from = PAGE_ORDER[fromPath]
+    const to = PAGE_ORDER[location.pathname]
+    if (from === undefined || to === undefined || from === to) return
+
+    const forward = to > from
+    const variant = getNavVariant()
     const root = document.documentElement
-    let direction = null
-    let origin = null
-
-    if (sessionStorage.getItem('nav:zoom') === '1') {
-      direction = sessionStorage.getItem('nav:zoom-dir') === 'out' ? 'out' : 'in'
-      origin = sessionStorage.getItem('nav:zoom-origin')
-    } else if (fromPath && fromPath !== location.pathname) {
-      /* Traverse (tilbake/frem-knapp): anker i lenken som peker dit vi kom fra. */
-      direction = location.pathname === '/' ? 'out' : 'in'
-      const anchorPath = direction === 'out' ? fromPath : location.pathname
-      const anchor = header.querySelector(`nav a[href="${anchorPath}"]`)
-      if (anchor) {
-        const rect = anchor.getBoundingClientRect()
-        origin = `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`
-      }
-    }
-
-    sessionStorage.removeItem('nav:zoom')
-    if (!direction) return
-
     const cleanupTasks = []
-
-    if (direction === 'in') {
-      /* Innholdet under sidetittelen kaskaderer inn (CSS: .page-entering). */
-      root.classList.add('page-entering')
+    const addClass = (name) => {
+      root.classList.add(name)
+      cleanupTasks.push(() => root.classList.remove(name))
     }
 
-    if (direction === 'out' && fromPath) {
-      /* Sidetittelen på siden vi forlater morpher tilbake inn i nav-lenken sin. */
-      const target = header.querySelector(`nav a[href="${fromPath}"]`)
-      if (target) {
-        target.style.viewTransitionName = 'nav-focus'
-        cleanupTasks.push(() => {
-          target.style.viewTransitionName = ''
-        })
+    if (variant === 'pan') {
+      addClass(forward ? 'vt-pan-fwd' : 'vt-pan-back')
+    } else if (variant === 'portal') {
+      /* Portalen åpner/lukker seg fra nav-lenken til siden det gjelder. */
+      const anchor = header.querySelector(`nav a[href="${forward ? location.pathname : fromPath}"]`)
+      if (anchor) root.style.setProperty('--vt-clip-rect', linkInset(anchor))
+      addClass(forward ? 'vt-portal-in' : 'vt-portal-out')
+    } else if (variant === 'title') {
+      if (forward) {
+        addClass('vt-title-in')
+        addClass('page-entering')
+      } else {
+        const target = header.querySelector(`nav a[href="${fromPath}"]`)
+        if (target) {
+          target.style.viewTransitionName = 'nav-focus'
+          cleanupTasks.push(() => {
+            target.style.viewTransitionName = ''
+          })
+        }
+        addClass('vt-title-out')
+      }
+    } else if (variant === 'editorial') {
+      if (forward) {
+        addClass('vt-editorial-in')
+        addClass('page-entering')
+      } else {
+        addClass('vt-editorial-out')
       }
     }
-
-    if (origin) root.style.setProperty('--vt-origin', origin)
-    const className = direction === 'out' ? 'vt-navzoom-out' : 'vt-navzoom-in'
-    root.classList.add(className)
-    cleanupTasks.push(() => root.classList.remove(className))
+    /* «spa» intercepts klikk før navigasjon; havner vi her (traverse), kjør default. */
 
     const cleanup = () => cleanupTasks.forEach((task) => task())
     event.viewTransition.finished.then(cleanup, cleanup)
@@ -156,7 +173,7 @@ export function initHeader() {
   const header = document.querySelector('.site-header')
   if (!header) return null
 
-  initNavZoom(header)
+  initNavTransitions(header)
 
   function updateHeaderScrollState() {
     header.classList.toggle('is-scrolled', window.scrollY > 8)
