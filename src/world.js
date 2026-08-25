@@ -125,6 +125,7 @@ export function initWorld(header) {
     }
 
     world.classList.add('is-travelling')
+    header.classList.add('nav-travelling')
 
     /* Alle sider står som 90 %-kort under reisen; avreisesiden animeres dit. */
     sections.forEach((section) => {
@@ -159,7 +160,10 @@ export function initWorld(header) {
         [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
         { duration: scaleMs, easing: EASING },
       )
-      const clearTravel = () => world.classList.remove('is-travelling')
+      const clearTravel = () => {
+        world.classList.remove('is-travelling')
+        header.classList.remove('nav-travelling')
+      }
       zoom.finished.then(clearTravel, clearTravel)
     }
     pan.finished.then(land, () => {})

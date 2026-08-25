@@ -129,9 +129,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  min-height: 70px;
+  /* Chrome ligger i den øverste stripen som blottlegges når sidene skalerer til
+     90 % under reisen — logo/meny skal sveve OVER kortene, ikke overlappe dem. */
+  min-height: 48px;
   box-sizing: border-box;
-  padding: 30px 30px 16px;
+  padding: 12px 30px;
 }
 
 /* Forsiden: headeren tar ikke plass i flyten — tidslinjen sentreres i hele viewporten.
@@ -242,6 +244,15 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   margin-left: auto;
 }
 
+/* Nav-etikettene: PP Supply Mono, versaler — lastes direkte fra /fonts/. */
+@font-face {
+  font-family: PPSupplyMono;
+  src: url('/fonts/PPSupplyMono-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .site-header nav {
   display: flex;
   align-items: center;
@@ -255,6 +266,10 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 
 .site-header nav a {
   color: #52525b;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   font-weight: 400;
   padding: 0.375rem 0.625rem;
   position: relative;
@@ -303,6 +318,14 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 
   .site-header nav:has(a:is(:hover, :focus-visible))::before {
     opacity: 1;
+  }
+
+  /* Under kamera-reisen: hover-pillen ankres i layoutboksen (som allerede står
+     på destinasjonen) og skyter i forveien mens etiketten flyr — skjul den til
+     etiketten har landet, så dukker den opp rundt lenken der cursoren står. */
+  .site-header.nav-travelling nav::before {
+    opacity: 0 !important;
+    transition: none;
   }
 }
 
