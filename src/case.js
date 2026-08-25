@@ -44,15 +44,8 @@ window.addEventListener('pagereveal', (event) => {
   if (origin) htmlRoot.style.setProperty('--vt-origin', origin)
   htmlRoot.classList.add('vt-zoom-in')
 
-  /* Ankom lys: mørk-temaet holdes tilbake til zoomen er ferdig, og fader så inn. */
-  document.body.classList.add('bg-hold')
-
   const cleanup = () => htmlRoot.classList.remove('vt-zoom-in')
   event.viewTransition.finished.then(cleanup, cleanup)
-  const releaseBg = () => {
-    setTimeout(() => document.body.classList.remove('bg-hold'), 150)
-  }
-  event.viewTransition.finished.then(releaseBg, releaseBg)
 })
 
 /* Lukking: tilbake til tidslinjen med zoom-ut. history.back() bevarer
