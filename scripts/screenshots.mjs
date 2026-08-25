@@ -12,14 +12,16 @@ const pad = (n) => String(n).padStart(2, '0')
 const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`
 const dir = `screenshots/${stamp}_${label}`
 
-/* fullPage: false for forsiden — den er en horisontal viewport uten vertikal scroll. */
+/* fullPage: false for forsiden — den er en horisontal viewport uten vertikal scroll.
+   About/Praise ligger i kamera-verdenen (body scroller ikke) — der skytes hele
+   innholdskolonnen som element i stedet. */
 const targets = [
   { path: '/', name: 'home', fullPage: false },
   { path: '/micromilspec/', name: 'micromilspec', fullPage: true },
   { path: '/off-market/', name: 'off-market', fullPage: true },
   { path: '/misc/', name: 'misc', fullPage: true },
-  { path: '/about/', name: 'about', fullPage: true },
-  { path: '/praise/', name: 'praise', fullPage: true },
+  { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
+  { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
 ]
 
 const viewports = [
@@ -53,7 +55,11 @@ for (const { name: vpName, ...contextOptions } of viewports) {
     await page.waitForTimeout(600)
     if (target.fullPage) await loadLazyMedia(page)
     const file = `${dir}/${target.name}-${vpName}.png`
-    await page.screenshot({ path: file, fullPage: target.fullPage })
+    if (target.element) {
+      await page.locator(target.element).screenshot({ path: file })
+    } else {
+      await page.screenshot({ path: file, fullPage: target.fullPage })
+    }
     console.log(`✓ ${file}`)
   }
 
