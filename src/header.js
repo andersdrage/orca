@@ -14,28 +14,46 @@ function initSpeculationRules() {
   script.type = 'speculationrules'
   script.textContent = JSON.stringify({
     prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/off-market/', '/misc/', '/about/', '/praise/'], eagerness: 'immediate' }],
-    /* Case-sider prerendres allerede ved pointerover (uten dwell-tid) — første
-       klikk får da en ferdig rendret side og view transition-morphen kan spille. */
+    /* Nettleseren tillater maks ~2 umiddelbare prerenders: bruk dem på de to
+       casene nærmest i tidslinjen ved last. Resten prerendres ved hover (LRU) —
+       og dyp-warmingen under gjør at selv uprerendrede klikk maler umiddelbart. */
     prerender: [
-      { urls: ['/micromilspec/', '/hjemla/', '/off-market/', '/misc/'], eagerness: 'eager' },
+      { urls: ['/micromilspec/', '/hjemla/'], eagerness: 'immediate' },
+      { urls: ['/off-market/', '/misc/'], eagerness: 'moderate' },
       { where: { href_matches: '/*' }, eagerness: 'moderate' },
     ],
   })
   document.head.append(script)
 }
 
-/* Varm HTTP-cachen for tidslinje-covere og case-sidenes øverste innhold fra ALLE
-   sider (ikke bare forsiden) — ellers viser transition-snapshots udekodede tiles
-   (svart flate) når man kommer fra f.eks. About. Kun bilder/postere, aldri video. */
+/* Dyp-warming: ALT en case-side trenger for første frame hentes i idle-tid —
+   HTML, JS- og CSS-assets (parset ut av HTML-en) pluss covere/postere. Da maler
+   siden umiddelbart selv uten prerender, og view transition-en rekker fristen.
+   Videofilene (mange MB) holdes utenfor; de er pauset under selve overgangen. */
 function warmCaseAssets() {
-  const urls = portfolioCases.flatMap((singleCase) =>
-    singleCase.items.slice(0, 2).map((item) => {
+  portfolioCases.forEach((singleCase) => {
+    singleCase.items.slice(0, 2).forEach((item) => {
       const src = `/images/${item.file}`
-      return /\.(mp4|webm|mov)$/i.test(item.file) ? src.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg') : src
-    }),
-  )
-  urls.forEach((url) => {
-    fetch(url, { priority: 'low' }).catch(() => {})
+      const url = /\.(mp4|webm|mov)$/i.test(item.file) ? src.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg') : src
+      fetch(url, { priority: 'low' }).catch(() => {})
+    })
+  })
+
+  const casePages = ['/micromilspec/', '/hjemla/', '/off-market/', '/misc/']
+  casePages.forEach((path) => {
+    fetch(path, { priority: 'low' })
+      .then((response) => response.text())
+      .then((html) => {
+        const doc = new DOMParser().parseFromString(html, 'text/html')
+        const assets = [
+          ...[...doc.querySelectorAll('script[src]')].map((el) => el.getAttribute('src')),
+          ...[...doc.querySelectorAll('link[rel="stylesheet"][href]')].map((el) => el.getAttribute('href')),
+        ]
+        assets.forEach((asset) => {
+          if (asset) fetch(asset, { priority: 'low' }).catch(() => {})
+        })
+      })
+      .catch(() => {})
   })
 }
 

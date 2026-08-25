@@ -7,6 +7,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [tailwindcss()],
+  /* Dev: forhåndskompiler alle entry-moduler ved serverstart — første klikk på
+     en case skal ikke vente på Vite-transform (det er det som får view
+     transition-en til å times ut og hoppe over animasjonen lokalt). */
+  server: {
+    warmup: {
+      clientFiles: ['./src/main.js', './src/case.js', './src/about.js', './src/praise.js'],
+    },
+  },
   build: {
     rollupOptions: {
       input: {

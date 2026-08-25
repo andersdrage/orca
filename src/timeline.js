@@ -185,6 +185,14 @@ export function initTimeline() {
   let elasticActive = false
   let lastFrameTime = performance.now()
 
+  /* Idet en case-navigasjon tar snapshot: slipp fjæren helt til ro, så
+     avreisebildet fanges uten strekk og ingenting muterer under overgangen. */
+  window.addEventListener('pageswap', () => {
+    elasticCurrent = scroller.scrollLeft
+    clearElasticTransforms()
+    elasticActive = false
+  })
+
   function clearElasticTransforms() {
     copies.forEach((copy) => {
       copy.style.transform = ''
