@@ -165,9 +165,14 @@ body.world-mode {
   display: flex;
   width: 300vw;
   height: 100svh;
-  will-change: transform;
-  /* Bakteppet som kommer til syne bak kortene når sidene skalerer til 90 %. */
+  /* Bakteppet som kommer til syne bak kortene når sidene skalerer ned. */
   background: #e9e6e0;
+}
+
+/* will-change KUN under reisen: en permanent 300vw-bred compositor-layer koster
+   GPU-minne og gjør Safari mer tilbøyelig til å droppe view transitions. */
+.world.is-travelling {
+  will-change: transform;
 }
 
 .world-page {
@@ -837,7 +842,7 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   margin: 2rem auto 0;
   color: #52525b;
   font-family: DragePlantin, Georgia, 'Times New Roman', serif;
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: 16px;
   line-height: 1.55;
   text-wrap: pretty;
 }
