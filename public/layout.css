@@ -1377,17 +1377,6 @@ html.vt-zoom-out::view-transition-old(case-close) {
 }
 
 
-.page-title {
-  margin: 0 0 2.5rem;
-  color: #18181b;
-  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
-  /* 60 % mindre enn serif-versjonen (clamp-verdiene × 0.4). */
-  font-size: clamp(1.1rem, 2.8vw, 1.7rem);
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
 
 
 /* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).
