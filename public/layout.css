@@ -143,10 +143,95 @@ body {
   margin-left: 0;
 }
 
-/* Undersider med sidetittel (About/Praise): menyen sitter til venstre, inntil
-   logoen — pan-overgangen flytter den dit i samme bevegelse som siden. */
-body:has(.page-title) .site-header > div {
+/* ---- Verden: index | About | Praise side om side, kamera panorerer ---- */
+
+body.world-mode {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.world-mode .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  margin-left: 0;
+  z-index: 40;
+}
+
+.world {
+  display: flex;
+  width: 300vw;
+  height: 100svh;
+  will-change: transform;
+}
+
+.world-page {
+  flex: none;
+  width: 100vw;
+  height: 100svh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Hver side beholder 800px-kolonnen sin inne i sin egen viewport-brede seksjon. */
+.world-column {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  min-height: 100%;
+}
+
+.world-column > main {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+/* Samme «kort over footer»-bakgrunn som #site-layout ga. */
+.world-column > main::before {
+  position: absolute;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  border-bottom-right-radius: clamp(0.75rem, 3vw, 2.4rem);
+  border-bottom-left-radius: clamp(0.75rem, 3vw, 2.4rem);
+  background: #fafafa;
+  box-shadow: 0 22px 46px rgba(24, 24, 27, 0.12);
+  clip-path: inset(0 -4rem -4rem -4rem);
+  content: '';
+  pointer-events: none;
+}
+
+.world-page .timeline-main {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Nav-lenkene er romlige indikatorer: sider til høyre for kameraet ligger som
+   lenker til høyre; passerte/aktive sider dokker til venstre ved logoen.
+   margin-left:auto skyver første «høyre-lenke» (og alt etter) til høyre kant. */
+.world-mode .site-header > div {
   justify-content: flex-start;
+}
+
+.world-mode .site-header nav {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+body[data-camera='0'] .site-header nav a[href='/about/'] {
+  margin-left: auto;
+}
+
+body[data-camera='1'] .site-header nav a[href='/praise/'] {
+  margin-left: auto;
 }
 
 .site-header nav {
@@ -892,14 +977,9 @@ body:has(.page-title) .site-header > div {
   }
 }
 
-a.timeline-tile {
-  transition: transform 240ms cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
-a.timeline-tile:hover {
-  transform: translateY(-4px);
-}
-
+/* NB: ingen transition/hover-transform på tilene — elastisk scroll skriver
+   transform per frame (rAF), og en alltid-på transition ville retargetet
+   hvert frame og flimret i WebKit. Hover-løftet er derfor fjernet. */
 a.timeline-tile:focus-visible {
   outline: 2px solid #18181b;
   outline-offset: 4px;
@@ -918,11 +998,6 @@ a.timeline-tile:focus-visible {
   white-space: nowrap;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  a.timeline-tile {
-    transition: none;
-  }
-}
 
 /* Lukkeknapp på case-sider — flytende, frostet, under headeren. */
 .case-close {
@@ -1280,13 +1355,6 @@ html.vt-zoom-out::view-transition-old(case-close) {
   }
 }
 
-/* Sidetittel på About/Praise: selve morph-målet for nav-lenken i variantene
-   «title» og «editorial» — kun der får den eget transition-lag; i pan/portal/spa
-   er den del av roten og beveger seg med siden. */
-html[data-nav-variant='title'] .page-title,
-html[data-nav-variant='editorial'] .page-title {
-  view-transition-name: nav-focus;
-}
 
 .page-title {
   margin: 0 0 2.5rem;
@@ -1298,291 +1366,19 @@ html[data-nav-variant='editorial'] .page-title {
   line-height: 1.05;
 }
 
-::view-transition-group(nav-focus) {
-  animation-duration: 500ms;
-  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
-/* Innholdet under tittelen animerer inn nedenfra i kaskade — kun når siden
-   ankommer via nav-zoom (JS setter .page-entering); direktebesøk viser alt statisk. */
-.page-entering #site-layout > main > :not(.page-title) {
-  animation: page-content-in 480ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-  animation-delay: 460ms;
-}
-
-.page-entering #site-layout > main > :nth-child(2) {
-  animation-delay: 220ms;
-}
-
-.page-entering #site-layout > main > :nth-child(3) {
-  animation-delay: 300ms;
-}
-
-.page-entering #site-layout > main > :nth-child(4) {
-  animation-delay: 380ms;
-}
-
-@keyframes page-content-in {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-entering #site-layout > main > :not(.page-title) {
-    animation: none;
-  }
-}
-
-/* ---- Transition-lab: fem varianter for hjem ↔ About/Praise ----
-   Felles verdensmodell: forsiden → About → Praise ligger fra venstre mot høyre. */
-
-/* 1) PAN: hele viewporten dollyer sidelengs; header-lagene (logo/meny) står i ro. */
-html.vt-pan-fwd::view-transition-old(root) {
-  animation: vt-pan-exit-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-fwd::view-transition-new(root) {
-  animation: vt-pan-enter-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-back::view-transition-old(root) {
-  animation: vt-pan-exit-right 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-pan-back::view-transition-new(root) {
-  animation: vt-pan-enter-left 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-pan-exit-left {
-  to {
-    transform: translateX(-100vw);
-  }
-}
-
-@keyframes vt-pan-enter-right {
-  from {
-    transform: translateX(100vw);
-  }
-}
-
-@keyframes vt-pan-exit-right {
-  to {
-    transform: translateX(100vw);
-  }
-}
-
-@keyframes vt-pan-enter-left {
-  from {
-    transform: translateX(-100vw);
-  }
-}
-
-/* Pan: logoen står bom stille (eget lag, samme posisjon på alle sider), mens
-   About/Praise-lenkene rir med sideflyttingen — de morpher fra høyre (forsiden)
-   til plassen sin ved siden av logoen (undersidene), i samme retning og tempo
-   som panoreringen. Selve layouten: se body:has(.page-title)-regelen ved headeren. */
-html.vt-pan-fwd::view-transition-group(site-nav),
-html.vt-pan-back::view-transition-group(site-nav) {
-  animation-duration: 500ms;
-  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
-/* 2) PORTAL: den nye siden blåser seg opp fra nav-lenkens rektangel (clip-path);
-   ved retur trekker den gamle siden seg sammen inn i lenken igjen. */
-html.vt-portal-in::view-transition-new(root) {
-  animation: vt-portal-open 550ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-portal-in::view-transition-old(root) {
-  animation: vt-portal-recede 550ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-portal-out::view-transition-old(root) {
-  animation: vt-portal-close 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-  z-index: 1;
-}
-
-html.vt-portal-out::view-transition-new(root) {
-  animation: none;
-  opacity: 1;
-}
-
-@keyframes vt-portal-open {
-  from {
-    clip-path: var(--vt-clip-rect, inset(45% 45% 45% 45% round 18px));
-  }
-  to {
-    clip-path: inset(0 round 0);
-  }
-}
-
-@keyframes vt-portal-close {
-  from {
-    clip-path: inset(0 round 0);
-  }
-  to {
-    clip-path: var(--vt-clip-rect, inset(45% 45% 45% 45% round 18px));
-  }
-}
-
-@keyframes vt-portal-recede {
-  to {
-    transform: scale(0.98);
-    opacity: 0.6;
-  }
-}
-
-/* 3) TITLE: én skarp flate — kun destinasjonens fullopppløste tittel animeres
-   fra lenkeboksen til tittelboksen (old-snapshotet skjules). Rolig root. */
-html.vt-title-in::view-transition-old(nav-focus),
-html.vt-title-out::view-transition-old(nav-focus) {
-  display: none;
-}
-
-html.vt-title-in::view-transition-new(nav-focus),
-html.vt-title-out::view-transition-new(nav-focus) {
-  animation: none;
-  opacity: 1;
-}
-
-html.vt-title-in::view-transition-old(root) {
-  animation: vt-title-recede 400ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-title-in::view-transition-new(root),
-html.vt-title-out::view-transition-new(root) {
-  animation: vt-fade-in 400ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-title-recede {
-  to {
-    transform: scale(0.985);
-    opacity: 0;
-  }
-}
-
-/* 4) EDITORIAL: ingen flight — verden trekker seg rolig tilbake, tittelen
-   avdekkes bak grunnlinjen (clip + løft), innholdet kaskaderer inn. */
-html.vt-editorial-in::view-transition-old(root) {
-  animation: vt-editorial-recede 380ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-editorial-in::view-transition-new(root) {
-  animation: vt-fade-in 320ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-editorial-in::view-transition-new(nav-focus) {
-  animation: vt-editorial-title 620ms cubic-bezier(0.32, 0.08, 0.24, 1) 100ms both;
-}
-
-html.vt-editorial-out::view-transition-old(nav-focus) {
-  animation: vt-editorial-title-exit 300ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-editorial-recede {
-  to {
-    transform: scale(0.99) translateY(-8px);
-    opacity: 0;
-  }
-}
-
-@keyframes vt-editorial-title {
-  from {
-    clip-path: inset(100% 0 0 0);
-    transform: translateY(0.45em);
-  }
-  to {
-    clip-path: inset(-5% 0 0 0);
-    transform: translateY(0);
-  }
-}
-
-@keyframes vt-editorial-title-exit {
-  to {
-    clip-path: inset(100% 0 0 0);
-    transform: translateY(0.45em);
-    opacity: 0;
-  }
-}
-
-/* 5) SPA: flyvende FLIP-klon (ekte DOM, fjær-easing i JS). */
-.spa-flip-clone {
-  position: fixed;
-  z-index: 90;
-  margin: 0;
-  transform-origin: top left;
-  will-change: transform;
-  pointer-events: none;
-}
-
-/* Bryteren nederst på forsiden. */
-.vt-switcher {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  border: 1px solid rgba(228, 228, 231, 0.9);
-  border-radius: 9999px;
-  background: rgba(250, 250, 250, 0.92);
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.5625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.vt-switcher__label {
-  padding: 0 8px;
-  color: #a1a1aa;
-}
-
-.vt-switcher__option {
-  padding: 6px 10px;
-  border: 0;
-  border-radius: 9999px;
-  background: transparent;
-  color: #52525b;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-  transition: background-color 140ms ease, color 140ms ease;
-}
-
-.vt-switcher__option:hover {
-  color: #18181b;
-}
-
-.vt-switcher__option[aria-pressed='true'] {
-  background: #18181b;
-  color: #fafafa;
-}
 
 /* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).
    Med ulikt innhold + skalering lysner komposittet synlig midtveis — oppleves som
    at bakgrunnen skifter farge. Vanlig alfa-blanding fjerner det. */
 html.vt-zoom-in::view-transition-image-pair(root),
-html.vt-zoom-out::view-transition-image-pair(root),
-html.vt-navzoom-in::view-transition-image-pair(root),
-html.vt-navzoom-out::view-transition-image-pair(root) {
+html.vt-zoom-out::view-transition-image-pair(root) {
   isolation: auto;
 }
 
 html.vt-zoom-in::view-transition-old(root),
 html.vt-zoom-in::view-transition-new(root),
 html.vt-zoom-out::view-transition-old(root),
-html.vt-zoom-out::view-transition-new(root),
-html.vt-navzoom-in::view-transition-old(root),
-html.vt-navzoom-in::view-transition-new(root),
-html.vt-navzoom-out::view-transition-old(root),
-html.vt-navzoom-out::view-transition-new(root) {
+html.vt-zoom-out::view-transition-new(root) {
   mix-blend-mode: normal;
 }
 

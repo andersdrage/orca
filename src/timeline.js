@@ -71,12 +71,54 @@ export function initTimeline() {
   })
 
   let copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
+  /* Den visuelle (myke) scrollposisjonen — jager scrollLeft i elasticFrame. */
+  let elasticCurrent = 0
+
+  /* Høyre viewport-kant er den eneste kanten publikum ser bevege seg: i pan-overgangen
+     til About/Praise glir forsidens snapshot sidelengs, og avstanden fra en tile til
+     snapshotets bakkant er konstant — så kuttet man ser midt på skjermen ER kuttet som
+     lå ved høyre kant da man slapp scrollen. Derfor: la aldri kanten bli stående midt
+     i en tile. Etter hver scroll settes den i nærmeste mellomrom (minste bevegelse:
+     enten avslør tilen helt, eller skyv den helt ut). */
+  const MAX_EDGE_GAP = 28
+
+  function settleEdge(behavior = 'smooth') {
+    const edgeX = scroller.getBoundingClientRect().right
+    const tiles = [...scroller.querySelectorAll('.timeline-tile')]
+    const index = tiles.findIndex((tile) => {
+      const rect = tile.getBoundingClientRect()
+      return rect.left < edgeX - 1 && rect.right > edgeX + 1
+    })
+    if (index === -1) return
+
+    const rect = tiles[index].getBoundingClientRect()
+    const prev = tiles[index - 1]?.getBoundingClientRect()
+    const next = tiles[index + 1]?.getBoundingClientRect()
+    /* Sømgapet er flere hundre piksler — kanten skal ligge like utenfor tilen, ikke midt i tomrommet. */
+    const gapAfter = next ? Math.min((next.left - rect.right) / 2, MAX_EDGE_GAP) : MAX_EDGE_GAP
+    const gapBefore = prev ? Math.min((rect.left - prev.right) / 2, MAX_EDGE_GAP) : MAX_EDGE_GAP
+
+    const forward = rect.right + gapAfter - edgeX
+    const back = rect.left - gapBefore - edgeX
+    const delta = Math.abs(forward) <= Math.abs(back) ? forward : back
+    if (Math.abs(delta) < 1) return
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    scroller.scrollTo({ left: scroller.scrollLeft + delta, behavior: reduced ? 'instant' : behavior })
+  }
 
   function wrap() {
     if (!copyWidth) return
     const x = scroller.scrollLeft
-    if (x < copyWidth * 0.5) scroller.scrollLeft = x + copyWidth
-    else if (x > copyWidth * 1.5) scroller.scrollLeft = x - copyWidth
+    /* Teleporten må også flytte den visuelle (elastiske) posisjonen — ellers
+       leser fjæren hoppet som en gigantisk hastighet og strekker seg vilt. */
+    if (x < copyWidth * 0.5) {
+      scroller.scrollLeft = x + copyWidth
+      elasticCurrent += copyWidth
+    } else if (x > copyWidth * 1.5) {
+      scroller.scrollLeft = x - copyWidth
+      elasticCurrent -= copyWidth
+    }
   }
 
   /* Start ved midt-kopien med ~360px luft til venstre for første tile. Sømgapet
@@ -84,32 +126,147 @@ export function initTimeline() {
      helt utenfor skjermen ved inngang — den avsløres først når man scroller bakover. */
   const edgeInset = Math.min(360, Math.round(window.innerWidth * 0.4))
   scroller.scrollLeft = copyWidth - edgeInset
+  elasticCurrent = scroller.scrollLeft
+  settleEdge('instant')
   scroller.addEventListener('scroll', wrap, { passive: true })
+
+  /* NB: ingen auto-snap på scrollend — å flytte lista på egen hånd mellom
+     hjul-bursts sloss med brukerens input. Kanten rettes kun når det trengs:
+     ved last, resize og i det pan-snapshotet skal tas (nav-klikk under). */
 
   window.addEventListener('resize', () => {
     const progress = copyWidth ? scroller.scrollLeft / copyWidth : 1
     copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
     scroller.scrollLeft = progress * copyWidth
+    elasticCurrent = scroller.scrollLeft
+    settleEdge('instant')
+    measureTiles()
   })
 
-  /* Vanlig (vertikalt) scrollehjul driver horisontal scroll. Magic Mouse/trackpad
-     sender allerede deltaX og får native oppførsel — de røres ikke. */
+  /* Alt hjul-input (vertikalt hjul OG trackpad/Magic Mouse-deltaX) kapres og
+     skrives til scrollLeft på main thread — da lander native scroll og de
+     elastiske transformene i samme frame, uten compositor-shimmer. */
   scroller.addEventListener(
     'wheel',
     (event) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
+      if (event.ctrlKey) return /* pinch-zoom skal fortsatt fungere */
       event.preventDefault()
+      const delta = Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX
       const scale = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? scroller.clientWidth : 1
-      scroller.scrollLeft += event.deltaY * scale
+      scroller.scrollLeft += delta * scale
     },
     { passive: false },
   )
+
+  /* Elastisk scroll (2+3): den synlige posisjonen `elasticCurrent` jager
+     scrollLeft med eksponentiell lerp — spenningen (target − current) er
+     «fjærstrekket». Kopiene kompenserer native scroll til den myke posisjonen,
+     og hver tile får ekstra lag som vokser mot høyre viewport-kant, så raden
+     strekker seg under fart og samler seg igjen i ro. Ingen CSS-transitions
+     involvert — rene per-frame transform-skriv. */
+  const LERP = 0.14
+  const LAG_MIN = 0.04
+  const LAG_MAX = 0.18
+  const MAX_TENSION = 600
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const finePointer = window.matchMedia('(pointer: fine)')
+
+  let tileGeometry = []
+  function measureTiles() {
+    const scrollerLeft = scroller.getBoundingClientRect().left
+    tileGeometry = [...scroller.querySelectorAll('.timeline-tile')].map((tile) => ({
+      tile,
+      contentLeft: tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft,
+      dirty: false,
+    }))
+  }
+  measureTiles()
+
+  let elasticActive = false
+  let lastFrameTime = performance.now()
+
+  function clearElasticTransforms() {
+    copies.forEach((copy) => {
+      copy.style.transform = ''
+    })
+    tileGeometry.forEach((entry) => {
+      if (entry.dirty) {
+        entry.tile.style.transform = ''
+        entry.dirty = false
+      }
+    })
+  }
+
+  function elasticFrame(now) {
+    requestAnimationFrame(elasticFrame)
+    const dt = Math.min((now - lastFrameTime) / 16.667, 3)
+    lastFrameTime = now
+
+    if (reducedMotionQuery.matches || !finePointer.matches) {
+      if (elasticActive) {
+        elasticCurrent = scroller.scrollLeft
+        clearElasticTransforms()
+        elasticActive = false
+      }
+      return
+    }
+
+    const target = scroller.scrollLeft
+    const ease = 1 - Math.pow(1 - LERP, dt)
+    elasticCurrent += (target - elasticCurrent) * ease
+
+    let tension = target - elasticCurrent
+    if (Math.abs(tension) > MAX_TENSION) {
+      tension = Math.sign(tension) * MAX_TENSION
+      elasticCurrent = target - tension
+    }
+
+    if (Math.abs(tension) < 0.3) {
+      if (elasticActive) {
+        elasticCurrent = target
+        clearElasticTransforms()
+        elasticActive = false
+      }
+      return
+    }
+
+    elasticActive = true
+    copies.forEach((copy) => {
+      copy.style.transform = `translate3d(${tension}px, 0, 0)`
+    })
+
+    const viewportWidth = window.innerWidth
+    tileGeometry.forEach((entry) => {
+      const xNorm = (entry.contentLeft - elasticCurrent) / viewportWidth
+      if (xNorm < -0.4 || xNorm > 1.4) {
+        if (entry.dirty) {
+          entry.tile.style.transform = ''
+          entry.dirty = false
+        }
+        return
+      }
+      const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
+      entry.tile.style.transform = `translate3d(${(tension * lag).toFixed(2)}px, 0, 0)`
+      entry.dirty = true
+    })
+  }
+  requestAnimationFrame(elasticFrame)
 
   scroller.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
     event.preventDefault()
     scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: 'smooth' })
   })
+
+  /* Klikk på About/Praise midt i en bevegelse rekker ikke å få sitt scrollend — rett
+     kanten instant her, før snapshotet til pan-overgangen tas. */
+  document.addEventListener(
+    'click',
+    (event) => {
+      if (event.target.closest('.site-header nav a')) settleEdge('instant')
+    },
+    true,
+  )
 
   /* Scroll-hint (pilene nede til høyre): fader ut når brukeren faktisk har begynt å scrolle. */
   const hint = document.querySelector('[data-scroll-hint]')
