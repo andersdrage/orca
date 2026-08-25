@@ -287,12 +287,19 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   transform: translateY(3px);
 }
 
-.site-header nav a[aria-current='page'] {
-  color: #18181b;
+/* Understrekingen ligger alltid der, transparent — aria-current (settes først
+   når reisen er ferdig) fader den inn via text-decoration-color. */
+.site-header nav a {
   text-decoration: underline;
-  text-decoration-color: #e5484d;
+  text-decoration-color: transparent;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 5px;
+  transition: color 150ms ease, text-decoration-color 400ms ease;
+}
+
+.site-header nav a[aria-current='page'] {
+  color: #18181b;
+  text-decoration-color: #e5484d;
 }
 
 @supports (position-anchor: --nav-item) {
@@ -1179,15 +1186,42 @@ html.vt-zoom-out::view-transition-new(root) {
   }
 }
 
-/* Case-sider har mørk grå bakgrunn — root-crossfaden i overgangen fader mellom
-   tonene og signaliserer tydelig at man er «et annet sted». */
+/* Case-sider har mørk grå bakgrunn. Under zoom-inn fra forsiden holdes den
+   tilbake (case.js setter bg-hold ved pagereveal): siden ankommer lys, og
+   mørk-temaet fader inn først når overgangen er ferdig — fargeskiftet skal
+   ikke konkurrere med selve zoomen. */
 body.page-case {
   background-color: #27272a;
+  transition: background-color 600ms ease;
 }
 
 .page-case #site-layout > main::before {
   background: #27272a;
   box-shadow: 0 22px 46px rgba(0, 0, 0, 0.4);
+  transition: background 600ms ease;
+}
+
+.page-case #work h2,
+.page-case #work section > .work-narrow > p,
+.page-case #work .work-media p {
+  transition: color 600ms ease;
+}
+
+body.page-case.bg-hold {
+  background-color: #fafafa;
+}
+
+.page-case.bg-hold #site-layout > main::before {
+  background: #fafafa;
+}
+
+.page-case.bg-hold #work h2 {
+  color: #18181b;
+}
+
+.page-case.bg-hold #work section > .work-narrow > p,
+.page-case.bg-hold #work .work-media p {
+  color: #52525b;
 }
 
 /* Tekst og chrome tilpasset mørk flate. Transkript-modalen forblir lys

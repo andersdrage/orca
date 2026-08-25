@@ -103,7 +103,6 @@ export function initWorld(header) {
     const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
     document.body.classList.toggle('page-home', index === 0)
-    updateAriaCurrent(index)
     const after = links.map((link) => link.getBoundingClientRect().left)
 
     /* Lengre pan + overlapp med nedskaleringen: reisen skal LESES — kortene
@@ -129,6 +128,7 @@ export function initWorld(header) {
       sections.forEach((section) => {
         section.style.transform = ''
       })
+      updateAriaCurrent(index)
       syncHeaderScrollState()
       return
     }
@@ -169,9 +169,12 @@ export function initWorld(header) {
         [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
         { duration: scaleMs, easing: EASING },
       )
+      /* Den røde understrekingen på aktiv lenke fader inn FØRST når reisen er
+         helt ferdig (CSS-transition på text-decoration-color). */
       const clearTravel = () => {
         world.classList.remove('is-travelling')
         header.classList.remove('nav-travelling')
+        updateAriaCurrent(cameraIndex)
       }
       zoom.finished.then(clearTravel, clearTravel)
     }
