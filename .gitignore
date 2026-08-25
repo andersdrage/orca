@@ -26,3 +26,6 @@ dist-ssr
 # Iterasjons-skjermbilder (~12MB per runde) — fjern linjen hvis de skal versjoneres
 screenshots/
 .vercel
+
+# Kildebilder i full oppløsning (komprimerte web-versjoner ligger i public/images)
+originals/

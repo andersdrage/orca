@@ -30,7 +30,14 @@ export const portfolioCases = [
     id: 'hjemla',
     title: 'Hjemla',
     intro: 'Case study in the works — more on this project soon.',
-    items: [{ file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' }],
+    items: [
+      { file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' },
+      { file: 'hjemla-2-full.jpg', span: 'full', alt: 'Hjemla' },
+      { file: 'hjemla-3-full.jpg', span: 'full', alt: 'Hjemla' },
+      { file: 'hjemla-4-full.jpg', span: 'full', alt: 'Hjemla' },
+      { file: 'hjemla-5-full.jpg', span: 'full', alt: 'Hjemla' },
+      { file: 'hjemla-6-full.jpg', span: 'full', alt: 'Hjemla' },
+    ],
   },
   {
     id: 'off-market',

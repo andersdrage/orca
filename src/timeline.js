@@ -25,11 +25,30 @@ const TILES = [
     ratio: '3 / 2',
     h: '34svh',
   },
-  { id: 'off-market', title: 'Off Market', href: '/off-market/', color: '#2c3e5d', ratio: '3 / 2', h: '40svh' },
+  {
+    id: 'off-market',
+    title: 'Off Market',
+    href: '/off-market/',
+    image: '/images/offmarket-1-full.jpg',
+    color: '#2c3e5d',
+    /* Samme aspekt som bildet (2560×1707) — identisk utsnitt i tile og hero. */
+    ratio: '2560 / 1707',
+    h: '40svh',
+  },
   { id: 'p5', color: '#c9a227', ratio: '9 / 16', h: '42svh' },
   { id: 'p6', color: '#6d597a', ratio: '5 / 4', h: '28svh' },
   { id: 'p7', color: '#a44a5e', ratio: '1 / 1', h: '36svh' },
-  { id: 'misc', title: 'Selected work', href: '/misc/', color: '#3e6e68', ratio: '21 / 9', h: '30svh' },
+  {
+    id: 'misc',
+    title: 'Selected work',
+    href: '/misc/',
+    /* Første frame av uber-videoen — samme frame er poster på case-heroen,
+       så morphen lander i nøyaktig samme bilde før videoen spiller. */
+    image: '/images/misc-uber-poster.jpg',
+    color: '#3e6e68',
+    ratio: '1920 / 1252',
+    h: '30svh',
+  },
   { id: 'p9', color: '#8c8577', ratio: '3 / 4', h: '38svh' },
   { id: 'p10', color: '#4a3b32', ratio: '4 / 3', h: '26svh' },
 ]
