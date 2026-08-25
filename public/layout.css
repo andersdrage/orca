@@ -1196,6 +1196,37 @@ a.timeline-tile:focus-visible {
   view-transition-name: case-cover;
 }
 
+/* Entré under heroen: holdes usynlig mens cover-morphen spiller, og stiger så
+   inn nedenfra med opacity. Tittel/intro først, mediene hakket etter. */
+.case-entering .case-below {
+  opacity: 0;
+}
+
+.case-entered .case-below {
+  animation: case-below-in 560ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+}
+
+.case-entered .work-media.case-below {
+  animation-delay: 100ms;
+}
+
+@keyframes case-below-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-entering .case-below {
+    opacity: 1;
+  }
+
+  .case-entered .case-below {
+    animation: none;
+  }
+}
+
 /* Hero 40% mindre enn full media-bredde, fortsatt sentrert. */
 #work .work-media.case-cover-hero {
   width: min(900px, calc((100vw - 3rem) * 0.6));

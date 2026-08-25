@@ -219,12 +219,12 @@ function caseSection(singleCase, index) {
   return `<section id="${singleCase.id}" class="scroll-mt-24 ${isFirst ? 'pt-8' : ''}" aria-labelledby="title-${singleCase.id}">
     ${isFirst ? '' : '<div class="work-narrow work-section-rule" aria-hidden="true"></div>'}
     <div class="work-media case-cover-hero flex flex-col gap-3 sm:gap-4 md:gap-6">${firstBlock}</div>
-    <div class="work-narrow mt-10 mb-8 w-full md:mt-14">
+    <div class="case-below work-narrow mt-10 mb-8 w-full md:mt-14">
       <h2 id="title-${singleCase.id}" class="font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${projectAudioHtml(singleCase)}
     </div>
-    <div class="work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
+    <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
   </section>`
 }
 

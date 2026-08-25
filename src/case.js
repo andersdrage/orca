@@ -19,6 +19,16 @@ initProjectTranscript()
 window.addEventListener('pagereveal', (event) => {
   if (!event.viewTransition) return
 
+  /* Innholdet under heroen holdes skjult under morphen og stiger inn nedenfra
+     (opacity + translateY) først når overgangen er ferdig. Klassene settes kun
+     når en view transition faktisk kjører — direktebesøk viser alt statisk. */
+  document.body.classList.add('case-entering')
+  const revealBelow = () => {
+    document.body.classList.add('case-entered')
+    document.body.classList.remove('case-entering')
+  }
+  event.viewTransition.finished.then(revealBelow, revealBelow)
+
   /* Ytelse: autoplay-videoer begynner å dekode midt i overgangen og stjeler
      frames. Pauses mens animasjonen kjører, gjenopptas når den er ferdig. */
   const videos = [...document.querySelectorAll('#work video')]
