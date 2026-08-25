@@ -100,6 +100,12 @@ export function initWorld(header) {
        NB: lenkene har en statisk translateY(2px) i CSS — den må inn i keyframene,
        ellers hopper etiketten 2px opp ved avgang og ned ved ankomst. */
     const links = navLinks()
+
+    /* Understrekingen fjernes FØRST: aria-current slippes ved avgang, og
+       streken trekkes ut i reiseretningen (data-travel-dir styrer origin). */
+    header.dataset.travelDir = index > cameraIndex ? 'fwd' : 'back'
+    links.forEach((link) => link.removeAttribute('aria-current'))
+
     const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
     document.body.classList.toggle('page-home', index === 0)

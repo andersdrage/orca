@@ -287,19 +287,54 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   transform: translateY(3px);
 }
 
-/* Understrekingen ligger alltid der, transparent — aria-current (settes først
-   når reisen er ferdig) fader den inn via text-decoration-color. */
-.site-header nav a {
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 5px;
-  transition: color 150ms ease, text-decoration-color 400ms ease;
+/* Retningsstyrt understreking: en ekte strek (::after) som wiper med
+   fartsretningen. Ved avgang fjernes aria-current umiddelbart → streken
+   trekkes ut i reiseretningen; ved landing settes ny aria-current → streken
+   tegnes inn fra motsatt side (siden man ankom fra). data-travel-dir på
+   headeren styrer origin-sidene. */
+.site-header nav a::after {
+  content: '';
+  position: absolute;
+  left: 0.625rem;
+  right: 0.625rem;
+  bottom: 0.1rem;
+  height: 1.5px;
+  background: #e5484d;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
 .site-header nav a[aria-current='page'] {
   color: #18181b;
-  text-decoration-color: #e5484d;
+}
+
+.site-header nav a[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+/* Fremover (verden glir mot venstre): gammel strek trekkes ut mot venstre,
+   ny tegnes inn fra høyre. Bakover: speilvendt. */
+.site-header[data-travel-dir='fwd'] nav a::after {
+  transform-origin: left;
+}
+
+.site-header[data-travel-dir='fwd'] nav a[aria-current='page']::after {
+  transform-origin: right;
+}
+
+.site-header[data-travel-dir='back'] nav a::after {
+  transform-origin: right;
+}
+
+.site-header[data-travel-dir='back'] nav a[aria-current='page']::after {
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header nav a::after {
+    transition: none;
+  }
 }
 
 @supports (position-anchor: --nav-item) {
@@ -1345,11 +1380,13 @@ html.vt-zoom-out::view-transition-old(case-close) {
 .page-title {
   margin: 0 0 2.5rem;
   color: #18181b;
-  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
-  font-size: clamp(2.75rem, 7vw, 4.25rem);
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  /* 60 % mindre enn serif-versjonen (clamp-verdiene × 0.4). */
+  font-size: clamp(1.1rem, 2.8vw, 1.7rem);
   font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.05;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 
