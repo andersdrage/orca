@@ -43,6 +43,11 @@ export function initWorld(header) {
   if (ownFooter) slots[selfIndex].append(ownFooter)
   layout.remove()
   document.body.append(world)
+  /* Fixed-posisjonerte elementer kan ikke bo inne i verdensstripen: dens
+     will-change/transform gjør den til containing block, og «fixed» løses da
+     mot 300vw-stripen i stedet for viewporten (scroll-hinten havnet på side 3). */
+  const hint = ownMain.querySelector('[data-scroll-hint]')
+  if (hint) document.body.append(hint)
   document.body.classList.add('world-mode')
   document.body.classList.toggle('page-home', selfIndex === 0)
 
@@ -101,8 +106,12 @@ export function initWorld(header) {
     updateAriaCurrent(index)
     const after = links.map((link) => link.getBoundingClientRect().left)
 
-    const panMs = reduced ? 0 : distance > 1 ? 650 : 450
+    /* Lengre pan + overlapp med nedskaleringen: reisen skal LESES — kortene
+       skal synlig gli forbi, ikke blinke. Panen starter idet nedskaleringen
+       er godt i gang, så det kjennes som én sammenhengende bevegelse. */
+    const panMs = reduced ? 0 : distance > 1 ? 800 : 600
     const scaleMs = reduced ? 0 : SCALE_MS
+    const panDelay = Math.round(scaleMs * 0.55)
 
     /* Retarget-vennlig: kanseller pågående animasjoner, les nåværende posisjon. */
     world.getAnimations().forEach((animation) => animation.cancel())
@@ -138,7 +147,7 @@ export function initWorld(header) {
 
     const pan = world.animate(
       [{ transform: from }, { transform: `translate3d(${-index * 100}vw, 0, 0)` }],
-      { duration: panMs, delay: scaleMs, easing: EASING, fill: 'backwards' },
+      { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
     )
 
     links.forEach((link, i) => {
@@ -149,7 +158,7 @@ export function initWorld(header) {
         const baseSuffix = base === 'none' ? '' : ` ${base}`
         link.animate(
           [{ transform: `translateX(${dx}px)${baseSuffix}` }, { transform: base === 'none' ? 'none' : base }],
-          { duration: panMs, delay: scaleMs, easing: EASING, fill: 'backwards' },
+          { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
         )
       }
     })

@@ -289,6 +289,10 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 
 .site-header nav a[aria-current='page'] {
   color: #18181b;
+  text-decoration: underline;
+  text-decoration-color: #e5484d;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
 }
 
 @supports (position-anchor: --nav-item) {
