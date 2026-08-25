@@ -83,7 +83,7 @@ export function initWorld(header) {
   /* Reise-koreografi: avreisesiden skalerer ned til 90 % (bakteppet bak kortene
      kommer til syne), kameraet panorerer mens alle sider står som kort på 90 %,
      og ankomstsiden zoomer opp til 100 % igjen. */
-  const TRAVEL_SCALE = 0.9
+  const TRAVEL_SCALE = 0.85
   const SCALE_MS = 220
 
   function navigateTo(index, { push = true } = {}) {
