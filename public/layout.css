@@ -179,9 +179,9 @@ body.world-mode {
   background: #fafafa;
 }
 
-/* Under reisen er sidene kort: avrundede hjørner mens de står på 90 %. */
+/* Under reisen er sidene kort: avrundede hjørner mens de står nedskalert. */
 .world.is-travelling .world-page {
-  border-radius: clamp(16px, 2.5vw, 28px);
+  border-radius: clamp(11px, 1.75vw, 20px);
 }
 
 /* Hver side beholder 800px-kolonnen sin inne i sin egen viewport-brede seksjon. */
