@@ -1,4 +1,5 @@
 import { initAnimationInspector } from './debug-panel.js'
+import { initFpsMeter } from './fps-meter.js'
 import { portfolioCases } from './portfolio-data.js'
 import { initWorld } from './world.js'
 
@@ -85,6 +86,7 @@ function initSamePageGuard(header) {
 export function initHeader() {
   initSpeculationRules()
   initAnimationInspector()
+  initFpsMeter()
   scheduleWarmup()
 
   const header = document.querySelector('.site-header')

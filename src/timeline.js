@@ -144,7 +144,26 @@ export function initTimeline() {
      (kopienes padding-right) er større enn inset-en, så forrige loop-runde ligger
      helt utenfor skjermen ved inngang — den avsløres først når man scroller bakover. */
   const edgeInset = Math.min(360, Math.round(window.innerWidth * 0.4))
-  scroller.scrollLeft = copyWidth - edgeInset
+  let initialScroll = copyWidth - edgeInset
+
+  /* Lukker man et prosjekt og forsiden lastes på nytt (uten bfcache), skal
+     tidslinjen stå ved prosjektet man kom fra — ikke kastes tilbake til start.
+     (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
+  try {
+    const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
+    if (/^\/(micromilspec|off-market|misc|hjemla)\/?$/.test(new URL(fromUrl).pathname)) {
+      const id = sessionStorage.getItem('timeline:last-case')
+      const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
+      if (tile) {
+        const scrollerLeft = scroller.getBoundingClientRect().left
+        initialScroll = tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft - edgeInset
+      }
+    }
+  } catch {
+    /* ugyldig referrer → standard startposisjon */
+  }
+
+  scroller.scrollLeft = initialScroll
   elasticCurrent = scroller.scrollLeft
   settleEdge('instant')
   scroller.addEventListener('scroll', wrap, { passive: true })

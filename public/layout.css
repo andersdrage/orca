@@ -1087,10 +1087,29 @@ a.timeline-tile:focus-visible {
   }
 }
 
-/* Animasjon-inspektør (dev): åpnes/lukkes med S. */
+/* FPS-måler nede til venstre. */
+.fps-meter {
+  position: fixed;
+  left: 30px;
+  bottom: 30px;
+  z-index: 90;
+  color: #a1a1aa;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.fps-meter.is-dropping {
+  color: #e5484d;
+}
+
+/* Animasjon-inspektør (dev): åpnes/lukkes med S — over FPS-måleren. */
 .debug-panel {
   position: fixed;
-  bottom: 30px;
+  bottom: 64px;
   left: 30px;
   z-index: 100;
   padding: 14px 16px;
