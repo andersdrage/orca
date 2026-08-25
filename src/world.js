@@ -80,12 +80,20 @@ export function initWorld(header) {
     )
   })
 
+  /* Reise-koreografi: avreisesiden skalerer ned til 90 % (bakteppet bak kortene
+     kommer til syne), kameraet panorerer mens alle sider står som kort på 90 %,
+     og ankomstsiden zoomer opp til 100 % igjen. */
+  const TRAVEL_SCALE = 0.9
+  const SCALE_MS = 220
+
   function navigateTo(index, { push = true } = {}) {
     if (index === cameraIndex) return
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const distance = Math.abs(index - cameraIndex)
 
-    /* FLIP: mål lenkene før/etter layoutbyttet, animer i takt med kameraet. */
+    /* FLIP: mål lenkene før/etter layoutbyttet, animer i takt med kameraet.
+       NB: lenkene har en statisk translateY(2px) i CSS — den må inn i keyframene,
+       ellers hopper etiketten 2px opp ved avgang og ned ved ankomst. */
     const links = navLinks()
     const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
@@ -93,30 +101,70 @@ export function initWorld(header) {
     updateAriaCurrent(index)
     const after = links.map((link) => link.getBoundingClientRect().left)
 
-    const duration = reduced ? 0 : distance > 1 ? 700 : 500
+    const panMs = reduced ? 0 : distance > 1 ? 650 : 450
+    const scaleMs = reduced ? 0 : SCALE_MS
 
-    /* Kamera: retarget-vennlig — les nåværende transform som startpunkt. */
+    /* Retarget-vennlig: kanseller pågående animasjoner, les nåværende posisjon. */
     world.getAnimations().forEach((animation) => animation.cancel())
+    sections.forEach((section) => section.getAnimations().forEach((animation) => animation.cancel()))
     const from = getComputedStyle(world).transform
     setTransform(index)
-    if (duration > 0) {
-      world.animate([{ transform: from }, { transform: `translate3d(${-index * 100}vw, 0, 0)` }], {
-        duration,
-        easing: EASING,
-      })
-      links.forEach((link, i) => {
-        const dx = before[i] - after[i]
-        if (Math.abs(dx) > 1) {
-          link.getAnimations().forEach((animation) => animation.cancel())
-          link.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration, easing: EASING })
-        }
-      })
-    }
 
+    const departing = sections[cameraIndex]
+    const arriving = sections[index]
     cameraIndex = index
     if (titles[index]) document.title = titles[index]
-    syncHeaderScrollState()
     if (push) history.pushState({ world: index }, '', PAGES[index])
+
+    if (panMs === 0) {
+      sections.forEach((section) => {
+        section.style.transform = ''
+      })
+      syncHeaderScrollState()
+      return
+    }
+
+    world.classList.add('is-travelling')
+
+    /* Alle sider står som 90 %-kort under reisen; avreisesiden animeres dit. */
+    sections.forEach((section) => {
+      section.style.transform = `scale(${TRAVEL_SCALE})`
+    })
+    departing.animate(
+      [{ transform: 'scale(1)' }, { transform: `scale(${TRAVEL_SCALE})` }],
+      { duration: scaleMs, easing: EASING },
+    )
+
+    const pan = world.animate(
+      [{ transform: from }, { transform: `translate3d(${-index * 100}vw, 0, 0)` }],
+      { duration: panMs, delay: scaleMs, easing: EASING, fill: 'backwards' },
+    )
+
+    links.forEach((link, i) => {
+      const dx = before[i] - after[i]
+      if (Math.abs(dx) > 1) {
+        link.getAnimations().forEach((animation) => animation.cancel())
+        const base = getComputedStyle(link).transform
+        const baseSuffix = base === 'none' ? '' : ` ${base}`
+        link.animate(
+          [{ transform: `translateX(${dx}px)${baseSuffix}` }, { transform: base === 'none' ? 'none' : base }],
+          { duration: panMs, delay: scaleMs, easing: EASING, fill: 'backwards' },
+        )
+      }
+    })
+
+    const land = () => {
+      arriving.style.transform = ''
+      const zoom = arriving.animate(
+        [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
+        { duration: scaleMs, easing: EASING },
+      )
+      const clearTravel = () => world.classList.remove('is-travelling')
+      zoom.finished.then(clearTravel, clearTravel)
+    }
+    pan.finished.then(land, () => {})
+
+    syncHeaderScrollState()
   }
 
   /* Nav-klikk = kamerabevegelse (samme side håndteres av jiggle-guarden i header.js). */

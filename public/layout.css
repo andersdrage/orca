@@ -164,6 +164,8 @@ body.world-mode {
   width: 300vw;
   height: 100svh;
   will-change: transform;
+  /* Bakteppet som kommer til syne bak kortene når sidene skalerer til 90 %. */
+  background: #e9e6e0;
 }
 
 .world-page {
@@ -172,6 +174,12 @@ body.world-mode {
   height: 100svh;
   overflow-y: auto;
   overflow-x: hidden;
+  background: #fafafa;
+}
+
+/* Under reisen er sidene kort: avrundede hjørner mens de står på 90 %. */
+.world.is-travelling .world-page {
+  border-radius: clamp(16px, 2.5vw, 28px);
 }
 
 /* Hver side beholder 800px-kolonnen sin inne i sin egen viewport-brede seksjon. */

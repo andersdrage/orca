@@ -14,7 +14,12 @@ function initSpeculationRules() {
   script.type = 'speculationrules'
   script.textContent = JSON.stringify({
     prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/off-market/', '/misc/', '/about/', '/praise/'], eagerness: 'immediate' }],
-    prerender: [{ where: { href_matches: '/*' }, eagerness: 'moderate' }],
+    /* Case-sider prerendres allerede ved pointerover (uten dwell-tid) — første
+       klikk får da en ferdig rendret side og view transition-morphen kan spille. */
+    prerender: [
+      { urls: ['/micromilspec/', '/hjemla/', '/off-market/', '/misc/'], eagerness: 'eager' },
+      { where: { href_matches: '/*' }, eagerness: 'moderate' },
+    ],
   })
   document.head.append(script)
 }
