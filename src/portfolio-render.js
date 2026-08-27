@@ -170,28 +170,31 @@ function projectAudioHtml(singleCase) {
 }
 
 /**
- * Pair consecutive `half` items into one row; `full` spans the grid.
+ * Pair consecutive `half` items into one row, `third` items into rows of three;
+ * `full` spans the grid.
  */
 function layoutRows(items) {
-  /** @type {{ kind: 'full' | 'half-row', items: typeof items }[]} */
+  /** @type {{ kind: 'full' | 'half-row' | 'third-row', items: typeof items }[]} */
   const rows = []
   let buf = []
+  let bufKind = null
+  const flush = () => {
+    if (buf.length) rows.push({ kind: bufKind === 'third' ? 'third-row' : 'half-row', items: [...buf] })
+    buf = []
+    bufKind = null
+  }
   for (const item of items) {
-    if (item.span === 'half') {
+    if (item.span === 'half' || item.span === 'third') {
+      if (bufKind && bufKind !== item.span) flush()
+      bufKind = item.span
       buf.push(item)
-      if (buf.length === 2) {
-        rows.push({ kind: 'half-row', items: [...buf] })
-        buf = []
-      }
+      if (buf.length === (item.span === 'third' ? 3 : 2)) flush()
     } else {
-      if (buf.length) {
-        rows.push({ kind: 'half-row', items: [...buf] })
-        buf = []
-      }
+      flush()
       rows.push({ kind: 'full', items: [item] })
     }
   }
-  if (buf.length) rows.push({ kind: 'half-row', items: [...buf] })
+  flush()
   return rows
 }
 
@@ -203,6 +206,15 @@ function caseSection(singleCase, index) {
     const eager = rowIndex === 0
     if (row.kind === 'full') {
       return wrapFigure(row.items[0], eager)
+    }
+    if (row.kind === 'third-row') {
+      /* Triptyk: alltid tre i bredden — hører sammen som ett motiv. */
+      const cells = row.items
+        .map((item) => `<div class="portfolio-third min-w-0">${wrapFigure(item, eager)}</div>`)
+        .join('')
+      return `<div class="w-full">
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">${cells}</div>
+      </div>`
     }
     const cells = row.items
       .map((item) => `<div class="portfolio-half min-w-0">${wrapFigure(item, eager)}</div>`)

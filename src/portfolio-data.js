@@ -67,6 +67,20 @@ export const portfolioCases = [
     ],
   },
   {
+    id: 'mountain-milk',
+    title: 'Mountain Milk',
+    intro: 'Case study in the works — more on this project soon.',
+    items: [
+      { file: 'mm-1.jpg', span: 'full', alt: 'Mountain Milk' },
+      { file: 'mm-2.jpg', span: 'full', alt: 'Mountain Milk' },
+      { file: 'mm-3.jpg', span: 'full', alt: 'Mountain Milk' },
+      /* Triptyk — vises tre i bredden. */
+      { file: 'mm-4-1-3.jpg', span: 'third', alt: 'Mountain Milk' },
+      { file: 'mm-4-2-3.jpg', span: 'third', alt: 'Mountain Milk' },
+      { file: 'mm-4-3-3.jpg', span: 'third', alt: 'Mountain Milk' },
+    ],
+  },
+  {
     id: 'misc',
     title: 'Selected work',
     intro: 'Fragments from client and side projects.',

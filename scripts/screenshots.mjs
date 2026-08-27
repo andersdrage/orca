@@ -18,8 +18,11 @@ const dir = `screenshots/${stamp}_${label}`
 const targets = [
   { path: '/', name: 'home', fullPage: false },
   { path: '/micromilspec/', name: 'micromilspec', fullPage: true },
+  { path: '/hjemla/', name: 'hjemla', fullPage: true },
   { path: '/off-market/', name: 'off-market', fullPage: true },
+  { path: '/hmkg/', name: 'hmkg', fullPage: true },
   { path: '/misc/', name: 'misc', fullPage: true },
+  { path: '/mountain-milk/', name: 'mountain-milk', fullPage: true },
   { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
   { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
   { path: '/archive/', name: 'archive', element: '.world-page[data-path="/archive/"] .world-column' },
