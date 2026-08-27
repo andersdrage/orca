@@ -1022,7 +1022,7 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 .timeline-tile__hover-label {
   position: absolute;
   top: 100%;
-  left: 2px;
+  left: 50%;
   z-index: 0;
   padding-top: 9px;
   color: #52525b;
@@ -1033,7 +1033,7 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
-  transform: translateY(calc(-100% - 9px));
+  transform: translate(-50%, calc(-100% - 9px));
   transition: transform 620ms linear(
     0, 0.301 7.4%, 0.609 15.4%, 0.865 23.4%, 1.053 31.7%, 1.145 39.8%,
     1.132 47.7%, 1.085 56%, 1.021 68.3%, 0.998 80.5%, 1
@@ -1042,7 +1042,7 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 
 a.timeline-tile:hover .timeline-tile__hover-label,
 a.timeline-tile:focus-visible .timeline-tile__hover-label {
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 /* Ved klikk: etiketten skal ikke inn i morph-snapshotet. */
