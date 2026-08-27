@@ -253,8 +253,9 @@ export function initTimeline() {
       tile,
       contentLeft: tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft,
       width: tile.getBoundingClientRect().width,
-      /* Siste tile i hver kopi = siste prosjekt — den fader ut mot venstre kant. */
-      isLast: !tile.nextElementSibling,
+      /* De to siste tilene i hver kopi fader ut mot venstre kant — nest siste
+         treffer kanten først og fader først, så siste: runden ebber ut i rekkefølge. */
+      fades: !tile.nextElementSibling || !tile.nextElementSibling.nextElementSibling,
       dirty: false,
       fadeDirty: false,
     }))
@@ -266,7 +267,7 @@ export function initTimeline() {
   function updateSeamFade() {
     const viewportWidth = window.innerWidth
     tileGeometry.forEach((entry) => {
-      if (!entry.isLast) return
+      if (!entry.fades) return
       const centerNorm = (entry.contentLeft + entry.width / 2 - elasticCurrent) / viewportWidth
       let opacity = (centerNorm - 0.08) / 0.34
       opacity = Math.min(Math.max(opacity, 0.05), 1)
