@@ -161,12 +161,19 @@ body.world-mode {
   z-index: 40;
 }
 
+/* 2D-verden: rad 1 = forside | About | Praise, arkivet ligger under forsiden. */
 .world {
-  display: flex;
-  width: 400vw;
-  height: 100svh;
+  display: grid;
+  grid-template-columns: repeat(3, 100vw);
+  grid-auto-rows: 100svh;
+  width: 300vw;
   /* Bakteppet som kommer til syne bak kortene når sidene skalerer ned. */
   background: #e9e6e0;
+}
+
+.world-page[data-path='/archive/'] {
+  grid-column: 1;
+  grid-row: 2;
 }
 
 /* will-change KUN under reisen: en permanent 300vw-bred compositor-layer koster
@@ -242,11 +249,11 @@ body.world-mode {
 }
 
 body[data-camera='0'] .site-header nav a[href='/about/'],
-body[data-camera='1'] .site-header nav a[href='/about/'] {
+body[data-camera='3'] .site-header nav a[href='/about/'] {
   margin-left: auto;
 }
 
-body[data-camera='2'] .site-header nav a[href='/praise/'] {
+body[data-camera='1'] .site-header nav a[href='/praise/'] {
   margin-left: auto;
 }
 

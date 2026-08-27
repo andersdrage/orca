@@ -12,13 +12,19 @@
 
 import { initTimeline } from './timeline.js'
 
-/* Verdenskartet, venstre → høyre. Arkivet ligger til VENSTRE for forsiden —
-   lenken bor i nedre venstre hjørne, og kameraet panorerer venstre for å nå det. */
-const PAGES = ['/archive/', '/', '/about/', '/praise/']
+/* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
+   forsiden — lenken bor i nedre venstre hjørne, og kameraet panorerer nedover
+   for å nå det. Diagonale reiser (f.eks. About → arkiv) panorerer skrått. */
+const PAGES = [
+  { path: '/', x: 0, y: 0 },
+  { path: '/about/', x: 1, y: 0 },
+  { path: '/praise/', x: 2, y: 0 },
+  { path: '/archive/', x: 0, y: 1 },
+]
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
 export function initWorld(header) {
-  const selfIndex = PAGES.indexOf(location.pathname)
+  const selfIndex = PAGES.findIndex((page) => page.path === location.pathname)
   if (selfIndex === -1 || !header) return
 
   const layout = document.getElementById('site-layout')
@@ -29,10 +35,10 @@ export function initWorld(header) {
   document.body.prepend(header)
   const world = document.createElement('div')
   world.className = 'world'
-  const slots = PAGES.map((path) => {
+  const slots = PAGES.map((page) => {
     const section = document.createElement('section')
     section.className = 'world-page'
-    section.dataset.path = path
+    section.dataset.path = page.path
     const column = document.createElement('div')
     column.className = 'world-column'
     section.append(column)
@@ -51,13 +57,14 @@ export function initWorld(header) {
   const hint = ownMain.querySelector('[data-scroll-hint]')
   if (hint) document.body.append(hint)
   document.body.classList.add('world-mode')
-  document.body.classList.toggle('page-home', PAGES[selfIndex] === '/')
+  document.body.classList.toggle('page-home', PAGES[selfIndex].path === '/')
 
-  const titles = PAGES.map((path) => (path === location.pathname ? document.title : null))
+  const titles = PAGES.map((page) => (page.path === location.pathname ? document.title : null))
   let cameraIndex = selfIndex
 
   const setTransform = (index) => {
-    world.style.transform = `translate3d(${-index * 100}vw, 0, 0)`
+    const { x, y } = PAGES[index]
+    world.style.transform = `translate3d(${-x * 100}vw, ${-y * 100}svh, 0)`
   }
   document.body.dataset.camera = String(cameraIndex)
   setTransform(cameraIndex)
@@ -67,11 +74,11 @@ export function initWorld(header) {
 
   function updateAriaCurrent(index) {
     navLinks().forEach((link) => {
-      if (new URL(link.href).pathname === PAGES[index]) link.setAttribute('aria-current', 'page')
+      if (new URL(link.href).pathname === PAGES[index].path) link.setAttribute('aria-current', 'page')
       else link.removeAttribute('aria-current')
     })
     if (archiveLink) {
-      if (PAGES[index] === '/archive/') archiveLink.setAttribute('aria-current', 'page')
+      if (PAGES[index].path === '/archive/') archiveLink.setAttribute('aria-current', 'page')
       else archiveLink.removeAttribute('aria-current')
     }
   }
@@ -80,7 +87,7 @@ export function initWorld(header) {
   /* Arkiv-lenken i hjørnet er også en kamerabevegelse. */
   archiveLink?.addEventListener('click', (event) => {
     event.preventDefault()
-    const index = PAGES.indexOf('/archive/')
+    const index = PAGES.findIndex((page) => page.path === '/archive/')
     if (index !== cameraIndex) navigateTo(index)
   })
 
@@ -108,7 +115,9 @@ export function initWorld(header) {
   function navigateTo(index, { push = true } = {}) {
     if (index === cameraIndex) return
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const distance = Math.abs(index - cameraIndex)
+    const dx = PAGES[index].x - PAGES[cameraIndex].x
+    const dy = PAGES[index].y - PAGES[cameraIndex].y
+    const distance = Math.abs(dx) + Math.abs(dy)
 
     /* FLIP: mål lenkene før/etter layoutbyttet, animer i takt med kameraet.
        NB: lenkene har en statisk translateY(2px) i CSS — den må inn i keyframene,
@@ -117,12 +126,13 @@ export function initWorld(header) {
 
     /* Understrekingen fjernes FØRST: aria-current slippes ved avgang, og
        streken trekkes ut i reiseretningen (data-travel-dir styrer origin). */
-    header.dataset.travelDir = index > cameraIndex ? 'fwd' : 'back'
+    /* Ren vertikal reise (arkivet) flytter ingen nav-etiketter — behold forrige dir. */
+    if (dx !== 0) header.dataset.travelDir = dx > 0 ? 'fwd' : 'back'
     links.forEach((link) => link.removeAttribute('aria-current'))
 
     const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
-    document.body.classList.toggle('page-home', PAGES[index] === '/')
+    document.body.classList.toggle('page-home', PAGES[index].path === '/')
     const after = links.map((link) => link.getBoundingClientRect().left)
 
     /* Lengre pan + overlapp med nedskaleringen: reisen skal LESES — kortene
@@ -142,7 +152,7 @@ export function initWorld(header) {
     const arriving = sections[index]
     cameraIndex = index
     if (titles[index]) document.title = titles[index]
-    if (push) history.pushState({ world: index }, '', PAGES[index])
+    if (push) history.pushState({ world: index }, '', PAGES[index].path)
 
     if (panMs === 0) {
       sections.forEach((section) => {
@@ -166,7 +176,7 @@ export function initWorld(header) {
     )
 
     const pan = world.animate(
-      [{ transform: from }, { transform: `translate3d(${-index * 100}vw, 0, 0)` }],
+      [{ transform: from }, { transform: `translate3d(${-PAGES[index].x * 100}vw, ${-PAGES[index].y * 100}svh, 0)` }],
       { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
     )
 
@@ -207,21 +217,21 @@ export function initWorld(header) {
   header.addEventListener('click', (event) => {
     const link = event.target.closest('a')
     if (!link) return
-    const index = PAGES.indexOf(new URL(link.href).pathname)
+    const index = PAGES.findIndex((page) => page.path === new URL(link.href).pathname)
     if (index === -1 || index === cameraIndex) return
     event.preventDefault()
     navigateTo(index)
   })
 
   window.addEventListener('popstate', () => {
-    const index = PAGES.indexOf(location.pathname)
+    const index = PAGES.findIndex((page) => page.path === location.pathname)
     if (index !== -1) navigateTo(index, { push: false })
   })
 
   /* Monter søskensidene rundt den vi står på. */
-  PAGES.forEach((path, index) => {
+  PAGES.forEach((page, index) => {
     if (index === selfIndex) return
-    fetch(path)
+    fetch(page.path)
       .then((response) => response.text())
       .then((html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -231,7 +241,7 @@ export function initWorld(header) {
         if (main) slots[index].append(document.importNode(main, true))
         if (footer) slots[index].append(document.importNode(footer, true))
         /* Forsiden trenger tidslinje-motoren sin når den er hentet inn. */
-        if (index === 0) initTimeline()
+        if (page.path === '/') initTimeline()
       })
       .catch(() => {})
   })
