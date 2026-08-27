@@ -457,7 +457,15 @@ export function initTimeline() {
 
     const id = sessionStorage.getItem('timeline:last-case')
     if (!id) return
-    const tile = copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`)
+    /* Sikt morphen mot instansen som faktisk er PÅ SKJERMEN — etter wrap-sikker
+       normalisering kan det være en annen loop-kopi enn midt-kopien (typisk for
+       siste prosjekt). En morph mot en offscreen-instans flyr ut av bildet. */
+    const instances = [...scroller.querySelectorAll(`[data-tile-id="${CSS.escape(id)}"]`)]
+    const tile =
+      instances.find((candidate) => {
+        const r = candidate.getBoundingClientRect()
+        return r.right > 0 && r.left < window.innerWidth
+      }) ?? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`)
     if (!tile) return
 
     /* Naboene får push-navnene sine igjen, så de glir tilbake på plass fra sidene
