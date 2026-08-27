@@ -12,7 +12,9 @@
 
 import { initTimeline } from './timeline.js'
 
-const PAGES = ['/', '/about/', '/praise/']
+/* Verdenskartet, venstre → høyre. Arkivet ligger til VENSTRE for forsiden —
+   lenken bor i nedre venstre hjørne, og kameraet panorerer venstre for å nå det. */
+const PAGES = ['/archive/', '/', '/about/', '/praise/']
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
 export function initWorld(header) {
@@ -49,7 +51,7 @@ export function initWorld(header) {
   const hint = ownMain.querySelector('[data-scroll-hint]')
   if (hint) document.body.append(hint)
   document.body.classList.add('world-mode')
-  document.body.classList.toggle('page-home', selfIndex === 0)
+  document.body.classList.toggle('page-home', PAGES[selfIndex] === '/')
 
   const titles = PAGES.map((path) => (path === location.pathname ? document.title : null))
   let cameraIndex = selfIndex
@@ -61,14 +63,26 @@ export function initWorld(header) {
   setTransform(cameraIndex)
 
   const navLinks = () => [...header.querySelectorAll('nav a')]
+  const archiveLink = document.querySelector('.archive-link')
 
   function updateAriaCurrent(index) {
     navLinks().forEach((link) => {
       if (new URL(link.href).pathname === PAGES[index]) link.setAttribute('aria-current', 'page')
       else link.removeAttribute('aria-current')
     })
+    if (archiveLink) {
+      if (PAGES[index] === '/archive/') archiveLink.setAttribute('aria-current', 'page')
+      else archiveLink.removeAttribute('aria-current')
+    }
   }
   updateAriaCurrent(cameraIndex)
+
+  /* Arkiv-lenken i hjørnet er også en kamerabevegelse. */
+  archiveLink?.addEventListener('click', (event) => {
+    event.preventDefault()
+    const index = PAGES.indexOf('/archive/')
+    if (index !== cameraIndex) navigateTo(index)
+  })
 
   /* Frostet header-bakgrunn følger den aktive sidens interne scroll. */
   const sections = [...world.children]
@@ -108,7 +122,7 @@ export function initWorld(header) {
 
     const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
-    document.body.classList.toggle('page-home', index === 0)
+    document.body.classList.toggle('page-home', PAGES[index] === '/')
     const after = links.map((link) => link.getBoundingClientRect().left)
 
     /* Lengre pan + overlapp med nedskaleringen: reisen skal LESES — kortene
