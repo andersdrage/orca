@@ -189,6 +189,11 @@ export function initTimeline() {
       if (tile) {
         const scrollerLeft = scroller.getBoundingClientRect().left
         initialScroll = tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft - edgeInset
+        /* Normaliser inn i wrap-sonen [0.6w, 1.4w] — siste tile (Mountain Milk)
+           kunne ellers lande forbi wrap-terskelen, som teleporterte scrollen
+           MIDT i tilbake-morphen og fikk zoomen til å fly mot feil sted. */
+        while (initialScroll > copyWidth * 1.4) initialScroll -= copyWidth
+        while (initialScroll < copyWidth * 0.6) initialScroll += copyWidth
       }
     }
   } catch {
@@ -247,10 +252,35 @@ export function initTimeline() {
     tileGeometry = [...scroller.querySelectorAll('.timeline-tile')].map((tile) => ({
       tile,
       contentLeft: tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft,
+      width: tile.getBoundingClientRect().width,
+      /* Siste tile i hver kopi = siste prosjekt — den fader ut mot venstre kant. */
+      isLast: !tile.nextElementSibling,
       dirty: false,
+      fadeDirty: false,
     }))
   }
   measureTiles()
+
+  /* Sømfokus: når siste prosjekt nærmer seg venstre kant (= ny runde starter til
+     høyre for det), fader det ut og overlater oppmerksomheten til restarten. */
+  function updateSeamFade() {
+    const viewportWidth = window.innerWidth
+    tileGeometry.forEach((entry) => {
+      if (!entry.isLast) return
+      const centerNorm = (entry.contentLeft + entry.width / 2 - elasticCurrent) / viewportWidth
+      let opacity = (centerNorm - 0.08) / 0.34
+      opacity = Math.min(Math.max(opacity, 0.05), 1)
+      if (opacity >= 0.999) {
+        if (entry.fadeDirty) {
+          entry.tile.style.opacity = ''
+          entry.fadeDirty = false
+        }
+      } else {
+        entry.tile.style.opacity = opacity.toFixed(3)
+        entry.fadeDirty = true
+      }
+    })
+  }
 
   let elasticActive = false
   let lastFrameTime = performance.now()
@@ -281,11 +311,12 @@ export function initTimeline() {
     lastFrameTime = now
 
     if (reducedMotionQuery.matches || !finePointer.matches) {
+      elasticCurrent = scroller.scrollLeft
       if (elasticActive) {
-        elasticCurrent = scroller.scrollLeft
         clearElasticTransforms()
         elasticActive = false
       }
+      updateSeamFade()
       return
     }
 
@@ -305,8 +336,11 @@ export function initTimeline() {
         clearElasticTransforms()
         elasticActive = false
       }
+      updateSeamFade()
       return
     }
+
+    updateSeamFade()
 
     elasticActive = true
     copies.forEach((copy) => {

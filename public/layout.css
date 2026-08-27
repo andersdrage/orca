@@ -906,6 +906,22 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   background-color: #f4f4f5;
 }
 
+/* Fullbredde-bilder i case-visning er aldri høyere enn 90 % av viewporten —
+   hvert bilde skal kunne ses i sin helhet uten å scrolle. Figuren krymper til
+   bildets bredde og sentreres, så det ikke blir grå letterbox-striper. */
+#work .work-media > .portfolio-item .portfolio-asset {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+#work .work-media > .portfolio-item .portfolio-asset img,
+#work .work-media > .portfolio-item .portfolio-asset video {
+  max-height: 90svh;
+  width: auto;
+  max-width: 100%;
+}
+
 .portfolio-asset img,
 .portfolio-asset video {
   display: block;
@@ -1228,6 +1244,23 @@ a.timeline-tile:focus-visible {
 
 .archive-list li.is-year-start:not(:first-child) {
   margin-top: 1.75rem;
+}
+
+/* Press-lista: bredere venstre kolonne (gruppenavn i stedet for årstall). */
+.archive-list--press li {
+  grid-template-columns: 8rem 1fr 1fr;
+}
+
+.archive-name a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #d4d4d8;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 150ms ease;
+}
+
+.archive-name a:hover {
+  text-decoration-color: #52525b;
 }
 
 .archive-year {
