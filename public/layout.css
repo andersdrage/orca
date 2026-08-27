@@ -1004,9 +1004,57 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   object-fit: cover;
 }
 
-/* Bildet er tilen — ingen bakgrunnsflate bak (unngår svart rektangel i snapshots). */
+/* Bildet er tilen — ingen bakgrunnsflate bak (unngår svart rektangel i snapshots).
+   overflow: visible + radius på selve bildet, så hover-etiketten kan skyves UT
+   under bildekanten. Bildet ligger på z 1 og dekker etiketten i hvileposisjon. */
 .timeline-tile--image {
   background: none;
+  overflow: visible;
+}
+
+.timeline-tile--image .timeline-tile__image {
+  border-radius: inherit;
+  z-index: 1;
+}
+
+/* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
+   med fjær-easing (overshoot ~8 % som setter seg) — bevegelse, ikke fade. */
+.timeline-tile__hover-label {
+  position: absolute;
+  top: 100%;
+  left: 2px;
+  z-index: 0;
+  padding-top: 9px;
+  color: #52525b;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateY(calc(-100% - 9px));
+  transition: transform 620ms linear(
+    0, 0.301 7.4%, 0.609 15.4%, 0.865 23.4%, 1.053 31.7%, 1.145 39.8%,
+    1.132 47.7%, 1.085 56%, 1.021 68.3%, 0.998 80.5%, 1
+  );
+}
+
+a.timeline-tile:hover .timeline-tile__hover-label,
+a.timeline-tile:focus-visible .timeline-tile__hover-label {
+  transform: translateY(0);
+}
+
+/* Ved klikk: etiketten skal ikke inn i morph-snapshotet. */
+a.timeline-tile.is-navigating .timeline-tile__hover-label {
+  transition: none;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-tile__hover-label {
+    transition: none;
+  }
 }
 
 .timeline-tile__title {

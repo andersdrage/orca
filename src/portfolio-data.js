@@ -40,6 +40,17 @@ export const portfolioCases = [
     ],
   },
   {
+    id: 'hmkg',
+    title: 'HMKG',
+    intro: 'Premium business cards for His Majesty The King’s Guard.',
+    items: [
+      { file: 'hmkg-1-full.jpg', span: 'full', alt: 'HMKG' },
+      { file: 'hmkg-2-full.jpg', span: 'full', alt: 'HMKG' },
+      { file: 'hmkg-3-full.jpg', span: 'full', alt: 'HMKG' },
+      { file: 'hmkg-4-full.jpg', span: 'full', alt: 'HMKG' },
+    ],
+  },
+  {
     id: 'off-market',
     title: 'Off Market',
     intro:

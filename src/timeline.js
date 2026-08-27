@@ -14,7 +14,16 @@ const TILES = [
     ratio: '1600 / 1770',
     h: '44svh',
   },
-  { id: 'p2', color: '#b65c3f', ratio: '1 / 1', h: '30svh' },
+  {
+    id: 'hmkg',
+    title: 'HMKG',
+    href: '/hmkg/',
+    image: '/images/hmkg-1-full.jpg',
+    color: '#b65c3f',
+    /* Samme aspekt som bildet (844×740). */
+    ratio: '844 / 740',
+    h: '30svh',
+  },
   {
     id: 'hjemla',
     title: 'Hjemla',
@@ -64,8 +73,13 @@ function tileHtml(tile) {
     ? `<img class="timeline-tile__image" src="${tile.image}" alt="" loading="eager" fetchpriority="high" decoding="async" />`
     : ''
   const classes = `timeline-tile${tile.image ? ' timeline-tile--image' : ''}`
+  /* Hover: prosjektnavnet skyves ut fra bildets underkant med fjær-easing. */
+  const hoverLabel =
+    tile.href && tile.title && tile.image
+      ? `<span class="timeline-tile__hover-label" aria-hidden="true">${tile.title}</span>`
+      : ''
   return tile.href
-    ? `<a class="${classes}" href="${tile.href}" data-tile-id="${tile.id}" style="${style}">${image}${title}</a>`
+    ? `<a class="${classes}" href="${tile.href}" data-tile-id="${tile.id}" style="${style}">${image}${hoverLabel}${title}</a>`
     : `<div class="${classes}" style="${style}" aria-hidden="true">${image}</div>`
 }
 
@@ -151,7 +165,7 @@ export function initTimeline() {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|misc|hjemla)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (/^\/(micromilspec|off-market|misc|hjemla|hmkg)\/?$/.test(new URL(fromUrl).pathname)) {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -363,6 +377,8 @@ export function initTimeline() {
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
     if (!tile) return
+    /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
+    tile.classList.add('is-navigating')
     assignNeighborNames(tile)
     tile.style.viewTransitionName = 'case-cover'
     sessionStorage.setItem('timeline:last-case', tile.dataset.tileId)
@@ -381,7 +397,7 @@ export function initTimeline() {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc|hjemla)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|hjemla|hmkg)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }
