@@ -100,6 +100,8 @@ export const portfolioCases = [
       { file: 'finn-11.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-12.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-13.jpg', span: 'full', alt: 'FINN.no' },
+      /* Kort type-vekt-animasjon (0,75s) — looper som syklende specimen. */
+      { file: 'finn-type-weights.mp4', span: 'full', alt: 'FINN.no typography weights' },
       { file: 'finn-1.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-2.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-3.jpg', span: 'full', alt: 'FINN.no' },
