@@ -67,7 +67,7 @@ const TILES = [
   { id: 'p7', color: '#a44a5e', ratio: '1 / 1', h: '36svh' },
   {
     id: 'misc',
-    title: 'Selected work',
+    title: 'Miscellaneous work',
     href: '/misc/',
     /* Første frame av uber-videoen — samme frame er poster på case-heroen,
        så morphen lander i nøyaktig samme bilde før videoen spiller. */

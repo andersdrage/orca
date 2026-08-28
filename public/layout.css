@@ -994,7 +994,7 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
   flex: none;
   display: flex;
   align-items: center;
-  gap: clamp(1.25rem, 3vw, 2.5rem);
+  gap: clamp(2.5rem, 5.5vw, 5.5rem);
   padding-right: clamp(240px, 45vw, 600px);
 }
 
@@ -1373,6 +1373,50 @@ a.timeline-tile:focus-visible {
    på tilen ved klikk). Med samme bilde begge steder morpher coveret inn i seg selv. */
 .case-cover-hero {
   view-transition-name: case-cover;
+}
+
+/* Credits på case-sider: rolle | navn i to kolonner rundt midtaksen. */
+.case-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 1.75rem 0 0;
+}
+
+.case-credits__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
+  align-items: baseline;
+}
+
+.case-credits__role {
+  color: #71717a;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.case-credits__names {
+  margin: 0;
+  color: #52525b;
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .case-credits__row {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    text-align: center;
+  }
+
+  .case-credits__role,
+  .case-credits__names {
+    text-align: center;
+  }
 }
 
 /* Entré under heroen: holdes usynlig mens cover-morphen spiller, og stiger så

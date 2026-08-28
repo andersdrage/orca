@@ -48,6 +48,20 @@ function captionHtml(item) {
   return `<p class="work-narrow mx-auto mt-2 px-1 text-center text-[10px] leading-snug text-zinc-600">${escapeHtmlText(raw)}</p>`
 }
 
+/* Credits-oversikt: rolle (mono, høyrestilt) | navn — vises under introen. */
+function creditsHtml(singleCase) {
+  if (!singleCase.credits?.length) return ''
+  const rows = singleCase.credits
+    .map(
+      (credit) => `<div class="case-credits__row">
+        <dt class="case-credits__role">${escapeHtmlText(credit.role)}</dt>
+        <dd class="case-credits__names">${escapeHtmlText(credit.names)}</dd>
+      </div>`,
+    )
+    .join('\n')
+  return `<dl class="case-credits">${rows}</dl>`
+}
+
 /** @param {typeof portfolioCases[number]['items'][number]} item */
 function wrapFigure(item, eager = false) {
   return `<div class="portfolio-item w-full">
@@ -112,7 +126,7 @@ const projectAudio = {
     src: miscWorkUrl,
     fallbackDuration: 86,
     durationLabel: '01:26',
-    ariaName: 'Selected work',
+    ariaName: 'Miscellaneous work',
     title: 'My personal notes on selected work',
     body: [
       'The last part of my portfolio is more of a collection of fragments from different client projects, startups, and side quests over the years.',
@@ -234,6 +248,7 @@ function caseSection(singleCase, index) {
     <div class="case-below work-narrow mt-10 mb-8 w-full md:mt-14">
       <h2 id="title-${singleCase.id}" class="font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
+      ${creditsHtml(singleCase)}
       ${projectAudioHtml(singleCase)}
     </div>
     <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>

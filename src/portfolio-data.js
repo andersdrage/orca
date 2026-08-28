@@ -84,6 +84,13 @@ export const portfolioCases = [
     id: 'finn',
     title: 'FINN.no',
     intro: 'Brand and UX design for FINN.no.',
+    credits: [
+      { role: 'Creative Director', names: 'Miriam Skovholt Mortensen' },
+      { role: 'Designers', names: 'Anders Drage, Ludvig Bruneau Rossow and Truong Vu Pham' },
+      { role: 'Strategy', names: 'Monna Nordhagen, Kirsti Rogne, Jonas Feiring' },
+      { role: 'Project management', names: 'Caroline Hanssen' },
+      { role: 'Reel', names: 'Lars Hoel' },
+    ],
     items: [
       /* Hero = tile-cover; filmen som nr. 2 (autoplay, muted, loop). */
       { file: 'finn-5.jpg', span: 'full', alt: 'FINN.no' },
@@ -128,13 +135,12 @@ export const portfolioCases = [
   },
   {
     id: 'misc',
-    title: 'Selected work',
+    title: 'Miscellaneous work',
     intro: 'Fragments from client and side projects.',
     items: [
       { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
       { file: 'misc-aprila.jpg', span: 'full', alt: 'Aprila Bank' },
       { file: 'misc-brevio.jpg', span: 'full', alt: 'Brevio' },
-      { file: 'misc-finn.jpg', span: 'full', alt: 'Finn' },
       { file: 'misc-logos.jpg', span: 'full', alt: 'Logos' },
       { file: 'misc-nettavisen.jpg', span: 'full', alt: 'Nettavisen' },
       { file: 'misc-nike.jpg', span: 'full', alt: 'Nike' },
