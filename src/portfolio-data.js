@@ -141,6 +141,10 @@ export const portfolioCases = [
     intro: 'Fragments from client and side projects.',
     items: [
       { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
+      { file: 'misc-agens-1.jpg', span: 'full', alt: 'Agens' },
+      { file: 'misc-agens-2.jpg', span: 'full', alt: 'Agens' },
+      { file: 'misc-agens-3.jpg', span: 'full', alt: 'Agens' },
+      { file: 'misc-agens-4.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-aprila.jpg', span: 'full', alt: 'Aprila Bank' },
       { file: 'misc-brevio.jpg', span: 'full', alt: 'Brevio' },
       { file: 'misc-logos.jpg', span: 'full', alt: 'Logos' },
