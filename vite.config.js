@@ -25,6 +25,7 @@ export default defineConfig({
         micromilspec: resolve(__dirname, 'micromilspec/index.html'),
         hjemla: resolve(__dirname, 'hjemla/index.html'),
         hmkg: resolve(__dirname, 'hmkg/index.html'),
+        finn: resolve(__dirname, 'finn/index.html'),
         hummingPeople: resolve(__dirname, 'humming-people/index.html'),
         mountainMilk: resolve(__dirname, 'mountain-milk/index.html'),
         offMarket: resolve(__dirname, 'off-market/index.html'),

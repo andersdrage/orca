@@ -24,6 +24,7 @@ const targets = [
   { path: '/misc/', name: 'misc', fullPage: true },
   { path: '/mountain-milk/', name: 'mountain-milk', fullPage: true },
   { path: '/humming-people/', name: 'humming-people', fullPage: true },
+  { path: '/finn/', name: 'finn', fullPage: true },
   { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
   { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
   { path: '/archive/', name: 'archive', element: '.world-page[data-path="/archive/"] .world-column' },

@@ -1263,6 +1263,20 @@ a.timeline-tile:focus-visible {
   text-decoration-color: #52525b;
 }
 
+/* Ekstern lenke-pil (↗) etter presse-lenkene. */
+.archive-list--press .archive-name a::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 0.35em;
+  font-size: 0.8em;
+  color: #a1a1aa;
+  text-decoration: none;
+}
+
+.archive-list--press .archive-name a:hover::after {
+  color: #52525b;
+}
+
 .archive-year {
   color: #a1a1aa;
 }
