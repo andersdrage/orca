@@ -64,7 +64,16 @@ const TILES = [
     ratio: '2072 / 1372',
     h: '32svh',
   },
-  { id: 'p7', color: '#a44a5e', ratio: '1 / 1', h: '36svh' },
+  {
+    id: 'brathwait',
+    title: 'Brathwait',
+    href: '/brathwait/',
+    image: '/images/brathwait-cover.jpg',
+    color: '#a44a5e',
+    /* Samme aspekt som coveret (580×784). */
+    ratio: '580 / 784',
+    h: '36svh',
+  },
   {
     id: 'misc',
     title: 'Miscellaneous work',
@@ -192,7 +201,7 @@ export function initTimeline() {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (/^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -459,7 +468,7 @@ export function initTimeline() {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }
