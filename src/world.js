@@ -117,6 +117,9 @@ export function initWorld(header) {
 
   function navigateTo(index, { push = true } = {}) {
     if (index === cameraIndex) return
+    /* Enhver verdensreise betyr at navigasjonen er oppdaget — scroll-hinten
+       (pilene nede til høyre) skal ikke blinke videre på andre sider. */
+    document.querySelector('[data-scroll-hint]')?.classList.add('is-hidden')
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const dx = PAGES[index].x - PAGES[cameraIndex].x
     const dy = PAGES[index].y - PAGES[cameraIndex].y

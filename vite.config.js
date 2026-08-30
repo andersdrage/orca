@@ -27,6 +27,7 @@ export default defineConfig({
         hjemla: resolve(__dirname, 'hjemla/index.html'),
         hmkg: resolve(__dirname, 'hmkg/index.html'),
         finn: resolve(__dirname, 'finn/index.html'),
+        nettavisen: resolve(__dirname, 'nettavisen/index.html'),
         brathwait: resolve(__dirname, 'brathwait/index.html'),
         hummingPeople: resolve(__dirname, 'humming-people/index.html'),
         mountainMilk: resolve(__dirname, 'mountain-milk/index.html'),

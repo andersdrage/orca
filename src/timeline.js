@@ -45,6 +45,16 @@ const TILES = [
     h: '40svh',
   },
   {
+    id: 'nettavisen',
+    title: 'Nettavisen',
+    href: '/nettavisen/',
+    image: '/images/nettavisen-cover.jpg',
+    color: '#31406f',
+    /* Samme aspekt som coveret (1147×1190). */
+    ratio: '1147 / 1190',
+    h: '38svh',
+  },
+  {
     id: 'finn',
     title: 'FINN.no',
     href: '/finn/',
@@ -85,7 +95,6 @@ const TILES = [
     ratio: '1920 / 1252',
     h: '30svh',
   },
-  { id: 'p9', color: '#8c8577', ratio: '3 / 4', h: '38svh' },
   {
     id: 'mountain-milk',
     title: 'Mountain Milk',
@@ -150,7 +159,7 @@ export function initTimeline() {
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
   intro.textContent =
-    'I’m Anders Drage, a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
+    'I’m Anders, a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -263,7 +272,7 @@ export function initTimeline() {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (/^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -555,7 +564,7 @@ export function initTimeline() {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }

@@ -8,7 +8,10 @@ Gjennomgås før lansering. Kryss av med `[x]`.
       Høyoppløste kilder: Dropbox `2000 Portfolio/1500 Portefølje/02 Jobber/00 JPGs/010 HMKG`.
       Nye filnavn ved bytte (immutable cache på /images).
 - [ ] **Placeholder-intro på Hjemla og Mountain Milk** («Case study in the works») — skriv ekte intro.
-- [ ] **To placeholder-tiles igjen** (p5 gul 9:16, p7 rosa 1:1) — fyll med prosjekter eller fjern.
+- [x] **Placeholder-tiles** — alle fylt; Nettavisen tok den siste (før FINN).
+- [ ] **Nettavisen-intro** («Design for Nettavisen, one of Norway’s largest news sites.») — bekreft/omskriv.
+- [ ] **Gratitude-sidenotater på People** («People I owe») — fyll inn en kort personlig
+      note per navn (kolonnen står tom i markupen, klar til bruk).
 - [ ] Vurder lyd/`Personal notes` for de nye casene (HMKG, Hjemla, Mountain Milk, Humming People).
 
 ## Metadata og deling
@@ -35,3 +38,5 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 
 - [ ] «NSB årsrapport digitalt» sto to ganger under 2016 i arkiv-kilden — én er publisert;
       bekreft om det faktisk var to utgaver.
+- [ ] **Nettavisen ligger nå både som egen case og som `misc-nettavisen.jpg` i
+      Miscellaneous work** — skal misc-blokken fjernes/flyttes inn i casen?

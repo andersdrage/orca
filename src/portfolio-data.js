@@ -81,6 +81,16 @@ export const portfolioCases = [
     ],
   },
   {
+    id: 'nettavisen',
+    title: 'Nettavisen',
+    intro: 'Design for Nettavisen, one of Norway’s largest news sites.',
+    items: [
+      /* Hero = samme cover som tidslinje-tilen. */
+      { file: 'nettavisen-cover.jpg', span: 'full', alt: 'Nettavisen' },
+      { file: 'na-03.mp4', span: 'full', alt: 'Nettavisen' },
+    ],
+  },
+  {
     id: 'finn',
     title: 'FINN.no',
     intro: 'Brand and UX design for FINN.no.',
