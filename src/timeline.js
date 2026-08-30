@@ -252,7 +252,10 @@ export function initTimeline() {
   /* Entré: introteksten står 30px fra venstre kant, første prosjekt følger etter.
      Faller tilbake til standard-inset hvis dimensjoner manglet ved init —
      retry-loopen under korrigerer posisjonen når fanen får ekte størrelse. */
-  let initialScroll = introPlaced ? introContentLeft - 30 : copyWidth - edgeInset
+  /* Intro-entré: luft fra venstre viewportkant til tekstblokka (ornamentet
+     henger 34px lenger ut og får dermed ~50px). */
+  const INTRO_EDGE_GAP = 84
+  let initialScroll = introPlaced ? introContentLeft - INTRO_EDGE_GAP : copyWidth - edgeInset
   let useIntroEntry = introPlaced
 
   /* Lukker man et prosjekt og forsiden lastes på nytt (uten bfcache), skal
@@ -293,7 +296,7 @@ export function initTimeline() {
     const calibrate = () => {
       if (introDismissed || userInteracted || stableFrames > 30) return
       if (placeIntro()) {
-        const target = introContentLeft - 30
+        const target = introContentLeft - INTRO_EDGE_GAP
         if (Math.abs(target - scroller.scrollLeft) > 2) {
           scroller.scrollLeft = target
           elasticCurrent = target

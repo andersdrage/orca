@@ -997,16 +997,49 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
 
 /* Intro-tekst til venstre for første prosjekt — kun første gjennomgang
    (fjernes av JS når man har passert den). Scroller med innholdet. */
+@font-face {
+  font-family: MaisonNeueBook;
+  src: url('/fonts/MaisonNeueBook.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .timeline-intro {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: min(320px, 62vw);
   margin: 0;
-  color: #52525b;
-  font-size: 1rem;
-  line-height: 1.65;
+  color: #3f3f46;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
   text-wrap: pretty;
+}
+
+/* Prikke-ornament til venstre for teksten: liten rutenett-kolonne,
+   oransje øverst, lys grå videre ned. */
+.timeline-intro::before,
+.timeline-intro::after {
+  content: '';
+  position: absolute;
+  left: -34px;
+  width: 18px;
+  background-image: radial-gradient(circle, var(--intro-dot) 1.1px, transparent 1.2px);
+  background-size: 5px 5px;
+}
+
+.timeline-intro::before {
+  top: 0.4em;
+  height: 20px;
+  --intro-dot: #e0862b;
+}
+
+.timeline-intro::after {
+  top: calc(0.4em + 20px);
+  height: 66px;
+  --intro-dot: #d6d6d9;
 }
 
 /* Hver kopi bærer sømgapet som padding-right: et markert større mellomrom mellom
