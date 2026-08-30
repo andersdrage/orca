@@ -26,6 +26,7 @@ const targets = [
   { path: '/humming-people/', name: 'humming-people', fullPage: true },
   { path: '/finn/', name: 'finn', fullPage: true },
   { path: '/nettavisen/', name: 'nettavisen', fullPage: true },
+  { path: '/uber/', name: 'uber', fullPage: true },
   { path: '/brathwait/', name: 'brathwait', fullPage: true },
   { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
   { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },

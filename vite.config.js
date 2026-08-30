@@ -28,6 +28,7 @@ export default defineConfig({
         hmkg: resolve(__dirname, 'hmkg/index.html'),
         finn: resolve(__dirname, 'finn/index.html'),
         nettavisen: resolve(__dirname, 'nettavisen/index.html'),
+        uber: resolve(__dirname, 'uber/index.html'),
         brathwait: resolve(__dirname, 'brathwait/index.html'),
         hummingPeople: resolve(__dirname, 'humming-people/index.html'),
         mountainMilk: resolve(__dirname, 'mountain-milk/index.html'),

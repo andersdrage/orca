@@ -1249,7 +1249,8 @@ a.timeline-tile.is-navigating .timeline-tile__hover-label {
    Fader ut første gang brukeren faktisk scroller. */
 .scroll-hint {
   position: fixed;
-  right: 30px;
+  /* Til venstre for People-lenken (nede til høyre) — pilene skal ikke ligge oppå den. */
+  right: 118px;
   bottom: 30px;
   z-index: 30;
   display: flex;
@@ -1374,13 +1375,28 @@ a.timeline-tile:focus-visible {
 
 /* Hjørnelenkene nede til venstre (Archive · People) — portene til raden under
    forsiden i verdenskartet. Aktiv side = rød strek, som i toppmenyen. */
+/* Hjørnelenkene: fullskjerms fixed lag med absolutte barn — Archive nede til
+   venstre, People nede til høyre. (Laget, ikke lenkene, er fixed: entré-fade
+   på containeren ville ellers gjort den til containing block for fixed barn.) */
 .corner-links {
   position: fixed;
-  left: 30px;
-  bottom: 30px;
+  inset: 0;
   z-index: 60;
-  display: flex;
-  gap: 1.4rem;
+  pointer-events: none;
+}
+
+.corner-links a {
+  position: absolute;
+  bottom: 30px;
+  pointer-events: auto;
+}
+
+.corner-links a[href='/archive/'] {
+  left: 30px;
+}
+
+.corner-links a[href='/people/'] {
+  right: 30px;
 }
 
 .corner-links a {
@@ -1560,47 +1576,92 @@ a.timeline-tile:focus-visible {
   view-transition-name: case-cover;
 }
 
-/* Credits på case-sider: rolle | navn i to kolonner rundt midtaksen. */
+/* Credits på case-sider — à la Writing-lista på benji.org: grå etikett øverst,
+   rolle i venstre gutter, navn som hovedtekst, hairlines mellom radene som
+   starter ETTER gutteren. Hover dimmer alle rader unntatt den man står på. */
 .case-credits {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  margin: 1.75rem 0 0;
+  margin: 2.5rem 0 0;
+  text-align: left;
 }
 
-.case-credits__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1.5rem;
-  align-items: baseline;
+.case-credits dl {
+  margin: 0;
 }
 
-.case-credits__role {
-  color: #71717a;
+.case-credits__label {
+  margin: 0;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #ececee;
+  color: #a1a1aa;
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.625rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  text-align: right;
+}
+
+.case-credits__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 10.5rem 1fr;
+  gap: 0 1.5rem;
+  align-items: baseline;
+  padding: 0.7rem 0;
+}
+
+/* Hairline mellom radene — indentert forbi rolle-gutteren, som hos Benji. */
+.case-credits__row::after {
+  content: '';
+  position: absolute;
+  left: 12rem;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid #ececee;
+}
+
+.case-credits__row:last-child::after {
+  display: none;
+}
+
+.case-credits__role {
+  color: #a1a1aa;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: opacity 140ms ease;
 }
 
 .case-credits__names {
   margin: 0;
-  color: #52525b;
+  color: #18181b;
   font-size: 0.875rem;
-  text-align: left;
+  transition: opacity 140ms ease;
+}
+
+/* Hover-effekten fra benji.org: alt dimmes når pekeren er over lista —
+   raden man står på beholder full styrke. Spotlight ved å dempe resten. */
+@media (hover: hover) {
+  .case-credits:hover .case-credits__role,
+  .case-credits:hover .case-credits__names {
+    opacity: 0.3;
+  }
+
+  .case-credits__row:hover .case-credits__role,
+  .case-credits__row:hover .case-credits__names {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 640px) {
   .case-credits__row {
     grid-template-columns: 1fr;
-    gap: 0.1rem;
-    text-align: center;
+    gap: 0.15rem;
   }
 
-  .case-credits__role,
-  .case-credits__names {
-    text-align: center;
+  .case-credits__row::after {
+    left: 0;
   }
 }
 

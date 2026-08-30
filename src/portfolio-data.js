@@ -84,6 +84,12 @@ export const portfolioCases = [
     id: 'nettavisen',
     title: 'Nettavisen',
     intro: 'Design for Nettavisen, one of Norway’s largest news sites.',
+    credits: [
+      { role: 'Creative Director', names: 'Anders Drage' },
+      { role: 'Designers', names: 'Fredrik Lien Bjørgmo, Line, Neno Mindjek' },
+      { role: 'Strategy & client director', names: 'Jonas Feiring' },
+      { role: 'Client', names: 'Pål Nisja' },
+    ],
     items: [
       /* Hero = samme cover som tidslinje-tilen. */
       { file: 'nettavisen-cover.jpg', span: 'full', alt: 'Nettavisen' },
@@ -178,11 +184,24 @@ export const portfolioCases = [
     ],
   },
   {
+    id: 'uber',
+    title: 'Uber',
+    intro: 'Product design for Uber.',
+    credits: [
+      { role: 'Creative Director', names: 'Halli' },
+      { role: 'Designers', names: 'Ben Mingo, Anders Drage and Simon' },
+    ],
+    items: [
+      /* Hero = videoen; posteren (første frame) er tidslinje-tilen, så morphen
+         lander i nøyaktig samme bilde før videoen spiller. */
+      { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
+    ],
+  },
+  {
     id: 'misc',
     title: 'Miscellaneous work',
     intro: 'Fragments from client and side projects.',
     items: [
-      { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
       { file: 'misc-agens-1.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-2.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-3.jpg', span: 'full', alt: 'Agens' },

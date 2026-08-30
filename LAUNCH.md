@@ -10,6 +10,8 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 - [ ] **Placeholder-intro på Hjemla og Mountain Milk** («Case study in the works») — skriv ekte intro.
 - [x] **Placeholder-tiles** — alle fylt; Nettavisen tok den siste (før FINN).
 - [ ] **Nettavisen-intro** («Design for Nettavisen, one of Norway’s largest news sites.») — bekreft/omskriv.
+- [ ] **Uber-intro** («Product design for Uber.») — bekreft/omskriv.
+- [ ] **Uber-credits: «Simon»** mangler etternavn (Designers: Ben Mingo, Anders Drage and Simon) — finn fullt navn.
 - [ ] **Gratitude-sidenotater på People** («People I owe») — fyll inn en kort personlig
       note per navn (kolonnen står tom i markupen, klar til bruk).
 - [ ] Vurder lyd/`Personal notes` for de nye casene (HMKG, Hjemla, Mountain Milk, Humming People).

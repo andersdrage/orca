@@ -48,7 +48,8 @@ function captionHtml(item) {
   return `<p class="work-narrow mx-auto mt-2 px-1 text-center text-[10px] leading-snug text-zinc-600">${escapeHtmlText(raw)}</p>`
 }
 
-/* Credits-oversikt: rolle (mono, høyrestilt) | navn — vises under introen. */
+/* Credits-oversikt à la Writing-lista på benji.org: grå «Credits»-etikett,
+   rolle i venstre gutter, navn som hovedtekst, hairlines mellom radene. */
 function creditsHtml(singleCase) {
   if (!singleCase.credits?.length) return ''
   const rows = singleCase.credits
@@ -59,7 +60,7 @@ function creditsHtml(singleCase) {
       </div>`,
     )
     .join('\n')
-  return `<dl class="case-credits">${rows}</dl>`
+  return `<div class="case-credits"><p class="case-credits__label">Credits</p><dl>${rows}</dl></div>`
 }
 
 /** @param {typeof portfolioCases[number]['items'][number]} item */
