@@ -970,6 +970,7 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
 
 /* Full-bleed scroller: bryter ut av 800px-kolonnen til hele viewport-bredden. */
 .timeline-scroller {
+  position: relative; /* ankerpunkt for .timeline-intro (absolutt i innholdet) */
   flex: 1;
   min-height: 0;
   width: 100vw;
@@ -992,6 +993,20 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
   outline: 2px solid #18181b;
   outline-offset: -2px;
   border-radius: 8px;
+}
+
+/* Intro-tekst til venstre for første prosjekt — kun første gjennomgang
+   (fjernes av JS når man har passert den). Scroller med innholdet. */
+.timeline-intro {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(320px, 62vw);
+  margin: 0;
+  color: #52525b;
+  font-size: 1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 
 /* Hver kopi bærer sømgapet som padding-right: et markert større mellomrom mellom

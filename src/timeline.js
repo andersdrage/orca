@@ -143,6 +143,61 @@ export function initTimeline() {
   /* Den visuelle (myke) scrollposisjonen — jager scrollLeft i elasticFrame. */
   let elasticCurrent = 0
 
+  /* Intro-tekst til venstre for første prosjekt — KUN første gjennomgang.
+     Absolutt posisjonert i innholdskoordinater (utenfor kopi-flexen, så
+     loop-målingene ikke påvirkes). Når man har scrollet forbi, fjernes den
+     permanent mens den er utenfor skjermen — loopen kommer rundt uten den. */
+  const intro = document.createElement('p')
+  intro.className = 'timeline-intro'
+  intro.textContent =
+    'I’m Anders Drage, a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
+  scroller.append(intro)
+  const firstTileEl = copies[1].querySelector('.timeline-tile')
+  let introContentLeft = 0
+  let introContentRight = 0
+  let introPlaced = false
+  let introDismissed = false
+  /* Ekte brukerinput — wrap-teleporter og layout-shifts teller ikke. */
+  let userInteracted = false
+  const markInteraction = () => {
+    userInteracted = true
+  }
+  scroller.addEventListener('wheel', markInteraction, { once: true, passive: true })
+  scroller.addEventListener('pointerdown', markInteraction, { once: true, passive: true })
+  scroller.addEventListener('keydown', markInteraction, { once: true })
+
+  function placeIntro() {
+    const width = intro.offsetWidth
+    if (!width || !window.innerWidth) return false
+    const scrollerLeftEdge = scroller.getBoundingClientRect().left
+    const firstTileContentLeft =
+      firstTileEl.getBoundingClientRect().left - scrollerLeftEdge + scroller.scrollLeft
+    introContentLeft = firstTileContentLeft - width - 56
+    introContentRight = introContentLeft + width
+    intro.style.left = `${introContentLeft}px`
+    introPlaced = true
+    return true
+  }
+  placeIntro()
+
+  /* Fjern introen når den er scrollet helt ut til venstre (aldri synlig fjerning).
+     Gjemmes ikke før posisjonen faktisk er målt med gyldige dimensjoner —
+     init i en dimensjonløs (bakgrunnet) fane skal ikke feil-gjemme den. */
+  scroller.addEventListener(
+    'scroll',
+    () => {
+      if (introDismissed || !introPlaced) return
+      /* Ved intro-entré: gjem kun etter ekte input — frossen-init/wrap-hopp
+         skal ikke feil-gjemme den. (Case-retur står forbi introen med vilje.) */
+      if (useIntroEntry && !userInteracted) return
+      if (scroller.scrollLeft > introContentRight + 120) {
+        intro.hidden = true
+        introDismissed = true
+      }
+    },
+    { passive: true },
+  )
+
   /* Høyre viewport-kant er den eneste kanten publikum ser bevege seg: i pan-overgangen
      til About/Praise glir forsidens snapshot sidelengs, og avstanden fra en tile til
      snapshotets bakkant er konstant — så kuttet man ser midt på skjermen ER kuttet som
@@ -194,7 +249,11 @@ export function initTimeline() {
      (kopienes padding-right) er større enn inset-en, så forrige loop-runde ligger
      helt utenfor skjermen ved inngang — den avsløres først når man scroller bakover. */
   const edgeInset = Math.min(360, Math.round(window.innerWidth * 0.4))
-  let initialScroll = copyWidth - edgeInset
+  /* Entré: introteksten står 30px fra venstre kant, første prosjekt følger etter.
+     Faller tilbake til standard-inset hvis dimensjoner manglet ved init —
+     retry-loopen under korrigerer posisjonen når fanen får ekte størrelse. */
+  let initialScroll = introPlaced ? introContentLeft - 30 : copyWidth - edgeInset
+  let useIntroEntry = introPlaced
 
   /* Lukker man et prosjekt og forsiden lastes på nytt (uten bfcache), skal
      tidslinjen stå ved prosjektet man kom fra — ikke kastes tilbake til start.
@@ -212,6 +271,7 @@ export function initTimeline() {
            MIDT i tilbake-morphen og fikk zoomen til å fly mot feil sted. */
         while (initialScroll > copyWidth * 1.4) initialScroll -= copyWidth
         while (initialScroll < copyWidth * 0.6) initialScroll += copyWidth
+        useIntroEntry = false
       }
     }
   } catch {
@@ -220,8 +280,32 @@ export function initTimeline() {
 
   scroller.scrollLeft = initialScroll
   elasticCurrent = scroller.scrollLeft
-  settleEdge('instant')
+  /* Kant-snappingen skal ikke overstyre den designede intro-entréen. */
+  if (!useIntroEntry) settleEdge('instant')
   scroller.addEventListener('scroll', wrap, { passive: true })
+
+  /* Selvkalibrerende entré: layouten kan flytte seg de første framene (fonter,
+     bilder, bakgrunnet fane som får dimensjoner). Re-mål intro-posisjonen en
+     kort periode og korriger entré-scrollen — men aldri etter at brukeren har
+     begynt å scrolle selv. */
+  if (useIntroEntry || !introPlaced) {
+    let stableFrames = 0
+    const calibrate = () => {
+      if (introDismissed || userInteracted || stableFrames > 30) return
+      if (placeIntro()) {
+        const target = introContentLeft - 30
+        if (Math.abs(target - scroller.scrollLeft) > 2) {
+          scroller.scrollLeft = target
+          elasticCurrent = target
+          stableFrames = 0
+        } else {
+          stableFrames += 1
+        }
+      }
+      requestAnimationFrame(calibrate)
+    }
+    requestAnimationFrame(calibrate)
+  }
 
   /* NB: ingen auto-snap på scrollend — å flytte lista på egen hånd mellom
      hjul-bursts sloss med brukerens input. Kanten rettes kun når det trengs:
