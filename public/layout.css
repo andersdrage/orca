@@ -1031,6 +1031,27 @@ body[data-camera='1'] .site-header nav a[href='/praise/'] {
 .timeline-tile--image .timeline-tile__image {
   border-radius: inherit;
   z-index: 1;
+  /* Hover-skalering ligger på BILDET, ikke tilen — elastikk-scrollen skriver
+     transform på tilen per frame, og en transition der ville retargetet og
+     flimret. Diskret hover-event → transition er trygt her. */
+  transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+a.timeline-tile:hover .timeline-tile__image,
+a.timeline-tile:focus-visible .timeline-tile__image {
+  transform: scale(1.03);
+}
+
+/* Ved klikk: nullstill momentant så morph-snapshotet tas i hvilestørrelse. */
+a.timeline-tile.is-navigating .timeline-tile__image {
+  transition: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-tile--image .timeline-tile__image {
+    transition: none;
+  }
 }
 
 /* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
