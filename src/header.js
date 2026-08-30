@@ -14,7 +14,7 @@ function initSpeculationRules() {
   const script = document.createElement('script')
   script.type = 'speculationrules'
   script.textContent = JSON.stringify({
-    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/brathwait/', '/about/', '/praise/', '/archive/'], eagerness: 'immediate' }],
+    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/brathwait/', '/about/', '/praise/', '/archive/', '/people/'], eagerness: 'immediate' }],
     /* Nettleseren tillater maks ~2 umiddelbare prerenders: bruk dem på de to
        casene nærmest i tidslinjen ved last. Resten prerendres ved hover (LRU) —
        og dyp-warmingen under gjør at selv uprerendrede klikk maler umiddelbart. */

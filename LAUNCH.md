@@ -23,6 +23,8 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 ## Teknisk
 
 - [ ] **Skjul FPS-måleren** (eller flytt den bak S-panelet).
+- [ ] **Sjekk ytelsen på mouseover-effektene** (hover-skalering + fjær-label på
+      tiles) — profiler at de holder 60fps sammen med elastisk scroll, særlig i Safari.
 - [ ] **Vurder S-inspektøren** — ok å la ligge (uoppdagbar), eller fjern.
 - [ ] **Domene**: pek andersdrage.com mot Vercel-prosjektet `andersdrage-com`.
 - [ ] **Full gjennomkjøring i Safari** (macOS + iOS) — transitions, elastisk scroll, verden.

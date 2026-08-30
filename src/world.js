@@ -20,6 +20,7 @@ const PAGES = [
   { path: '/about/', x: 1, y: 0 },
   { path: '/praise/', x: 2, y: 0 },
   { path: '/archive/', x: 0, y: 1 },
+  { path: '/people/', x: 1, y: 1 },
 ]
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
@@ -70,25 +71,27 @@ export function initWorld(header) {
   setTransform(cameraIndex)
 
   const navLinks = () => [...header.querySelectorAll('nav a')]
-  const archiveLink = document.querySelector('.archive-link')
+  const cornerLinks = [...document.querySelectorAll('.corner-links a')]
 
   function updateAriaCurrent(index) {
     navLinks().forEach((link) => {
       if (new URL(link.href).pathname === PAGES[index].path) link.setAttribute('aria-current', 'page')
       else link.removeAttribute('aria-current')
     })
-    if (archiveLink) {
-      if (PAGES[index].path === '/archive/') archiveLink.setAttribute('aria-current', 'page')
-      else archiveLink.removeAttribute('aria-current')
-    }
+    cornerLinks.forEach((link) => {
+      if (new URL(link.href).pathname === PAGES[index].path) link.setAttribute('aria-current', 'page')
+      else link.removeAttribute('aria-current')
+    })
   }
   updateAriaCurrent(cameraIndex)
 
-  /* Arkiv-lenken i hjørnet er også en kamerabevegelse. */
-  archiveLink?.addEventListener('click', (event) => {
-    event.preventDefault()
-    const index = PAGES.findIndex((page) => page.path === '/archive/')
-    if (index !== cameraIndex) navigateTo(index)
+  /* Hjørnelenkene (Archive/People) er også kamerabevegelser. */
+  cornerLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault()
+      const index = PAGES.findIndex((page) => page.path === new URL(link.href).pathname)
+      if (index !== -1 && index !== cameraIndex) navigateTo(index)
+    })
   })
 
   /* Frostet header-bakgrunn følger den aktive sidens interne scroll. */

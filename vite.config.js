@@ -22,6 +22,7 @@ export default defineConfig({
         about: resolve(__dirname, 'about/index.html'),
         praise: resolve(__dirname, 'praise/index.html'),
         archive: resolve(__dirname, 'archive/index.html'),
+        people: resolve(__dirname, 'people/index.html'),
         micromilspec: resolve(__dirname, 'micromilspec/index.html'),
         hjemla: resolve(__dirname, 'hjemla/index.html'),
         hmkg: resolve(__dirname, 'hmkg/index.html'),
