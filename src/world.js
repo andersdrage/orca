@@ -97,7 +97,10 @@ export function initWorld(header) {
   /* Frostet header-bakgrunn følger den aktive sidens interne scroll. */
   const sections = [...world.children]
   function syncHeaderScrollState() {
-    header.classList.toggle('is-scrolled', sections[cameraIndex].scrollTop > 8)
+    /* About og Praise har ingen frostet toppbar — logo/nav svever fritt over teksten. */
+    const path = PAGES[cameraIndex].path
+    const frostless = path === '/about/' || path === '/praise/'
+    header.classList.toggle('is-scrolled', !frostless && sections[cameraIndex].scrollTop > 8)
   }
   sections.forEach((section, index) => {
     section.addEventListener(

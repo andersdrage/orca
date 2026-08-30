@@ -294,6 +294,46 @@ export function initTimeline() {
   elasticCurrent = scroller.scrollLeft
   /* Kant-snappingen skal ikke overstyre den designede intro-entréen. */
   if (!useIntroEntry) settleEdge('instant')
+
+  /* Entré-koreografi (à la benji.org): introteksten stiger inn linje for linje,
+     så tilene i stigende rekkefølge, til slutt chromen (logo → nav → hjørner).
+     Ren CSS-animasjon gatet på body-klassen; her splittes bare introen i
+     ord-spans gruppert per rendret linje (--line styrer delayen). Kjøres KUN
+     ved frisk last av forsiden — ikke ved case-retur (useIntroEntry er false),
+     ikke når indexen er verdens-montert fra en annen side (page-home mangler),
+     og ikke ved redusert bevegelse. Alt skjer synkront før første paint. */
+  if (
+    useIntroEntry &&
+    document.body.classList.contains('page-home') &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    const words = intro.textContent.split(' ')
+    intro.textContent = ''
+    const wordSpans = words.map((word) => {
+      const span = document.createElement('span')
+      span.className = 'timeline-intro__word'
+      span.textContent = word
+      intro.append(span, document.createTextNode(' '))
+      return span
+    })
+    let lineIndex = -1
+    let lastTop = null
+    wordSpans.forEach((span) => {
+      /* I en dimensjonløs (bakgrunnet) fane er alle offsetTop 0 — da degraderer
+         hele avsnittet til én samlet linje, som er helt greit. */
+      if (span.offsetTop !== lastTop) {
+        lineIndex += 1
+        lastTop = span.offsetTop
+      }
+      span.style.setProperty('--line', String(lineIndex))
+    })
+    document.body.classList.add('is-entering-home')
+    const endEntrance = () => document.body.classList.remove('is-entering-home')
+    /* Ryddes når alt står i ro — og momentant hvis en morph starter før det,
+       så halvferdige fades aldri havner i view transition-snapshotet. */
+    setTimeout(endEntrance, 2600)
+    window.addEventListener('pageswap', endEntrance, { once: true })
+  }
   scroller.addEventListener('scroll', wrap, { passive: true })
 
   /* Selvkalibrerende entré: layouten kan flytte seg de første framene (fonter,

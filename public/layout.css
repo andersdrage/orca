@@ -1042,6 +1042,99 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
   --intro-dot: #d6d6d9;
 }
 
+/* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
+   Fase 1: introteksten linje for linje (90ms mellom linjene).
+   Fase 2: tilene i stigende rekkefølge fra ~480ms.
+   Fase 3: chromen — logo, nav, hjørnelenker, scroll-hint — fra ~1s.
+   Alt med `both`-fill: elementene står usynlige til sin tur kommer. */
+@keyframes entrance-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes entrance-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Ord-spans (JS grupperer dem per rendret linje via --line). inline-block
+   alltid — transform virker ikke på rene inline-bokser. */
+.timeline-intro__word {
+  display: inline-block;
+}
+
+.is-entering-home .timeline-intro__word {
+  animation: entrance-rise 0.5s ease both;
+  animation-delay: calc(var(--line, 0) * 90ms);
+}
+
+.is-entering-home .timeline-intro::before,
+.is-entering-home .timeline-intro::after {
+  animation: entrance-fade 0.5s ease both;
+}
+
+/* Tilene: animasjonen ligger på BILDET, ikke tilen — elastikk-scrollen skriver
+   transform på tilene per frame (samme regel som hover-skaleringen). */
+.is-entering-home .timeline-tile__image {
+  animation: entrance-rise 0.55s ease both;
+  animation-delay: 840ms;
+}
+
+.is-entering-home .timeline-copy .timeline-tile:nth-child(1) .timeline-tile__image {
+  animation-delay: 480ms;
+}
+
+.is-entering-home .timeline-copy .timeline-tile:nth-child(2) .timeline-tile__image {
+  animation-delay: 570ms;
+}
+
+.is-entering-home .timeline-copy .timeline-tile:nth-child(3) .timeline-tile__image {
+  animation-delay: 660ms;
+}
+
+.is-entering-home .timeline-copy .timeline-tile:nth-child(4) .timeline-tile__image {
+  animation-delay: 750ms;
+}
+
+/* Hover-etikettene ligger BAK bildet og skinner gjennom mens det fader inn —
+   hold dem usynlige til entréen er over. */
+.is-entering-home .timeline-tile__hover-label {
+  opacity: 0;
+}
+
+/* Chromen sist — kun opacity (nav-en har en statisk translateY(2px) som en
+   transform-animasjon ville overskrevet). */
+.is-entering-home .site-header__brand {
+  animation: entrance-fade 0.5s ease both;
+  animation-delay: 980ms;
+}
+
+.is-entering-home .site-header nav {
+  animation: entrance-fade 0.5s ease both;
+  animation-delay: 1060ms;
+}
+
+.is-entering-home .corner-links {
+  animation: entrance-fade 0.5s ease both;
+  animation-delay: 1140ms;
+}
+
+/* :not(.is-hidden): dismissal (verdensreise/scroll) skal vinne over entré-fillen. */
+.is-entering-home .scroll-hint:not(.is-hidden) {
+  animation: entrance-fade 0.5s ease both;
+  animation-delay: 1220ms;
+}
+
 /* Hver kopi bærer sømgapet som padding-right: et markert større mellomrom mellom
    siste og første tile, så det er tydelig at man har nådd slutten og loopen starter på nytt. */
 .timeline-copy {
