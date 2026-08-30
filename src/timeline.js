@@ -545,18 +545,6 @@ export function initTimeline() {
     true,
   )
 
-  /* Scroll-hint (pilene nede til høyre): fader ut når brukeren faktisk har begynt å scrolle. */
-  const hint = document.querySelector('[data-scroll-hint]')
-  if (hint) {
-    const startPosition = scroller.scrollLeft
-    function onFirstScroll() {
-      if (Math.abs(scroller.scrollLeft - startPosition) < 24) return
-      hint.classList.add('is-hidden')
-      scroller.removeEventListener('scroll', onFirstScroll)
-    }
-    scroller.addEventListener('scroll', onFirstScroll, { passive: true })
-  }
-
   /* Fysisk verden: nabokortene på skjermen får egne transition-navn (push-l1…l4 /
      push-r1…r4) så de kan flytte seg UT av veien når kortet zoomer inn — i stedet
      for å bli liggende under det voksende kortet. CSS animerer navnene sidelengs.

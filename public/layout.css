@@ -1045,7 +1045,7 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
    Fase 1: introteksten linje for linje (90ms mellom linjene).
    Fase 2: tilene i stigende rekkefølge fra ~480ms.
-   Fase 3: chromen — logo, nav, hjørnelenker, scroll-hint — fra ~1s.
+   Fase 3: chromen — logo, nav, hjørnelenker — fra ~1s.
    Alt med `both`-fill: elementene står usynlige til sin tur kommer. */
 @keyframes entrance-rise {
   0% {
@@ -1127,12 +1127,6 @@ body[data-camera='4'] .site-header nav a[href='/praise/'] {
 .is-entering-home .corner-links {
   animation: entrance-fade 0.5s ease both;
   animation-delay: 1140ms;
-}
-
-/* :not(.is-hidden): dismissal (verdensreise/scroll) skal vinne over entré-fillen. */
-.is-entering-home .scroll-hint:not(.is-hidden) {
-  animation: entrance-fade 0.5s ease both;
-  animation-delay: 1220ms;
 }
 
 /* Hver kopi bærer sømgapet som padding-right: et markert større mellomrom mellom
@@ -1243,61 +1237,6 @@ a.timeline-tile.is-navigating .timeline-tile__hover-label {
 
 .timeline-tile__title {
   z-index: 1;
-}
-
-/* Scroll-hint: tre chevroner nede til høyre som pulserer i tur — «her scroller man».
-   Fader ut første gang brukeren faktisk scroller. */
-.scroll-hint {
-  position: fixed;
-  /* Til venstre for People-lenken (nede til høyre) — pilene skal ikke ligge oppå den. */
-  right: 118px;
-  bottom: 30px;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  color: #52525b;
-  pointer-events: none;
-  transition: opacity 400ms ease;
-}
-
-/* Chevron-inken fyller bare midten av viewBoxen — negativ margin trekker
-   pilene tett sammen som «⟩⟩⟩». */
-.scroll-hint svg + svg {
-  margin-left: -17px;
-}
-
-.scroll-hint.is-hidden {
-  opacity: 0;
-}
-
-.scroll-hint svg {
-  animation: scroll-hint-pulse 1.8s ease-in-out infinite;
-}
-
-.scroll-hint svg:nth-child(2) {
-  animation-delay: 200ms;
-}
-
-.scroll-hint svg:nth-child(3) {
-  animation-delay: 400ms;
-}
-
-@keyframes scroll-hint-pulse {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  40% {
-    opacity: 0.9;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-hint svg {
-    animation: none;
-    opacity: 0.5;
-  }
 }
 
 /* NB: ingen transition/hover-transform på tilene — elastisk scroll skriver
