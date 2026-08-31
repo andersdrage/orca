@@ -2,10 +2,8 @@
    kamera panorerer mellom dem — klikker du Praise fra forsiden, ser du faktisk
    About passere underveis. Ingen WebGL: ren DOM med transform på verdensstripen.
 
-   Nav-lenkene er romlige indikatorer: sider til høyre for kameraet har lenken
-   sin til høyre, passerte/aktive sider dokker til venstre ved logoen. Layouten
-   styres av body[data-camera]; FLIP-animasjoner flytter lenkene i samme retning,
-   varighet og kurve som kameraet.
+   Nav-lenkene (About/Praise) står fast oppe til høyre; aktiv side markeres med
+   den røde understrekingen, som fader inn først når reisen er ferdig.
 
    Direktebesøk på /about/ eller /praise/ booter samme verden med kameraet
    stående på riktig side; søsknene hentes og monteres rundt. */
@@ -118,21 +116,14 @@ export function initWorld(header) {
     const dy = PAGES[index].y - PAGES[cameraIndex].y
     const distance = Math.abs(dx) + Math.abs(dy)
 
-    /* FLIP: mål lenkene før/etter layoutbyttet, animer i takt med kameraet.
-       NB: lenkene har en statisk translateY(2px) i CSS — den må inn i keyframene,
-       ellers hopper etiketten 2px opp ved avgang og ned ved ankomst. */
-    const links = navLinks()
-
-    /* Understrekingen fjernes FØRST: aria-current slippes ved avgang, og
+    /* Nav-etikettene står fast oppe til høyre — ingen FLIP-flytting lenger.
+       Understrekingen fjernes FØRST: aria-current slippes ved avgang, og
        streken trekkes ut i reiseretningen (data-travel-dir styrer origin). */
-    /* Ren vertikal reise (arkivet) flytter ingen nav-etiketter — behold forrige dir. */
     if (dx !== 0) header.dataset.travelDir = dx > 0 ? 'fwd' : 'back'
-    links.forEach((link) => link.removeAttribute('aria-current'))
+    navLinks().forEach((link) => link.removeAttribute('aria-current'))
 
-    const before = links.map((link) => link.getBoundingClientRect().left)
     document.body.dataset.camera = String(index)
     document.body.classList.toggle('page-home', PAGES[index].path === '/')
-    const after = links.map((link) => link.getBoundingClientRect().left)
 
     /* Lengre pan + overlapp med nedskaleringen: reisen skal LESES — kortene
        skal synlig gli forbi, ikke blinke. Panen starter idet nedskaleringen
@@ -178,19 +169,6 @@ export function initWorld(header) {
       [{ transform: from }, { transform: `translate3d(${-PAGES[index].x * 100}vw, ${-PAGES[index].y * 100}svh, 0)` }],
       { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
     )
-
-    links.forEach((link, i) => {
-      const dx = before[i] - after[i]
-      if (Math.abs(dx) > 1) {
-        link.getAnimations().forEach((animation) => animation.cancel())
-        const base = getComputedStyle(link).transform
-        const baseSuffix = base === 'none' ? '' : ` ${base}`
-        link.animate(
-          [{ transform: `translateX(${dx}px)${baseSuffix}` }, { transform: base === 'none' ? 'none' : base }],
-          { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
-        )
-      }
-    })
 
     const land = () => {
       arriving.style.transform = ''

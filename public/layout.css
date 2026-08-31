@@ -241,28 +241,6 @@ body.world-mode {
   min-height: 0;
 }
 
-/* Nav-lenkene er romlige indikatorer: sider til høyre for kameraet ligger som
-   lenker til høyre; passerte/aktive sider dokker til venstre ved logoen.
-   margin-left:auto skyver første «høyre-lenke» (og alt etter) til høyre kant. */
-.world-mode .site-header > div {
-  justify-content: flex-start;
-}
-
-.world-mode .site-header nav {
-  flex: 1;
-  justify-content: flex-start;
-}
-
-body[data-camera='0'] .site-header nav a[href='/about/'],
-body[data-camera='3'] .site-header nav a[href='/about/'] {
-  margin-left: auto;
-}
-
-body[data-camera='1'] .site-header nav a[href='/praise/'],
-body[data-camera='4'] .site-header nav a[href='/praise/'] {
-  margin-left: auto;
-}
-
 /* Nav-etikettene: PP Supply Mono, versaler — lastes direkte fra /fonts/. */
 @font-face {
   font-family: PPSupplyMono;
