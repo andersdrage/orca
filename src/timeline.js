@@ -115,13 +115,13 @@ const TILES = [
     id: 'misc',
     title: 'Miscellaneous work',
     href: '/misc/',
-    /* Bildestabel: tre kort rotert oppå hverandre — toppkortet er case-heroen.
+    /* Bildestabel: to kort rotert oppå hverandre — toppkortet er case-heroen.
        Hover vifter kortene ut så man ser at det er flere. */
-    image: '/images/misc-logos.jpg',
-    stack: ['/images/misc-logos.jpg', '/images/agens-2.png', '/images/agens-1.png'],
+    image: '/images/agens-1.png',
+    stack: ['/images/agens-1.png', '/images/agens-2.png'],
     color: '#3e6e68',
-    /* Samme aspekt som toppkortet (2560×1707). */
-    ratio: '2560 / 1707',
+    /* Samme aspekt som toppkortet (1440×1160). */
+    ratio: '1440 / 1160',
     h: '38svh',
   },
   {

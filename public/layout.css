@@ -852,7 +852,7 @@ body.world-mode {
   gap: 0.625rem;
   margin: 2rem 0 0;
   color: #71717a;
-  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   /* Én felles lenkestørrelse i footeren — samme som Archive/People-hjørnene. */
   font-size: 0.75rem;
   font-weight: 400;
@@ -875,7 +875,7 @@ body.world-mode {
 
 .site-footer__archived a {
   color: #a1a1aa;
-  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;

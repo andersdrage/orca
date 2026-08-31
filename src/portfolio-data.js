@@ -230,14 +230,15 @@ export const portfolioCases = [
     title: 'Miscellaneous work',
     intro: 'Fragments from client and side projects.',
     items: [
-      /* Hero = toppkortet i tile-stabelen; de to neste er kortene bak. */
-      { file: 'misc-logos.jpg', span: 'full', alt: 'Logos' },
+      /* Hero = toppkortet i tile-stabelen. */
+      { file: 'agens-1.png', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-1.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-2.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-3.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-agens-4.jpg', span: 'full', alt: 'Agens' },
       { file: 'misc-aprila.jpg', span: 'full', alt: 'Aprila Bank' },
       { file: 'misc-brevio.jpg', span: 'full', alt: 'Brevio' },
+      { file: 'misc-logos.jpg', span: 'full', alt: 'Logos' },
       { file: 'misc-nettavisen.jpg', span: 'full', alt: 'Nettavisen' },
       { file: 'misc-nike.jpg', span: 'full', alt: 'Nike' },
       { file: 'misc-pressworks.jpg', span: 'full', alt: 'Pressworks' },
