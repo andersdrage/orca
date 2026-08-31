@@ -127,7 +127,7 @@ export function initWorld(header) {
     /* Ikke ved case-retur — der eier tilbake-morphen hele ankomsten. */
     try {
       const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-      if (/^\/(micromilspec|off-market|misc|uber|boligmappa|boligmappa-2|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
+      if (/^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
     } catch {
       /* ugyldig referrer → kjør introen */
     }

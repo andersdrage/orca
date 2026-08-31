@@ -25,6 +25,7 @@ const TILES = [
     /* Samme aspekt som bildet (844×740). */
     ratio: '844 / 740',
     h: '38svh',
+    archived: true,
   },
   {
     id: 'hjemla',
@@ -104,17 +105,7 @@ const TILES = [
     id: 'boligmappa',
     title: 'Boligmappa',
     href: '/boligmappa/',
-    image: '/images/boligmappa-cover.jpg',
-    color: '#e8511f',
-    /* Samme aspekt som coveret (1285×2087). */
-    ratio: '1285 / 2087',
-    h: '51svh',
-  },
-  {
-    /* MIDLERTIDIG: cover-duell mot 'boligmappa' — taperen slettes. */
-    id: 'boligmappa-2',
-    title: 'Boligmappa',
-    href: '/boligmappa-2/',
+    /* Cover-duellens vinner: de to svevende telefonene. */
     image: '/images/boligmappa-cover-2.jpg',
     color: '#e8511f',
     /* Samme aspekt som coveret (1600×2494). */
@@ -339,7 +330,7 @@ export function initTimeline(scrollerEl) {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|misc|uber|boligmappa|boligmappa-2|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (/^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -720,7 +711,7 @@ export function initTimeline(scrollerEl) {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc|uber|boligmappa|boligmappa-2|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }

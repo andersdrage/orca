@@ -213,16 +213,7 @@ export const portfolioCases = [
     title: 'Boligmappa',
     intro: 'Design for Boligmappa — the digital home folder for Norwegian homes.',
     items: [
-      /* Hero = samme cover som tidslinje-tilen. */
-      { file: 'boligmappa-cover.jpg', span: 'full', alt: 'Boligmappa' },
-    ],
-  },
-  {
-    /* MIDLERTIDIG: cover-duell mot 'boligmappa' — taperen slettes. */
-    id: 'boligmappa-2',
-    title: 'Boligmappa',
-    intro: 'Design for Boligmappa — the digital home folder for Norwegian homes.',
-    items: [
+      /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
     ],
   },

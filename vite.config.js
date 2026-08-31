@@ -30,7 +30,6 @@ export default defineConfig({
         nettavisen: resolve(__dirname, 'nettavisen/index.html'),
         uber: resolve(__dirname, 'uber/index.html'),
         boligmappa: resolve(__dirname, 'boligmappa/index.html'),
-        boligmappa2: resolve(__dirname, 'boligmappa-2/index.html'),
         archivedWork: resolve(__dirname, 'archived-work/index.html'),
         brathwait: resolve(__dirname, 'brathwait/index.html'),
         hummingPeople: resolve(__dirname, 'humming-people/index.html'),

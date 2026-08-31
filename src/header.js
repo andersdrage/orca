@@ -14,13 +14,13 @@ function initSpeculationRules() {
   const script = document.createElement('script')
   script.type = 'speculationrules'
   script.textContent = JSON.stringify({
-    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/', '/boligmappa-2/', '/about/', '/praise/', '/archive/', '/people/'], eagerness: 'immediate' }],
+    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/', '/about/', '/praise/', '/archive/', '/people/'], eagerness: 'immediate' }],
     /* Nettleseren tillater maks ~2 umiddelbare prerenders: bruk dem på de to
        casene nærmest i tidslinjen ved last. Resten prerendres ved hover (LRU) —
        og dyp-warmingen under gjør at selv uprerendrede klikk maler umiddelbart. */
     prerender: [
       { urls: ['/micromilspec/', '/hjemla/'], eagerness: 'immediate' },
-      { urls: ['/off-market/', '/misc/', '/hmkg/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/', '/boligmappa-2/'], eagerness: 'moderate' },
+      { urls: ['/off-market/', '/misc/', '/hmkg/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/'], eagerness: 'moderate' },
       { where: { href_matches: '/*' }, eagerness: 'moderate' },
     ],
   })
@@ -40,7 +40,7 @@ function warmCaseAssets() {
     })
   })
 
-  const casePages = ['/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/', '/boligmappa-2/']
+  const casePages = ['/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/misc/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/']
   casePages.forEach((path) => {
     fetch(path, { priority: 'low' })
       .then((response) => response.text())
