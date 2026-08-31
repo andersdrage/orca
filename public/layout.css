@@ -983,6 +983,11 @@ body.world-mode {
   font-display: swap;
 }
 
+/* Gjenbrukbar Maison Neue-klasse (brukes bl.a. på praise-attribusjoner). */
+.font-maison {
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+}
+
 .timeline-intro {
   position: absolute;
   top: 50%;
