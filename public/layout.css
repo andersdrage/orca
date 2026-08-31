@@ -845,17 +845,14 @@ body.world-mode {
   text-wrap: pretty;
 }
 
-/* De tre lenkene ligger i én pille: avrundet rektangel med kun omriss. */
+/* Hver av de tre lenkene er sin egen pille-knapp: avrundet omriss, ingen fyll. */
 .site-footer__contact {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: baseline;
+  align-items: center;
   gap: 0.75rem;
   margin: 2rem 0 0;
-  padding: 0.8rem 1.75rem;
-  border: 1px solid #d4d4d8;
-  border-radius: 999px;
   color: #71717a;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   /* Én felles lenkestørrelse i footeren — samme som Archive/People-hjørnene. */
@@ -864,6 +861,20 @@ body.world-mode {
   letter-spacing: 0.12em;
   line-height: 1.4;
   text-transform: uppercase;
+}
+
+.site-footer__contact a {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid #d4d4d8;
+  border-radius: 999px;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.site-footer__contact a:hover {
+  border-color: #52525b;
 }
 
 .site-footer__contact a {
