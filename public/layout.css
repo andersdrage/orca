@@ -860,6 +860,25 @@ body.world-mode {
   transition: color 160ms ease;
 }
 
+/* Lenke til arkivert arbeid — dempet mono-linje nederst i footeren. */
+.site-footer__archived {
+  margin: 1.5rem 0 0;
+}
+
+.site-footer__archived a {
+  color: #a1a1aa;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.site-footer__archived a:hover {
+  color: #18181b;
+}
+
 .site-footer__contact a:hover,
 .site-footer__contact a:focus-visible {
   color: #18181b;

@@ -7,14 +7,10 @@
     <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Regular.woff" as="font" type="font/woff" crossorigin />
     <link rel="preload" href="/src/assets/fonts/PlantinMTPro-Semibold.woff" as="font" type="font/woff" crossorigin />
     <link rel="preload" href="/src/assets/fonts/Eurostile-ext-bold.woff" as="font" type="font/woff" crossorigin />
-    <link rel="preload" href="/images/boligmappa-cover.jpg" as="image" fetchpriority="high" />
     <link rel="preload" href="/fonts/PPSupplyMono-Regular.otf" as="font" type="font/otf" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Boligmappa — design by Anders Drage."
-    />
-    <meta property="og:title" content="Boligmappa – Anders Drage" />
+    <meta name="description" content="Archived work by Anders Drage." />
+    <meta property="og:title" content="Archived work – Anders Drage" />
     <meta property="og:description" content="Product, brand, and marketing design by Anders Drage." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/images/sharing-img.png" />
@@ -22,27 +18,44 @@
     <meta property="og:image:height" content="1260" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="/images/sharing-img.png" />
-    <title>Boligmappa – Anders Drage</title>
+    <title>Archived work – Anders Drage</title>
     <link rel="stylesheet" href="/layout.css" />
     <link rel="stylesheet" href="/src/style.css" />
     <link rel="stylesheet" href="/src/font-theme.css" />
   </head>
   <body
-    class="page-case min-h-svh bg-zinc-50 font-sans text-[16px] leading-relaxed text-zinc-800 antialiased selection:bg-zinc-200"
+    class="min-h-svh bg-zinc-50 font-sans text-[16px] leading-relaxed text-zinc-800 antialiased selection:bg-zinc-200"
   >
-    <a href="#work" class="skip-link">Skip to work</a>
+    <a href="#innhold" class="skip-link">Skip to content</a>
 
     <div id="site-layout">
       <header
         class="site-header print:hidden"
       >
         <div class="flex items-center justify-between gap-6 py-4">
-           <span class="site-header__project-title" data-sticky-work-title aria-hidden="true"></span>
-           </div>
+          <a href="/" class="site-header__brand" aria-label="Anders Drage — home">
+            <img src="/drage-logo.svg" alt="" width="32" height="24" aria-hidden="true" decoding="async" />
+          </a>
+          <nav class="flex items-center gap-8 text-sm" aria-label="Primary">
+            <a href="/about/">About</a>
+            <a href="/praise/">Praise</a>
+          </nav>
+        </div>
       </header>
 
-      <main id="work" class="case-main flex flex-1 flex-col pb-20 md:pb-28">
-        <div data-case-root data-case-id="boligmappa" class="flex flex-col gap-4 md:gap-6"></div>
+      <main id="innhold" class="flex-1 py-14 md:py-20 print:py-10">
+        <h1 class="sr-only">Archived work</h1>
+        <header class="border-b border-zinc-200 pb-10">
+          <p class="font-label text-xs font-bold uppercase tracking-widest text-zinc-500">
+            Archived work
+          </p>
+          <div class="mt-4 max-w-xl space-y-4 text-pretty text-zinc-600">
+            <p>
+              Projects that have rotated off the front page. Still work I stand behind — they just
+              made room for newer things.
+            </p>
+          </div>
+        </header>
       </main>
 
       <footer class="site-footer">
@@ -56,11 +69,11 @@
             <span aria-hidden="true">·</span>
             <a href="tel:+4799597073">+47 99 59 70 73</a>
           </p>
-          <p class="site-footer__archived"><a href="/archived-work/">Archived work</a></p>
+          <p class="site-footer__archived"><a href="/archived-work/" aria-current="page">Archived work</a></p>
         </div>
       </footer>
     </div>
 
-    <script type="module" src="/src/case.js"></script>
+    <script type="module" src="/src/about.js"></script>
   </body>
 </html>

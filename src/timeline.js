@@ -202,10 +202,16 @@ export function initTimeline() {
      Absolutt posisjonert i innholdskoordinater (utenfor kopi-flexen, så
      loop-målingene ikke påvirkes). Når man har scrollet forbi, fjernes den
      permanent mens den er utenfor skjermen — loopen kommer rundt uten den. */
+  const INTRO_LINE_1 = 'I’m Anders Drage,'
+  const INTRO_REST =
+    'a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
-  intro.textContent =
-    'I’m Anders, a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
+  intro.append(
+    document.createTextNode(INTRO_LINE_1),
+    document.createElement('br'),
+    document.createTextNode(INTRO_REST),
+  )
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -355,15 +361,20 @@ export function initTimeline() {
     document.body.classList.contains('page-home') &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ) {
-    const words = intro.textContent.split(' ')
     intro.textContent = ''
-    const wordSpans = words.map((word) => {
-      const span = document.createElement('span')
-      span.className = 'timeline-intro__word'
-      span.textContent = word
-      intro.append(span, document.createTextNode(' '))
-      return span
-    })
+    const wordSpans = []
+    const appendWords = (text) => {
+      text.split(' ').forEach((word) => {
+        const span = document.createElement('span')
+        span.className = 'timeline-intro__word'
+        span.textContent = word
+        intro.append(span, document.createTextNode(' '))
+        wordSpans.push(span)
+      })
+    }
+    appendWords(INTRO_LINE_1)
+    intro.append(document.createElement('br'))
+    appendWords(INTRO_REST)
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {
