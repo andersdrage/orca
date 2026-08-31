@@ -2136,3 +2136,19 @@ body.world-map-intro .world-page {
   letter-spacing: normal;
   text-transform: none;
 }
+
+/* Employments-lista (About): samme dim-hover som credits — alt dempes når
+   pekeren er over lista, raden man står på beholder full styrke. */
+.employments-table td {
+  transition: opacity 140ms ease;
+}
+
+@media (hover: hover) {
+  .employments-table:hover td {
+    opacity: 0.3;
+  }
+
+  .employments-table tr:hover td {
+    opacity: 1;
+  }
+}
