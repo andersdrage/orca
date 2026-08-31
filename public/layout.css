@@ -1249,19 +1249,20 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   transform: rotate(-3.5deg) translate(8%, 4%);
 }
 
+/* Viften: kortene sprer seg langt nok til at hvert bilde faktisk kan leses. */
 a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(1),
 a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(1) {
-  transform: rotate(-2.5deg) translate(-7%, 1%);
+  transform: rotate(-5deg) translate(-30%, 2%);
 }
 
 a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(2),
 a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(2) {
-  transform: rotate(6.5deg) translate(9%, -4%);
+  transform: rotate(3deg) translate(4%, -7%);
 }
 
 a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(3),
 a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(3) {
-  transform: rotate(-8deg) translate(17%, 7%);
+  transform: rotate(9deg) translate(38%, 6%);
 }
 
 /* Ved klikk: kortene samler seg momentant så morph-snapshotet er én flate. */
@@ -2049,3 +2050,99 @@ body.world-map-intro .world-page {
   transition: border-radius 600ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 /* ── slutt PROTOTYP ── */
+
+/* ── Design-revisjon (D): overlay-panelet. Dev-verktøy. ── */
+#design-audit-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow-y: auto;
+  background: rgba(24, 24, 27, 0.55);
+  padding: 4vh 0;
+}
+
+#design-audit-panel .da-inner {
+  width: min(860px, 92vw);
+  margin: 0 auto;
+  background: #18181b;
+  color: #d4d4d8;
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem 2rem;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+}
+
+#design-audit-panel .da-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #3f3f46;
+  letter-spacing: 0.08em;
+}
+
+#design-audit-panel .da-section {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fafafa;
+  border-bottom: 1px solid #3f3f46;
+  padding-bottom: 0.35rem;
+}
+
+#design-audit-panel .da-family {
+  margin: 0.9rem 0 0.2rem;
+  font-size: 11px;
+  font-weight: 400;
+  color: #e8862b;
+}
+
+#design-audit-panel .da-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.15rem 0;
+}
+
+#design-audit-panel .da-swatch {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid #52525b;
+  align-self: center;
+}
+
+#design-audit-panel .da-value {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+#design-audit-panel .da-value.da-wrap {
+  white-space: normal;
+  word-break: break-all;
+}
+
+#design-audit-panel .da-sample {
+  color: #71717a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+#design-audit-panel .da-count {
+  color: #a1a1aa;
+  flex: none;
+}
+
+#design-audit-panel .da-dim {
+  color: #71717a;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}

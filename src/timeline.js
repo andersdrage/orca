@@ -118,7 +118,7 @@ const TILES = [
     /* Bildestabel: tre kort rotert oppå hverandre — toppkortet er case-heroen.
        Hover vifter kortene ut så man ser at det er flere. */
     image: '/images/misc-logos.jpg',
-    stack: ['/images/misc-logos.jpg', '/images/agens-1.png', '/images/agens-2.png'],
+    stack: ['/images/misc-logos.jpg', '/images/agens-2.png', '/images/agens-1.png'],
     color: '#3e6e68',
     /* Samme aspekt som toppkortet (2560×1707). */
     ratio: '2560 / 1707',
