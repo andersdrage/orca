@@ -831,7 +831,7 @@ body.world-mode {
 /* Spinnende drage-emblem (video, svart bakgrunn = usynlige kanter). */
 .site-footer__logo-video {
   display: block;
-  width: clamp(220px, 22vw, 320px);
+  width: clamp(110px, 11vw, 160px);
   height: auto;
   margin: 0 auto;
 }
@@ -1248,43 +1248,55 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   object-fit: cover;
   border-radius: clamp(14px, 2vw, 22px);
   box-shadow: 0 16px 36px rgba(24, 24, 27, 0.28);
-  transition: transform 420ms cubic-bezier(0.32, 0.08, 0.24, 1);
+  /* z-index er diskret, men med delay flipper den MIDT i bevegelsen — det er
+     det som gjør at kortet leses som at det går RUNDT det andre. */
+  transition:
+    transform 460ms cubic-bezier(0.32, 0.08, 0.24, 1),
+    z-index 0s 230ms;
 }
 
 /* Første kort i markupen er toppkortet. */
 .timeline-tile__stack-img:nth-child(1) {
-  z-index: 3;
+  z-index: 2;
 }
 
 .timeline-tile__stack-img:nth-child(2) {
-  z-index: 2;
+  z-index: 1;
   transform: rotate(4.5deg) translate(4%, -2%);
 }
 
-.timeline-tile__stack-img:nth-child(3) {
-  z-index: 1;
-  transform: rotate(-3.5deg) translate(8%, 4%);
-}
-
-/* Viften: kortene sprer seg langt nok til at hvert bilde faktisk kan leses. */
+/* Hover: fysisk kortbytte. Forkortet viker unna og legger seg BAK, mens
+   bakkortet svinger ut til siden (forbi kanten) og inn foran — banen er en
+   keyframe-bue, og z-flippen skjer mens det står ute ved siden. Ved unhover
+   glir alt tilbake med transitionen over. */
 a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(1),
 a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(1) {
-  transform: rotate(-5deg) translate(-30%, 2%);
+  transform: rotate(-5deg) translate(-16%, 4%);
+  z-index: 1;
 }
 
 a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(2),
 a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(2) {
-  transform: rotate(3deg) translate(4%, -7%);
+  animation: stack-swap-front 620ms cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+  z-index: 3;
 }
 
-a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(3),
-a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(3) {
-  transform: rotate(9deg) translate(38%, 6%);
+@keyframes stack-swap-front {
+  0% {
+    transform: rotate(4.5deg) translate(4%, -2%);
+  }
+  55% {
+    transform: rotate(12deg) translate(60%, -5%);
+  }
+  100% {
+    transform: rotate(-3deg) translate(10%, 3%);
+  }
 }
 
 /* Ved klikk: kortene samler seg momentant så morph-snapshotet er én flate. */
 a.timeline-tile.is-navigating .timeline-tile__stack-img {
   transition: none;
+  animation: none;
   transform: none;
   box-shadow: none;
 }
