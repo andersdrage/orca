@@ -1454,10 +1454,29 @@ a.timeline-tile:focus-visible {
 }
 
 .archive-list li {
+  position: relative;
   display: grid;
   grid-template-columns: 4.5rem 1fr 1fr;
   gap: 0 1.5rem;
-  padding: 0.2rem 0;
+  padding: 0.55rem 0;
+}
+
+/* Hairline mellom radene — indentert forbi venstre-gutteren, som hos credits. */
+.archive-list li::after {
+  content: '';
+  position: absolute;
+  left: 6rem;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid #ececee;
+}
+
+.archive-list li:last-child::after {
+  display: none;
+}
+
+.archive-list--press li::after {
+  left: 9.5rem;
 }
 
 .archive-list li.is-year-start:not(:first-child) {
@@ -1495,8 +1514,11 @@ a.timeline-tile:focus-visible {
   color: #52525b;
 }
 
+/* Venstre kolonne (årstall/gruppe) i Maison — meta-stemmen ved siden av serif-navnene. */
 .archive-year {
   color: #a1a1aa;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
 }
 
 .archive-name {
@@ -1517,6 +1539,11 @@ a.timeline-tile:focus-visible {
 @media (max-width: 640px) {
   .archive-list li {
     grid-template-columns: 3.25rem 1fr;
+  }
+
+  .archive-list li::after,
+  .archive-list--press li::after {
+    left: 0;
   }
 
   .archive-type {
