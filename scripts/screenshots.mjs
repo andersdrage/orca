@@ -34,7 +34,7 @@ const targets = [
   { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
   { path: '/archive/', name: 'archive', element: '.world-page[data-path="/archive/"] .world-column' },
   { path: '/people/', name: 'people', element: '.world-page[data-path="/people/"] .world-column' },
-  { path: '/archived-work/', name: 'archived-work', fullPage: true },
+  { path: '/archived-work/', name: 'archived-work', element: '.world-page[data-path="/archived-work/"] .world-column' },
 ]
 
 const viewports = [

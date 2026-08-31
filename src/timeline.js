@@ -164,8 +164,10 @@ function tileHtml(tile) {
     : `<div class="${classes}" style="${style}" aria-hidden="true">${image}</div>`
 }
 
-export function initTimeline() {
-  const scroller = document.querySelector('[data-timeline]')
+/* scrollerEl: verdenen kan romme TO tidslinjer (forsiden + arkiv-kjelleren) —
+   søsken-montering sender sin egen scroller; egen side faller tilbake til query. */
+export function initTimeline(scrollerEl) {
+  const scroller = scrollerEl ?? document.querySelector('[data-timeline]')
   if (!scroller) return
 
   /* Arkiv-modus: /archived-work/ bruker nøyaktig samme layout og fysikk, men

@@ -181,6 +181,12 @@ body.world-mode {
   grid-row: 2;
 }
 
+/* Kjelleren: arkivert arbeid en etasje under arkivet. */
+.world-page[data-path='/archived-work/'] {
+  grid-column: 1;
+  grid-row: 3;
+}
+
 /* will-change KUN under reisen: en permanent 300vw-bred compositor-layer koster
    GPU-minne og gjør Safari mer tilbøyelig til å droppe view transitions. */
 .world.is-travelling {
@@ -846,7 +852,7 @@ body.world-mode {
   gap: 0.625rem;
   margin: 2rem 0 0;
   color: #71717a;
-  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   /* Én felles lenkestørrelse i footeren — samme som Archive/People-hjørnene. */
   font-size: 0.75rem;
   font-weight: 400;
@@ -1342,9 +1348,10 @@ a.timeline-tile:focus-visible {
   right: 30px;
 }
 
-/* Arkiv-sida: egen «du er her»-etikett nede til venstre. */
+/* Kjelleren: «du er her»-etiketten sentrert i bunnen (Archive/People har hjørnene). */
 .corner-links a[href='/archived-work/'] {
-  left: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .corner-links a {
@@ -1954,6 +1961,10 @@ body.world-map-intro .timeline-tile__hover-label {
 
 .world.is-map .world-page:nth-child(5) {
   animation-delay: 320ms;
+}
+
+.world.is-map .world-page:nth-child(6) {
+  animation-delay: 400ms;
 }
 
 body.world-map-intro .world-page {

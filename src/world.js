@@ -19,6 +19,9 @@ const PAGES = [
   { path: '/praise/', x: 2, y: 0 },
   { path: '/archive/', x: 0, y: 1 },
   { path: '/people/', x: 1, y: 1 },
+  /* Kjelleren: arkivert arbeid ligger en etasje UNDER arkivet — kameraet
+     stiger ned forbi arkivlisten for å nå det. */
+  { path: '/archived-work/', x: 0, y: 2 },
 ]
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
@@ -135,10 +138,10 @@ export function initWorld(header) {
       section.style.transform = `scale(${TRAVEL_SCALE})`
     })
 
-    /* Kartet: hele 300vw × 200svh-stripen skalert inn i viewporten, sentrert. */
+    /* Kartet: hele 300vw × 300svh-verdenen skalert inn i viewporten, sentrert. */
     const MAP_SCALE = 0.25
     world.style.transformOrigin = '0 0'
-    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2}vw, ${(100 - 200 * MAP_SCALE) / 2}svh, 0) scale(${MAP_SCALE})`
+    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2}vw, ${(100 - 300 * MAP_SCALE) / 2}svh, 0) scale(${MAP_SCALE})`
 
     const HOLD_MS = 1000
     const ZOOM_MS = 1400
@@ -266,6 +269,17 @@ export function initWorld(header) {
     if (index !== -1) navigateTo(index, { push: false })
   })
 
+  /* Lenker INNE i verdenen som peker på en verdens-side (f.eks. «Archived
+     work» i footerne) er kamerabevegelser — ikke harde navigasjoner. */
+  world.addEventListener('click', (event) => {
+    const link = event.target.closest('a')
+    if (!link || link.origin !== location.origin) return
+    const index = PAGES.findIndex((page) => page.path === link.pathname)
+    if (index === -1) return
+    event.preventDefault()
+    if (index !== cameraIndex) navigateTo(index)
+  })
+
   /* Monter søskensidene rundt den vi står på. */
   PAGES.forEach((page, index) => {
     if (index === selfIndex) return
@@ -278,8 +292,11 @@ export function initWorld(header) {
         const footer = doc.querySelector('#site-layout footer')
         if (main) slots[index].append(document.importNode(main, true))
         if (footer) slots[index].append(document.importNode(footer, true))
-        /* Forsiden trenger tidslinje-motoren sin når den er hentet inn. */
-        if (page.path === '/') initTimeline()
+        /* Forsiden og arkiv-kjelleren trenger tidslinje-motoren sin når de er
+           hentet inn — scoped til egen scroller (to tidslinjer i dokumentet). */
+        if (page.path === '/' || page.path === '/archived-work/') {
+          initTimeline(slots[index].querySelector('[data-timeline]'))
+        }
       })
       .catch(() => {})
   })
