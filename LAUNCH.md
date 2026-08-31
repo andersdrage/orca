@@ -11,6 +11,7 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 - [x] **Placeholder-tiles** — alle fylt; Nettavisen tok den siste (før FINN).
 - [ ] **Nettavisen-intro** («Design for Nettavisen, one of Norway’s largest news sites.») — bekreft/omskriv.
 - [ ] **Uber-intro** («Product design for Uber.») — bekreft/omskriv.
+- [ ] **Boligmappa-intro** («Design for Boligmappa — the digital home folder for Norwegian homes.») — bekreft/omskriv; vurder flere bilder/credits.
 - [ ] **Uber-credits: «Simon»** mangler etternavn (Designers: Ben Mingo, Anders Drage and Simon) — finn fullt navn.
 - [ ] **Gratitude-sidenotater på People** («People I owe») — fyll inn en kort personlig
       note per navn (kolonnen står tom i markupen, klar til bruk).

@@ -208,6 +208,15 @@ export const portfolioCases = [
     ],
   },
   {
+    id: 'boligmappa',
+    title: 'Boligmappa',
+    intro: 'Design for Boligmappa — the digital home folder for Norwegian homes.',
+    items: [
+      /* Hero = samme cover som tidslinje-tilen. */
+      { file: 'boligmappa-cover.jpg', span: 'full', alt: 'Boligmappa' },
+    ],
+  },
+  {
     id: 'misc',
     title: 'Miscellaneous work',
     intro: 'Fragments from client and side projects.',
