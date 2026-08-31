@@ -131,6 +131,7 @@ const TILES = [
     /* Samme aspekt som bildet (2480×3508). */
     ratio: '2480 / 3508',
     h: '53svh',
+    archived: true,
   },
 ]
 
