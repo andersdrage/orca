@@ -109,6 +109,68 @@ export function initWorld(header) {
   const TRAVEL_SCALE = 0.85
   const SCALE_MS = 220
 
+  /* ── PROTOTYP: kart-intro ────────────────────────────────────────────────
+     Frisk last av forsiden starter utzoomet: hele verdenen som et kart av
+     kort (à la reise-tilstanden), holder et beat mens søskensidene monteres,
+     og kameraet zoomer så inn på indexen med huskurven. Chrome og index-
+     innhold holdes skjult underveis (CSS på body.world-map-intro); når
+     zoomen lander, får timeline.js beskjed ('world:map-intro-done') og
+     spiller den vanlige entré-koreografien.
+     REVERT: slett denne funksjonen + kallet under, PROTOTYP-blokka i
+     layout.css, og map-intro-grenen i timeline.js sin entré-blokk. */
+  function playMapIntro() {
+    if (PAGES[cameraIndex].path !== '/') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    /* Ikke ved case-retur — der eier tilbake-morphen hele ankomsten. */
+    try {
+      const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
+      if (/^\/(micromilspec|off-market|misc|uber|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
+    } catch {
+      /* ugyldig referrer → kjør introen */
+    }
+
+    document.body.classList.add('world-map-intro')
+    world.classList.add('is-travelling', 'is-map')
+    sections.forEach((section) => {
+      section.style.transform = `scale(${TRAVEL_SCALE})`
+    })
+
+    /* Kartet: hele 300vw × 200svh-stripen skalert inn i viewporten, sentrert. */
+    const MAP_SCALE = 0.25
+    world.style.transformOrigin = '0 0'
+    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2}vw, ${(100 - 200 * MAP_SCALE) / 2}svh, 0) scale(${MAP_SCALE})`
+
+    const HOLD_MS = 1000
+    const ZOOM_MS = 1400
+    setTimeout(() => {
+      const from = getComputedStyle(world).transform
+      world.classList.remove('is-map')
+      const zoom = world.animate(
+        [{ transform: from }, { transform: 'translate3d(0, 0, 0) scale(1)' }],
+        { duration: ZOOM_MS, easing: EASING, fill: 'backwards' },
+      )
+      const land = () => {
+        world.style.transformOrigin = ''
+        setTransform(cameraIndex)
+        const arriving = sections[cameraIndex]
+        arriving.style.transform = ''
+        const unfold = arriving.animate(
+          [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
+          { duration: SCALE_MS, easing: EASING },
+        )
+        const done = () => {
+          world.classList.remove('is-travelling')
+          document.body.classList.remove('world-map-intro')
+          document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+        }
+        unfold.finished.then(done, done)
+      }
+      zoom.finished.then(land, land)
+    }, HOLD_MS)
+  }
+  playMapIntro()
+  /* ── slutt PROTOTYP ── */
+
   function navigateTo(index, { push = true } = {}) {
     if (index === cameraIndex) return
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches

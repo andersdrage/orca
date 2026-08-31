@@ -1866,3 +1866,29 @@ html.vt-zoom-in::view-transition-new(root) {
     animation-duration: 0s !important;
   }
 }
+
+/* ── PROTOTYP: kart-intro (revert: slett denne blokka + playMapIntro i
+   world.js + map-intro-grenen i timeline.js) ──────────────────────────────
+   Under kartet: chrome og index-innholdet holdes skjult (kortene skal stå
+   som tomme skjeletter, entréen spiller etter landing). Kortene har rundere
+   hjørner i kart-skala; radiusen glir til reise-radiusen idet zoomen starter. */
+body.world-map-intro .site-header,
+body.world-map-intro .corner-links {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.world-map-intro .timeline-intro,
+body.world-map-intro .timeline-tile__image,
+body.world-map-intro .timeline-tile__hover-label {
+  opacity: 0;
+}
+
+.world.is-map .world-page {
+  border-radius: 48px;
+}
+
+body.world-map-intro .world-page {
+  transition: border-radius 600ms cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+/* ── slutt PROTOTYP ── */

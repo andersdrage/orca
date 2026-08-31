@@ -352,12 +352,20 @@ export function initTimeline() {
       }
       span.style.setProperty('--line', String(lineIndex))
     })
-    document.body.classList.add('is-entering-home')
-    const endEntrance = () => document.body.classList.remove('is-entering-home')
-    /* Ryddes når alt står i ro — og momentant hvis en morph starter før det,
-       så halvferdige fades aldri havner i view transition-snapshotet. */
-    setTimeout(endEntrance, 2600)
-    window.addEventListener('pageswap', endEntrance, { once: true })
+    const startEntrance = () => {
+      document.body.classList.add('is-entering-home')
+      const endEntrance = () => document.body.classList.remove('is-entering-home')
+      /* Ryddes når alt står i ro — og momentant hvis en morph starter før det,
+         så halvferdige fades aldri havner i view transition-snapshotet. */
+      setTimeout(endEntrance, 2600)
+      window.addEventListener('pageswap', endEntrance, { once: true })
+    }
+    /* PROTOTYP kart-intro (world.js): entréen venter til zoomen har landet. */
+    if (document.body.classList.contains('world-map-intro')) {
+      document.body.addEventListener('world:map-intro-done', startEntrance, { once: true })
+    } else {
+      startEntrance()
+    }
   }
   scroller.addEventListener('scroll', wrap, { passive: true })
 
