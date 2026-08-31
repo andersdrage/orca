@@ -10,8 +10,9 @@
    følger etter ved åpning — morphen forblir én og samme flate.
    ratio må matche bildefilens faktiske aspekt. */
 export const micromilspecCovers = [
-  { file: 'micromilspec-6-half.jpg', ratio: '1600 / 1770' },
+  /* Hvit/oransje er hovedcoveret; B sykler videre til tegningen og den sorte. */
   { file: 'micromilspec-cover-white.jpg', ratio: '1331 / 2000' },
+  { file: 'micromilspec-6-half.jpg', ratio: '1600 / 1770' },
   { file: 'micromilspec-cover-black.jpg', ratio: '1510 / 2000' },
 ]
 
@@ -23,7 +24,7 @@ export const portfolioCases = [
       'Co-built the brand, product, and operations — scaling to ~40 MNOK in sales across bespoke and military projects in three years.',
     items: [
       /* Hero = samme bilde som tidslinje-tilen — morphen lander sømløst i seg selv. */
-      { file: 'micromilspec-6-half.jpg', span: 'full', alt: 'MICROMILSPEC' },
+      { file: 'micromilspec-cover-white.jpg', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-1-full.mp4', span: 'full', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-3-half.jpg', span: 'half', alt: 'MICROMILSPEC' },
       { file: 'micromilspec-4-half.jpg', span: 'half', alt: 'MICROMILSPEC' },

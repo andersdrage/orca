@@ -9,11 +9,11 @@ const TILES = [
     id: 'micromilspec',
     title: 'MICROMILSPEC',
     href: '/micromilspec/',
-    image: '/images/micromilspec-6-half.jpg',
-    color: '#17171b',
-    /* Samme aspekt som bildefilen (1600×1770) — tile og case-hero viser da identisk
-       utsnitt, så morphen er én og samme flate uten dobbelteksponering. */
-    ratio: '1600 / 1770',
+    /* Hovedcover = hvit/oransje (micromilspecCovers[0]) — tile og case-hero viser
+       identisk utsnitt, så morphen er én og samme flate uten dobbelteksponering. */
+    image: '/images/micromilspec-cover-white.jpg',
+    color: '#e8862b',
+    ratio: '1331 / 2000',
     h: '56svh',
   },
   {
@@ -67,6 +67,7 @@ const TILES = [
     h: '38svh',
   },
   {
+    /* archived: vises kun på /archived-work/ (samme layout som forsiden). */
     id: 'humming-people',
     title: 'Humming People',
     href: '/humming-people/',
@@ -75,6 +76,7 @@ const TILES = [
     /* Samme aspekt som bildet (2072×1372). */
     ratio: '2072 / 1372',
     h: '41svh',
+    archived: true,
   },
   {
     id: 'brathwait',
@@ -85,6 +87,7 @@ const TILES = [
     /* Samme aspekt som coveret (580×784). */
     ratio: '580 / 784',
     h: '46svh',
+    archived: true,
   },
   {
     id: 'uber',
@@ -165,6 +168,12 @@ export function initTimeline() {
   const scroller = document.querySelector('[data-timeline]')
   if (!scroller) return
 
+  /* Arkiv-modus: /archived-work/ bruker nøyaktig samme layout og fysikk, men
+     viser kun tiles merket `archived` — forsiden viser resten. Arkivet har
+     ingen intro-tekst og ingen entré-koreografi. */
+  const showArchived = scroller.dataset.tiles === 'archived'
+  const tiles = TILES.filter((tile) => Boolean(tile.archived) === showArchived)
+
   /* MICROMILSPEC-tilen følger cover-varianten valgt med B på case-siden
      (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
      Settes idempotent (indeks 0 = standard) siden TILES er modul-state. */
@@ -182,7 +191,7 @@ export function initTimeline() {
     const copy = document.createElement('div')
     copy.className = 'timeline-copy'
     copy.dataset.copy = String(copyIndex)
-    copy.innerHTML = TILES.map(tileHtml).join('')
+    copy.innerHTML = tiles.map(tileHtml).join('')
     /* Kun midt-kopien er "ekte" for skjermleser/tastatur — duplikatene er visuell loop-fyll. */
     if (copyIndex !== 1) {
       copy.setAttribute('aria-hidden', 'true')
@@ -212,7 +221,9 @@ export function initTimeline() {
     document.createElement('br'),
     document.createTextNode(INTRO_REST),
   )
-  scroller.append(intro)
+  /* Arkiv-sida har ingen intro — utenfor DOM gir offsetWidth 0, og placeIntro
+     melder da pass av seg selv. */
+  if (!showArchived) scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
   let introContentRight = 0
@@ -407,7 +418,7 @@ export function initTimeline() {
      bilder, bakgrunnet fane som får dimensjoner). Re-mål intro-posisjonen en
      kort periode og korriger entré-scrollen — men aldri etter at brukeren har
      begynt å scrolle selv. */
-  if (useIntroEntry || !introPlaced) {
+  if (!showArchived && (useIntroEntry || !introPlaced)) {
     let stableFrames = 0
     const calibrate = () => {
       if (introDismissed || userInteracted || stableFrames > 30) return
@@ -461,8 +472,10 @@ export function initTimeline() {
   window.addEventListener('keydown', (event) => {
     if (event.key !== 'b' && event.key !== 'B') return
     if (event.metaKey || event.ctrlKey || event.altKey) return
-    /* Kun når forsiden faktisk vises (ikke fra About/Praise i verdenen). */
+    /* Kun når forsiden faktisk vises (ikke fra About/Praise i verdenen),
+       og kun der micromilspec-tilen finnes (ikke på arkiv-sida). */
     if (!document.body.classList.contains('page-home')) return
+    if (!scroller.querySelector('[data-tile-id="micromilspec"]')) return
     coverIndex = (coverIndex + 1) % micromilspecCovers.length
     try {
       sessionStorage.setItem('micromilspec:cover', String(coverIndex))
