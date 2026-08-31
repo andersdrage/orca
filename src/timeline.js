@@ -41,10 +41,10 @@ const TILES = [
     id: 'off-market',
     title: 'Off Market',
     href: '/off-market/',
-    image: '/images/offmarket-1-full.jpg',
-    color: '#2c3e5d',
-    /* Samme aspekt som bildet (2560×1707) — identisk utsnitt i tile og hero. */
-    ratio: '2560 / 1707',
+    image: '/images/offmarket-cover-1.jpg',
+    color: '#a67c52',
+    /* Samme aspekt som coveret (1299×1003) — identisk utsnitt i tile og hero. */
+    ratio: '1299 / 1003',
     h: '51svh',
   },
   {

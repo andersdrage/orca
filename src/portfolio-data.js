@@ -67,6 +67,8 @@ export const portfolioCases = [
     intro:
       'Co-founded Off Market, a real-estate marketplace matching buyers and sellers before homes reached the open market — leading product, design, and marketing.',
     items: [
+      /* Hero = samme cover som tidslinje-tilen. */
+      { file: 'offmarket-cover-1.jpg', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-1-full.jpg', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-2-full.jpg', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-3-full.jpg', span: 'full', alt: 'Off Market' },
