@@ -118,7 +118,7 @@ const TILES = [
     /* Bildestabel: to kort rotert oppå hverandre — toppkortet er case-heroen.
        Hover vifter kortene ut så man ser at det er flere. */
     image: '/images/agens-1.png',
-    stack: ['/images/agens-1.png', '/images/agens-2.png'],
+    stack: ['/images/agens-1.png', '/images/agens-2b.png'],
     color: '#3e6e68',
     /* Samme aspekt som toppkortet (1440×1160). */
     ratio: '1440 / 1160',
@@ -210,6 +210,75 @@ export function initTimeline(scrollerEl) {
   let copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
   /* Den visuelle (myke) scrollposisjonen — jager scrollLeft i elasticFrame. */
   let elasticCurrent = 0
+
+  /* Fysisk kortbytte på stabel-tiles (misc): bakkortet svinger ut til siden,
+     forbi kanten av forkortet, og legger seg foran — mens forkortet viker bak.
+     Drives med WAAPI i stedet for CSS :hover, slik at raske inn/ut-bevegelser
+     retargeter sømløst fra NÅVÆRENDE posisjon (CSS-animasjoner starter alltid
+     på 0 % og hopper). z-flippen skjer midt i svingen, mens kortet står ute. */
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const SWAP_EASE = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
+    scroller.querySelectorAll('.timeline-tile--stack').forEach((tile) => {
+      const [front, back] = tile.querySelectorAll('.timeline-tile__stack-img')
+      if (!front || !back) return
+      let zTimer = 0
+
+      const fly = (el, keyframes, duration) => {
+        /* Les NÅVÆRENDE posisjon FØR kansellering — cancel() smetter computed
+           style tilbake til basen, og da ville retargeting teleportert. */
+        const from = getComputedStyle(el).transform
+        el.getAnimations().forEach((animation) => animation.cancel())
+        el.animate([{ transform: from }, ...keyframes], {
+          duration,
+          easing: SWAP_EASE,
+          fill: 'forwards',
+        })
+      }
+
+      tile.addEventListener('mouseenter', () => {
+        clearTimeout(zTimer)
+        fly(front, [{ transform: 'rotate(-5deg) translate(-16%, 4%)' }], 460)
+        fly(
+          back,
+          [
+            { transform: 'rotate(12deg) translate(60%, -5%)', offset: 0.55 },
+            { transform: 'rotate(-3deg) translate(10%, 3%)' },
+          ],
+          620,
+        )
+        zTimer = setTimeout(() => {
+          back.style.zIndex = '3'
+          front.style.zIndex = '1'
+        }, 300)
+      })
+
+      tile.addEventListener('mouseleave', () => {
+        clearTimeout(zTimer)
+        fly(front, [{ transform: 'rotate(0deg) translate(0%, 0%)' }], 460)
+        fly(
+          back,
+          [
+            { transform: 'rotate(12deg) translate(60%, -5%)', offset: 0.45 },
+            { transform: 'rotate(4.5deg) translate(4%, -2%)' },
+          ],
+          620,
+        )
+        zTimer = setTimeout(() => {
+          back.style.zIndex = ''
+          front.style.zIndex = ''
+        }, 320)
+      })
+
+      /* Ved klikk: nullstill momentant så morph-snapshotet er én ren flate. */
+      tile.addEventListener('click', () => {
+        clearTimeout(zTimer)
+        ;[front, back].forEach((el) => {
+          el.getAnimations().forEach((animation) => animation.cancel())
+          el.style.zIndex = ''
+        })
+      })
+    })
+  }
 
   /* Intro-tekst til venstre for første prosjekt — KUN første gjennomgang.
      Absolutt posisjonert i innholdskoordinater (utenfor kopi-flexen, så

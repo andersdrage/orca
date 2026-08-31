@@ -1166,7 +1166,7 @@ body.world-mode {
   flex: none;
   display: flex;
   align-items: center;
-  gap: clamp(2.5rem, 5.5vw, 5.5rem);
+  gap: calc(clamp(2.5rem, 5.5vw, 5.5rem) + 100px);
   padding-right: clamp(240px, 45vw, 600px);
 }
 
@@ -1248,11 +1248,6 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   object-fit: cover;
   border-radius: clamp(14px, 2vw, 22px);
   box-shadow: 0 16px 36px rgba(24, 24, 27, 0.28);
-  /* z-index er diskret, men med delay flipper den MIDT i bevegelsen — det er
-     det som gjør at kortet leses som at det går RUNDT det andre. */
-  transition:
-    transform 460ms cubic-bezier(0.32, 0.08, 0.24, 1),
-    z-index 0s 230ms;
 }
 
 /* Første kort i markupen er toppkortet. */
@@ -1263,34 +1258,6 @@ a.timeline-tile.is-navigating .timeline-tile__image {
 .timeline-tile__stack-img:nth-child(2) {
   z-index: 1;
   transform: rotate(4.5deg) translate(4%, -2%);
-}
-
-/* Hover: fysisk kortbytte. Forkortet viker unna og legger seg BAK, mens
-   bakkortet svinger ut til siden (forbi kanten) og inn foran — banen er en
-   keyframe-bue, og z-flippen skjer mens det står ute ved siden. Ved unhover
-   glir alt tilbake med transitionen over. */
-a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(1),
-a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(1) {
-  transform: rotate(-5deg) translate(-16%, 4%);
-  z-index: 1;
-}
-
-a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(2),
-a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(2) {
-  animation: stack-swap-front 620ms cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
-  z-index: 3;
-}
-
-@keyframes stack-swap-front {
-  0% {
-    transform: rotate(4.5deg) translate(4%, -2%);
-  }
-  55% {
-    transform: rotate(12deg) translate(60%, -5%);
-  }
-  100% {
-    transform: rotate(-3deg) translate(10%, 3%);
-  }
 }
 
 /* Ved klikk: kortene samler seg momentant så morph-snapshotet er én flate. */
