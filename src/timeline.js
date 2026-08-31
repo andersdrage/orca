@@ -397,6 +397,51 @@ export function initTimeline() {
     measureTiles()
   })
 
+  /* B sykler MICROMILSPEC-coveret — kun her på forsiden. Bytter bilde og ratio
+     på tilen i alle tre kopiene, lagrer valget (case-heroen følger etter ved
+     åpning) og re-måler loop-geometrien siden tilebredden endres. Variantene
+     preloades i idle-tid så byttet er momentant. */
+  let coverIndex = 0
+  try {
+    coverIndex = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    if (!micromilspecCovers[coverIndex]) coverIndex = 0
+  } catch {
+    coverIndex = 0
+  }
+  const warmCovers = () => {
+    micromilspecCovers.forEach((cover) => {
+      new Image().src = `/images/${cover.file}`
+    })
+  }
+  if ('requestIdleCallback' in window) requestIdleCallback(warmCovers, { timeout: 4000 })
+  else setTimeout(warmCovers, 2000)
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'b' && event.key !== 'B') return
+    if (event.metaKey || event.ctrlKey || event.altKey) return
+    /* Kun når forsiden faktisk vises (ikke fra About/Praise i verdenen). */
+    if (!document.body.classList.contains('page-home')) return
+    coverIndex = (coverIndex + 1) % micromilspecCovers.length
+    try {
+      sessionStorage.setItem('micromilspec:cover', String(coverIndex))
+    } catch {
+      /* valget gjelder da bare til neste last */
+    }
+    const cover = micromilspecCovers[coverIndex]
+    scroller.querySelectorAll('[data-tile-id="micromilspec"]').forEach((tile) => {
+      tile.style.setProperty('--tile-ratio', cover.ratio)
+      const image = tile.querySelector('.timeline-tile__image')
+      if (image) image.src = `/images/${cover.file}`
+    })
+    const progress = copyWidth ? scroller.scrollLeft / copyWidth : 1
+    copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
+    scroller.scrollLeft = progress * copyWidth
+    elasticCurrent = scroller.scrollLeft
+    measureTiles()
+    /* Tilebredden endret seg — introteksten må re-ankres til første tile. */
+    if (!introDismissed) placeIntro()
+  })
+
   /* Alt hjul-input (vertikalt hjul OG trackpad/Magic Mouse-deltaX) kapres og
      skrives til scrollLeft på main thread — da lander native scroll og de
      elastiske transformene i samme frame, uten compositor-shimmer. */

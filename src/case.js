@@ -13,34 +13,22 @@ if (root) {
   initCoverCycle(root.dataset.caseId)
 }
 
-/* B-tasten sykler MICROMILSPEC-heroen gjennom cover-variantene. Valget lagres
-   i sessionStorage, og tidslinjen leser det ved neste last — så tilen man
-   morpher tilbake til viser samme bilde. Variantene preloades så byttet er
-   momentant uten dekode-blaff. */
+/* Case-heroen følger cover-varianten valgt med B på forsiden (sessionStorage) —
+   tilen man morpher fra og heroen man lander i er da samme bilde. Selve
+   B-syklingen bor KUN på forsiden (timeline.js). */
 function initCoverCycle(caseId) {
   if (caseId !== 'micromilspec') return
   const hero = document.querySelector('.case-cover-hero img')
   if (!hero) return
 
-  let index = Number(sessionStorage.getItem('micromilspec:cover')) || 0
-  if (!micromilspecCovers[index]) index = 0
-  const apply = () => {
-    hero.src = `/images/${micromilspecCovers[index].file}`
+  try {
+    const index = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    if (index > 0 && micromilspecCovers[index]) {
+      hero.src = `/images/${micromilspecCovers[index].file}`
+    }
+  } catch {
+    /* sessionStorage utilgjengelig → standard-cover */
   }
-  if (index > 0) apply()
-
-  micromilspecCovers.forEach((cover) => {
-    new Image().src = `/images/${cover.file}`
-  })
-
-  window.addEventListener('keydown', (event) => {
-    if (event.key !== 'b' && event.key !== 'B') return
-    if (event.metaKey || event.ctrlKey || event.altKey) return
-    if (document.querySelector('dialog[open]')) return
-    index = (index + 1) % micromilspecCovers.length
-    sessionStorage.setItem('micromilspec:cover', String(index))
-    apply()
-  })
 }
 
 initProjectAudio()
