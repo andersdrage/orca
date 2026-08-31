@@ -817,8 +817,9 @@ body.world-mode {
   position: sticky;
   bottom: 0;
   z-index: 0;
-  background: #f0efeb;
-  color: #3f3f46;
+  /* Svart flate: den spinnende drage-videoens bakgrunn går i ett med footeren. */
+  background: #000;
+  color: #d4d4d8;
 }
 
 .site-footer__inner {
@@ -827,18 +828,18 @@ body.world-mode {
   text-align: center;
 }
 
-.site-footer__logo {
+/* Spinnende drage-emblem (video, svart bakgrunn = usynlige kanter). */
+.site-footer__logo-video {
   display: block;
-  width: clamp(3.25rem, 8vw, 4.5rem);
+  width: clamp(220px, 22vw, 320px);
   height: auto;
   margin: 0 auto;
-  opacity: 0.9;
 }
 
 .site-footer__story {
   max-width: 34rem;
   margin: 2rem auto 0;
-  color: #52525b;
+  color: #d4d4d8;
   font-family: DragePlantin, Georgia, 'Times New Roman', serif;
   font-size: 16px;
   line-height: 1.55;
@@ -853,7 +854,7 @@ body.world-mode {
   align-items: center;
   gap: 0.75rem;
   margin: 2rem 0 0;
-  color: #71717a;
+  color: #a1a1aa;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   /* Én felles lenkestørrelse i footeren — samme som Archive/People-hjørnene. */
   font-size: 0.75rem;
@@ -866,7 +867,7 @@ body.world-mode {
 .site-footer__contact a {
   display: inline-block;
   padding: 0.7rem 1.4rem;
-  border: 1px solid #d4d4d8;
+  border: 1px solid #3f3f46;
   border-radius: 999px;
   transition:
     color 160ms ease,
@@ -874,7 +875,7 @@ body.world-mode {
 }
 
 .site-footer__contact a:hover {
-  border-color: #52525b;
+  border-color: #a1a1aa;
 }
 
 .site-footer__contact a {
@@ -905,7 +906,7 @@ body.world-mode {
 
 .site-footer__contact a:hover,
 .site-footer__contact a:focus-visible {
-  color: #18181b;
+  color: #fafafa;
 }
 
 @media (max-width: 767px) {

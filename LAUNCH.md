@@ -33,6 +33,9 @@ Gjennomgås før lansering. Kryss av med `[x]`.
       tiles) — profiler at de holder 60fps sammen med elastisk scroll, særlig i Safari.
 - [ ] **Vurder S-inspektøren** — ok å la ligge (uoppdagbar), eller fjern.
 - [ ] **Domene**: pek andersdrage.com mot Vercel-prosjektet `andersdrage-com`.
+- [ ] **iOS-overscroll under svart footer**: bounce-feltet henter farge fra body
+      (#fafafa) — med svart footer nederst bør body settes svart og innholdsfargen
+      flyttes til main på sidene med footer (jf. front-end-standardene).
 - [ ] **Full gjennomkjøring i Safari** (macOS + iOS) — transitions, elastisk scroll, verden.
 - [ ] **Mobil-gjennomgang** — tidslinje-touch, case-sider, arkivlista, world-pan på småskjerm.
 - [ ] Lighthouse-runde på prod (ytelse + a11y).
