@@ -1872,6 +1872,12 @@ html.vt-zoom-in::view-transition-new(root) {
    Under kartet: chrome og index-innholdet holdes skjult (kortene skal stå
    som tomme skjeletter, entréen spiller etter landing). Kortene har rundere
    hjørner i kart-skala; radiusen glir til reise-radiusen idet zoomen starter. */
+/* Bakteppet skal fylle HELE viewporten under kartet — ikke bare stripen bak
+   kortene. (Verden dekker skjermen igjen når zoomen lander, så byttet synes ikke.) */
+body.world-map-intro {
+  background-color: #e9e6e0;
+}
+
 body.world-map-intro .site-header,
 body.world-map-intro .corner-links {
   opacity: 0;
