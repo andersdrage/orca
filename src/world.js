@@ -149,23 +149,22 @@ export function initWorld(header) {
         [{ transform: from }, { transform: 'translate3d(0, 0, 0) scale(1)' }],
         { duration: ZOOM_MS, easing: EASING, fill: 'backwards' },
       )
+      /* Kortet folder seg ut UNDERVEIS i flighten — samme varighet og kurve
+         som zoomen, så hele ankomsten leses som én bevegelse. */
+      const arriving = sections[cameraIndex]
+      arriving.style.transform = ''
+      const unfold = arriving.animate(
+        [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
+        { duration: ZOOM_MS, easing: EASING },
+      )
       const land = () => {
         world.style.transformOrigin = ''
         setTransform(cameraIndex)
-        const arriving = sections[cameraIndex]
-        arriving.style.transform = ''
-        const unfold = arriving.animate(
-          [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
-          { duration: SCALE_MS, easing: EASING },
-        )
-        const done = () => {
-          world.classList.remove('is-travelling')
-          document.body.classList.remove('world-map-intro')
-          document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
-        }
-        unfold.finished.then(done, done)
+        world.classList.remove('is-travelling')
+        document.body.classList.remove('world-map-intro')
+        document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
       }
-      zoom.finished.then(land, land)
+      Promise.all([zoom.finished, unfold.finished]).then(land, land)
     }, HOLD_MS)
   }
   playMapIntro()
