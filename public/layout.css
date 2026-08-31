@@ -1479,6 +1479,22 @@ a.timeline-tile:focus-visible {
   left: 9.5rem;
 }
 
+/* Samme dim-hover som credits/employments: alt dempes, raden man står på
+   beholder full styrke. */
+.archive-list li > span {
+  transition: opacity 140ms ease;
+}
+
+@media (hover: hover) {
+  .archive-list:hover li > span {
+    opacity: 0.3;
+  }
+
+  .archive-list li:hover > span {
+    opacity: 1;
+  }
+}
+
 .archive-list li.is-year-start:not(:first-child) {
   margin-top: 1.75rem;
 }
@@ -1490,14 +1506,7 @@ a.timeline-tile:focus-visible {
 
 .archive-name a {
   color: inherit;
-  text-decoration: underline;
-  text-decoration-color: #d4d4d8;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 150ms ease;
-}
-
-.archive-name a:hover {
-  text-decoration-color: #52525b;
+  text-decoration: none;
 }
 
 /* Ekstern lenke-pil (↗) etter presse-lenkene. */
