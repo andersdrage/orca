@@ -1209,6 +1209,80 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   }
 }
 
+/* ── Bildestabel (misc): tre kort rotert oppå hverandre med skygge bakover.
+   Hover vifter dem ut så man ser at det er flere. Transforms ligger på
+   KORTENE (indre elementer) — elastikk-scrollen eier tilens egen transform. */
+.timeline-tile--stack {
+  overflow: visible;
+  background: none;
+}
+
+.timeline-tile__stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.timeline-tile__stack-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: clamp(14px, 2vw, 22px);
+  box-shadow: 0 16px 36px rgba(24, 24, 27, 0.28);
+  transition: transform 420ms cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+/* Første kort i markupen er toppkortet. */
+.timeline-tile__stack-img:nth-child(1) {
+  z-index: 3;
+}
+
+.timeline-tile__stack-img:nth-child(2) {
+  z-index: 2;
+  transform: rotate(4.5deg) translate(4%, -2%);
+}
+
+.timeline-tile__stack-img:nth-child(3) {
+  z-index: 1;
+  transform: rotate(-3.5deg) translate(8%, 4%);
+}
+
+a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(1),
+a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(1) {
+  transform: rotate(-2.5deg) translate(-7%, 1%);
+}
+
+a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(2),
+a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(2) {
+  transform: rotate(6.5deg) translate(9%, -4%);
+}
+
+a.timeline-tile--stack:hover .timeline-tile__stack-img:nth-child(3),
+a.timeline-tile--stack:focus-visible .timeline-tile__stack-img:nth-child(3) {
+  transform: rotate(-8deg) translate(17%, 7%);
+}
+
+/* Ved klikk: kortene samler seg momentant så morph-snapshotet er én flate. */
+a.timeline-tile.is-navigating .timeline-tile__stack-img {
+  transition: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Entré: stabelen stiger inn som én gruppe (samme kurve som enkeltbildene). */
+.is-entering-home .timeline-tile__stack {
+  animation: entrance-rise 0.55s ease both;
+  animation-delay: 840ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-tile__stack-img {
+    transition: none;
+  }
+}
+
 /* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
    med fjær-easing (overshoot ~8 % som setter seg) — bevegelse, ikke fade. */
 .timeline-tile__hover-label {

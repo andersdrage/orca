@@ -115,10 +115,13 @@ const TILES = [
     id: 'misc',
     title: 'Miscellaneous work',
     href: '/misc/',
-    image: '/images/misc-agens-1.jpg',
+    /* Bildestabel: tre kort rotert oppå hverandre — toppkortet er case-heroen.
+       Hover vifter kortene ut så man ser at det er flere. */
+    image: '/images/misc-logos.jpg',
+    stack: ['/images/misc-logos.jpg', '/images/misc-agens-1.jpg', '/images/misc-agens-2.jpg'],
     color: '#3e6e68',
-    /* Samme aspekt som bildet (1800×1237). */
-    ratio: '1800 / 1237',
+    /* Samme aspekt som toppkortet (2560×1707). */
+    ratio: '2560 / 1707',
     h: '38svh',
   },
   {
@@ -140,11 +143,19 @@ function tileHtml(tile) {
      tilen. (Bakgrunnen lå bak bildet og dukket opp som svart flate i transition-
      snapshots tatt før bildet var dekodet.) */
   const title = tile.title && !tile.image ? `<span class="timeline-tile__title">${tile.title}</span>` : ''
-  /* Cover-bilde: over folden på forsiden — lastes eagert med høy prioritet. */
-  const image = tile.image
-    ? `<img class="timeline-tile__image" src="${tile.image}" alt="" loading="eager" fetchpriority="high" decoding="async" />`
-    : ''
-  const classes = `timeline-tile${tile.image ? ' timeline-tile--image' : ''}`
+  /* Cover-bilde: over folden på forsiden — lastes eagert med høy prioritet.
+     Stabel-tiles rendrer tre kort oppå hverandre i stedet for ett bilde. */
+  const image = tile.stack
+    ? `<span class="timeline-tile__stack" aria-hidden="true">${tile.stack
+        .map(
+          (src) =>
+            `<img class="timeline-tile__stack-img" src="${src}" alt="" loading="eager" fetchpriority="high" decoding="async" />`,
+        )
+        .join('')}</span>`
+    : tile.image
+      ? `<img class="timeline-tile__image" src="${tile.image}" alt="" loading="eager" fetchpriority="high" decoding="async" />`
+      : ''
+  const classes = `timeline-tile${tile.image ? ' timeline-tile--image' : ''}${tile.stack ? ' timeline-tile--stack' : ''}`
   /* Hover: prosjektnavnet skyves ut fra bildets underkant med fjær-easing. */
   const hoverLabel =
     tile.href && tile.title && tile.image
