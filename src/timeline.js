@@ -48,14 +48,15 @@ const TILES = [
     h: '51svh',
   },
   {
-    id: 'nettavisen',
-    title: 'Nettavisen',
-    href: '/nettavisen/',
-    image: '/images/nettavisen-cover.jpg',
-    color: '#31406f',
-    /* Samme aspekt som coveret (1147×1190). */
-    ratio: '1147 / 1190',
-    h: '48svh',
+    id: 'boligmappa',
+    title: 'Boligmappa',
+    href: '/boligmappa/',
+    /* Cover-duellens vinner: de to svevende telefonene. */
+    image: '/images/boligmappa-cover-2.jpg',
+    color: '#e8511f',
+    /* Samme aspekt som coveret (1600×2494). */
+    ratio: '1600 / 2494',
+    h: '51svh',
   },
   {
     id: 'finn',
@@ -66,6 +67,16 @@ const TILES = [
     /* Samme aspekt som bildet (1920×1080). */
     ratio: '16 / 9',
     h: '38svh',
+  },
+  {
+    id: 'nettavisen',
+    title: 'Nettavisen',
+    href: '/nettavisen/',
+    image: '/images/nettavisen-cover.jpg',
+    color: '#31406f',
+    /* Samme aspekt som coveret (1147×1190). */
+    ratio: '1147 / 1190',
+    h: '48svh',
   },
   {
     /* archived: vises kun på /archived-work/ (samme layout som forsiden). */
@@ -94,23 +105,11 @@ const TILES = [
     id: 'uber',
     title: 'Uber',
     href: '/uber/',
-    /* Første frame av uber-videoen — samme frame er poster på case-heroen,
-       så morphen lander i nøyaktig samme bilde før videoen spiller. */
-    image: '/images/misc-uber-poster.jpg',
-    color: '#3e6e68',
-    ratio: '1920 / 1252',
+    image: '/images/uber-cover-1.jpg',
+    color: '#c99b6a',
+    /* Samme aspekt som coveret (1376×1139) — identisk utsnitt i tile og hero. */
+    ratio: '1376 / 1139',
     h: '38svh',
-  },
-  {
-    id: 'boligmappa',
-    title: 'Boligmappa',
-    href: '/boligmappa/',
-    /* Cover-duellens vinner: de to svevende telefonene. */
-    image: '/images/boligmappa-cover-2.jpg',
-    color: '#e8511f',
-    /* Samme aspekt som coveret (1600×2494). */
-    ratio: '1600 / 2494',
-    h: '51svh',
   },
   {
     id: 'misc',

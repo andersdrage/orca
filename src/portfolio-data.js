@@ -205,8 +205,8 @@ export const portfolioCases = [
       { role: 'Designers', names: 'Ben Mingo, Anders Drage and Simon' },
     ],
     items: [
-      /* Hero = videoen; posteren (første frame) er tidslinje-tilen, så morphen
-         lander i nøyaktig samme bilde før videoen spiller. */
+      /* Hero = samme cover som tidslinje-tilen; videoen under. */
+      { file: 'uber-cover-1.jpg', span: 'full', alt: 'Uber' },
       { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
     ],
   },
