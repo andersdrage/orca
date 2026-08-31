@@ -1423,12 +1423,6 @@ a.timeline-tile:focus-visible {
   right: 30px;
 }
 
-/* Kjelleren: «du er her»-etiketten sentrert i bunnen (Archive/People har hjørnene). */
-.corner-links a[href='/archived-work/'] {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 .corner-links a {
   color: #52525b;
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
