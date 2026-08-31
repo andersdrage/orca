@@ -1010,9 +1010,13 @@ body.world-mode {
   font-display: swap;
 }
 
-/* Gjenbrukbar Maison Neue-klasse (brukes bl.a. på praise-attribusjoner). */
+/* Gjenbrukbare fontklasser (brukes bl.a. på praise-attribusjoner). */
 .font-maison {
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-supply {
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 .timeline-intro {
