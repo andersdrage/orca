@@ -203,9 +203,11 @@ export function initTimeline() {
   function placeIntro() {
     const width = intro.offsetWidth
     if (!width || !window.innerWidth) return false
-    const scrollerLeftEdge = scroller.getBoundingClientRect().left
-    const firstTileContentLeft =
-      firstTileEl.getBoundingClientRect().left - scrollerLeftEdge + scroller.scrollLeft
+    /* offsetLeft = layout-koordinater relativt til scrolleren — immun mot både
+       elastikk-transforms og kart-introens nedskalering av hele verdenen
+       (getBoundingClientRect ville målt 4× feil mens kartet står på 0.25). */
+    const firstTileContentLeft = firstTileEl.offsetLeft
+    if (!firstTileContentLeft) return false
     introContentLeft = firstTileContentLeft - width - 56
     introContentRight = introContentLeft + width
     intro.style.left = `${introContentLeft}px`
@@ -301,8 +303,8 @@ export function initTimeline() {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
-        const scrollerLeft = scroller.getBoundingClientRect().left
-        initialScroll = tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft - edgeInset
+        /* offsetLeft: layout-koordinater — upåvirket av transforms (se placeIntro). */
+        initialScroll = tile.offsetLeft - edgeInset
         /* Normaliser inn i wrap-sonen [0.6w, 1.4w] — siste tile (Mountain Milk)
            kunne ellers lande forbi wrap-terskelen, som teleporterte scrollen
            MIDT i tilbake-morphen og fikk zoomen til å fly mot feil sted. */
@@ -480,11 +482,12 @@ export function initTimeline() {
 
   let tileGeometry = []
   function measureTiles() {
-    const scrollerLeft = scroller.getBoundingClientRect().left
+    /* offsetLeft/offsetWidth: layout-koordinater — upåvirket av elastikk-
+       transforms og kart-introens verdens-skalering (se placeIntro). */
     tileGeometry = [...scroller.querySelectorAll('.timeline-tile')].map((tile) => ({
       tile,
-      contentLeft: tile.getBoundingClientRect().left - scrollerLeft + scroller.scrollLeft,
-      width: tile.getBoundingClientRect().width,
+      contentLeft: tile.offsetLeft,
+      width: tile.offsetWidth,
       /* De to siste tilene i hver kopi fader ut mot venstre kant — nest siste
          treffer kanten først og fader først, så siste: runden ebber ut i rekkefølge. */
       fades: !tile.nextElementSibling || !tile.nextElementSibling.nextElementSibling,
