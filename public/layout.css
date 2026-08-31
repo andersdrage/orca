@@ -846,9 +846,9 @@ body.world-mode {
   gap: 0.625rem;
   margin: 2rem 0 0;
   color: #71717a;
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.625rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.12em;
   line-height: 1.4;
   text-transform: uppercase;
@@ -860,9 +860,9 @@ body.world-mode {
   transition: color 160ms ease;
 }
 
-/* Lenke til arkivert arbeid — dempet mono-linje nederst i footeren. */
+/* Lenke til arkivert arbeid — dempet mono-linje rett under dracones-teksten. */
 .site-footer__archived {
-  margin: 1.5rem 0 0;
+  margin: 1.25rem 0 0;
 }
 
 .site-footer__archived a {
