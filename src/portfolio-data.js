@@ -5,6 +5,16 @@
  * `span` matches filename: full | half
  * `caption` – valgfri kort tekst under bildet/video (10px, sentrert, zinc-600)
  */
+/* Cover-varianter for MICROMILSPEC: B-tasten på case-siden sykler heroen
+   gjennom disse, og valget lagres i sessionStorage ('micromilspec:cover') så
+   tidslinje-tilen viser samme bilde — morphen forblir én og samme flate.
+   ratio må matche bildefilens faktiske aspekt. */
+export const micromilspecCovers = [
+  { file: 'micromilspec-6-half.jpg', ratio: '1600 / 1770' },
+  { file: 'micromilspec-b2.jpg', ratio: '1600 / 2844' },
+  { file: 'micromilspec-b3.jpg', ratio: '1600 / 2844' },
+]
+
 export const portfolioCases = [
   {
     id: 'micromilspec',

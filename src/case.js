@@ -1,4 +1,5 @@
 import { initHeader } from './header.js'
+import { micromilspecCovers } from './portfolio-data.js'
 import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import closeIconUrl from './assets/icons/close.svg?url'
@@ -9,6 +10,37 @@ if (root) {
   /* Husk hvilken case vi står på — så «lukk» (og back) alltid kan morphe til riktig tile,
      også etter direktebesøk på case-URL-en. */
   sessionStorage.setItem('timeline:last-case', root.dataset.caseId)
+  initCoverCycle(root.dataset.caseId)
+}
+
+/* B-tasten sykler MICROMILSPEC-heroen gjennom cover-variantene. Valget lagres
+   i sessionStorage, og tidslinjen leser det ved neste last — så tilen man
+   morpher tilbake til viser samme bilde. Variantene preloades så byttet er
+   momentant uten dekode-blaff. */
+function initCoverCycle(caseId) {
+  if (caseId !== 'micromilspec') return
+  const hero = document.querySelector('.case-cover-hero img')
+  if (!hero) return
+
+  let index = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+  if (!micromilspecCovers[index]) index = 0
+  const apply = () => {
+    hero.src = `/images/${micromilspecCovers[index].file}`
+  }
+  if (index > 0) apply()
+
+  micromilspecCovers.forEach((cover) => {
+    new Image().src = `/images/${cover.file}`
+  })
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'b' && event.key !== 'B') return
+    if (event.metaKey || event.ctrlKey || event.altKey) return
+    if (document.querySelector('dialog[open]')) return
+    index = (index + 1) % micromilspecCovers.length
+    sessionStorage.setItem('micromilspec:cover', String(index))
+    apply()
+  })
 }
 
 initProjectAudio()

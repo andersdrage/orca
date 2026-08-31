@@ -2,6 +2,8 @@
    Tre identiske kopier av tilene rendres; scroll holdes alltid i midt-kopien
    (wrap ved 0.5/1.5 × kopibredde) så loopen aldri møter en kant. */
 
+import { micromilspecCovers } from './portfolio-data.js'
+
 const TILES = [
   {
     id: 'micromilspec',
@@ -141,6 +143,19 @@ function tileHtml(tile) {
 export function initTimeline() {
   const scroller = document.querySelector('[data-timeline]')
   if (!scroller) return
+
+  /* MICROMILSPEC-tilen følger cover-varianten valgt med B på case-siden
+     (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
+     Settes idempotent (indeks 0 = standard) siden TILES er modul-state. */
+  try {
+    let coverIndex = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    if (!micromilspecCovers[coverIndex]) coverIndex = 0
+    const micromilspecTile = TILES.find((tile) => tile.id === 'micromilspec')
+    micromilspecTile.image = `/images/${micromilspecCovers[coverIndex].file}`
+    micromilspecTile.ratio = micromilspecCovers[coverIndex].ratio
+  } catch {
+    /* sessionStorage utilgjengelig → standard-cover */
+  }
 
   const copies = [0, 1, 2].map((copyIndex) => {
     const copy = document.createElement('div')
