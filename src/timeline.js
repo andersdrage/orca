@@ -108,6 +108,17 @@ const TILES = [
     h: '40svh',
   },
   {
+    /* MIDLERTIDIG: cover-duell mot 'boligmappa' — taperen slettes. */
+    id: 'boligmappa-2',
+    title: 'Boligmappa',
+    href: '/boligmappa-2/',
+    image: '/images/boligmappa-cover-2.jpg',
+    color: '#e8511f',
+    /* Samme aspekt som coveret (1600×2494). */
+    ratio: '1600 / 2494',
+    h: '40svh',
+  },
+  {
     id: 'misc',
     title: 'Miscellaneous work',
     href: '/misc/',
@@ -309,7 +320,7 @@ export function initTimeline() {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (/^\/(micromilspec|off-market|misc|uber|boligmappa|boligmappa-2|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
       const id = sessionStorage.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -683,7 +694,7 @@ export function initTimeline() {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = /^\/(micromilspec|off-market|misc|uber|boligmappa|boligmappa-2|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }

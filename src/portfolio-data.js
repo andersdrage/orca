@@ -217,6 +217,15 @@ export const portfolioCases = [
     ],
   },
   {
+    /* MIDLERTIDIG: cover-duell mot 'boligmappa' — taperen slettes. */
+    id: 'boligmappa-2',
+    title: 'Boligmappa',
+    intro: 'Design for Boligmappa — the digital home folder for Norwegian homes.',
+    items: [
+      { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
+    ],
+  },
+  {
     id: 'misc',
     title: 'Miscellaneous work',
     intro: 'Fragments from client and side projects.',
