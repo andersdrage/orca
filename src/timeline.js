@@ -14,7 +14,7 @@ const TILES = [
     /* Samme aspekt som bildefilen (1600×1770) — tile og case-hero viser da identisk
        utsnitt, så morphen er én og samme flate uten dobbelteksponering. */
     ratio: '1600 / 1770',
-    h: '44svh',
+    h: '56svh',
   },
   {
     id: 'hmkg',
@@ -24,7 +24,7 @@ const TILES = [
     color: '#b65c3f',
     /* Samme aspekt som bildet (844×740). */
     ratio: '844 / 740',
-    h: '30svh',
+    h: '38svh',
   },
   {
     id: 'hjemla',
@@ -34,7 +34,7 @@ const TILES = [
     color: '#f5c542',
     /* Samme aspekt som bildet (2400×1600) — identisk utsnitt i tile og hero. */
     ratio: '3 / 2',
-    h: '34svh',
+    h: '43svh',
   },
   {
     id: 'off-market',
@@ -44,7 +44,7 @@ const TILES = [
     color: '#2c3e5d',
     /* Samme aspekt som bildet (2560×1707) — identisk utsnitt i tile og hero. */
     ratio: '2560 / 1707',
-    h: '40svh',
+    h: '51svh',
   },
   {
     id: 'nettavisen',
@@ -54,7 +54,7 @@ const TILES = [
     color: '#31406f',
     /* Samme aspekt som coveret (1147×1190). */
     ratio: '1147 / 1190',
-    h: '38svh',
+    h: '48svh',
   },
   {
     id: 'finn',
@@ -64,7 +64,7 @@ const TILES = [
     color: '#c9a227',
     /* Samme aspekt som bildet (1920×1080). */
     ratio: '16 / 9',
-    h: '30svh',
+    h: '38svh',
   },
   {
     id: 'humming-people',
@@ -74,7 +74,7 @@ const TILES = [
     color: '#6d597a',
     /* Samme aspekt som bildet (2072×1372). */
     ratio: '2072 / 1372',
-    h: '32svh',
+    h: '41svh',
   },
   {
     id: 'brathwait',
@@ -84,7 +84,7 @@ const TILES = [
     color: '#a44a5e',
     /* Samme aspekt som coveret (580×784). */
     ratio: '580 / 784',
-    h: '36svh',
+    h: '46svh',
   },
   {
     id: 'uber',
@@ -95,7 +95,7 @@ const TILES = [
     image: '/images/misc-uber-poster.jpg',
     color: '#3e6e68',
     ratio: '1920 / 1252',
-    h: '30svh',
+    h: '38svh',
   },
   {
     id: 'boligmappa',
@@ -105,7 +105,7 @@ const TILES = [
     color: '#e8511f',
     /* Samme aspekt som coveret (1285×2087). */
     ratio: '1285 / 2087',
-    h: '40svh',
+    h: '51svh',
   },
   {
     /* MIDLERTIDIG: cover-duell mot 'boligmappa' — taperen slettes. */
@@ -116,7 +116,7 @@ const TILES = [
     color: '#e8511f',
     /* Samme aspekt som coveret (1600×2494). */
     ratio: '1600 / 2494',
-    h: '40svh',
+    h: '51svh',
   },
   {
     id: 'misc',
@@ -126,7 +126,7 @@ const TILES = [
     color: '#3e6e68',
     /* Samme aspekt som bildet (1800×1237). */
     ratio: '1800 / 1237',
-    h: '30svh',
+    h: '38svh',
   },
   {
     id: 'mountain-milk',
@@ -136,7 +136,7 @@ const TILES = [
     color: '#4a3b32',
     /* Samme aspekt som bildet (2480×3508). */
     ratio: '2480 / 3508',
-    h: '42svh',
+    h: '53svh',
   },
 ]
 
