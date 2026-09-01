@@ -10,6 +10,16 @@ const ARCHIVED = [
   { id: 'humming-people', service: 'LP & booklet design', year: 2016 },
   { id: 'brathwait', service: 'Brand + UX design', year: 2015 },
   { id: 'mountain-milk', service: 'Packaging design', year: 2021 },
+  {
+    /* Har ingen case — filene listes direkte. */
+    id: 'houelandek',
+    title: 'Houeland-EK',
+    service: 'Brand design',
+    year: 2016,
+    files: ['01', '02', '03', '04', '06', '07', '08', '11', '12', '14', '17', '20', '21', '22', '23', '24'].map(
+      (n) => `houelandek/${n}.jpg`,
+    ),
+  },
 ]
 
 function collectMedia() {
@@ -24,15 +34,16 @@ function collectMedia() {
   ]
   ARCHIVED.forEach((project) => {
     const singleCase = portfolioCases.find((c) => c.id === project.id)
-    if (!singleCase) return
-    singleCase.items
-      .filter((item) => !/\.(mp4|webm|mov)$/i.test(item.file))
-      .forEach((item, index) => {
+    const title = project.title ?? singleCase?.title
+    const files = project.files ?? singleCase?.items.map((item) => item.file) ?? []
+    files
+      .filter((file) => !/\.(mp4|webm|mov)$/i.test(file))
+      .forEach((file, index) => {
         media.push({
           type: 'image',
-          src: `/images/${item.file}`,
-          alt: item.alt ?? singleCase.title,
-          title: singleCase.title,
+          src: `/images/${file}`,
+          alt: title,
+          title,
           meta: `${project.service}, ${project.year}`,
           firstOfProject: index === 0,
         })
