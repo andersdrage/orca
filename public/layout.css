@@ -2220,7 +2220,8 @@ body.world-map-intro .world-page {
   cursor: zoom-in;
 }
 
-.archived-grid img {
+.archived-grid img,
+.archived-grid video {
   display: block;
   width: 100%;
   height: auto;
@@ -2229,8 +2230,40 @@ body.world-map-intro .world-page {
 }
 
 .archived-grid__item:hover img,
-.archived-grid__item:focus-visible img {
+.archived-grid__item:focus-visible img,
+.archived-grid__item:hover video,
+.archived-grid__item:focus-visible video {
   transform: scale(1.02);
+}
+
+/* Oransje intro-kort (kopiert fra Figma-framen): serif-tittel øverst,
+   uppercase meta nederst, luft imellom. */
+.archived-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 870 / 1000;
+  border-radius: 10px;
+  background: #e8511f;
+  color: #fff;
+  padding: clamp(1.4rem, 2.4vw, 2.5rem);
+}
+
+.archived-card__title {
+  margin: 0;
+  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  line-height: 1.02;
+}
+
+.archived-card__meta {
+  margin: 0;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: clamp(0.72rem, 1vw, 0.95rem);
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  text-transform: uppercase;
 }
 
 .archived-grid__name {
@@ -2267,7 +2300,8 @@ body.world-map-intro .world-page {
   background: rgba(250, 250, 250, 0.96);
 }
 
-.archived-lightbox img {
+.archived-lightbox__media img,
+.archived-lightbox__media video {
   max-width: min(1400px, 86vw);
   max-height: 86svh;
   border-radius: 12px;

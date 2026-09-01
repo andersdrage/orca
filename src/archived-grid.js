@@ -1,7 +1,7 @@
 /* Arkiv-kjelleren: ALLE bildene fra de arkiverte prosjektene ligger rett ut i
    et masonry-grid (à la offgrid.inc) — man klikker ikke inn i noen case.
-   Første bilde i hvert prosjekt bærer navn + service/år. Klikk på et bilde
-   åpner en lightbox med ‹ ›-navigasjon (og ← → / Esc). */
+   Første celle er et oransje intro-kort; capa-vignetten ligger som levende
+   videocelle. Klikk åpner en lightbox med ‹ ›-navigasjon (og ← → / Esc). */
 
 import { portfolioCases } from './portfolio-data.js'
 
@@ -12,15 +12,24 @@ const ARCHIVED = [
   { id: 'mountain-milk', service: 'Packaging design', year: 2021 },
 ]
 
-function collectImages() {
-  const images = []
+function collectMedia() {
+  const media = [
+    {
+      type: 'video',
+      src: '/images/capa-vignette.mp4',
+      poster: '/images/capa-vignette-poster.jpg',
+      alt: 'Capa vignette',
+      title: 'Capa',
+    },
+  ]
   ARCHIVED.forEach((project) => {
     const singleCase = portfolioCases.find((c) => c.id === project.id)
     if (!singleCase) return
     singleCase.items
       .filter((item) => !/\.(mp4|webm|mov)$/i.test(item.file))
       .forEach((item, index) => {
-        images.push({
+        media.push({
+          type: 'image',
           src: `/images/${item.file}`,
           alt: item.alt ?? singleCase.title,
           title: singleCase.title,
@@ -29,37 +38,49 @@ function collectImages() {
         })
       })
   })
-  return images
+  return media
 }
+
+/* Oransje intro-kort — erstatter sidens tekst-header, øverst til venstre. */
+const CARD_HTML = `<div class="archived-grid__cell">
+    <div class="archived-card" role="heading" aria-level="2">
+      <h2 class="archived-card__title">Archived<br />work</h2>
+      <p class="archived-card__meta">Miscellanous work from<br />2012 and up to now</p>
+    </div>
+  </div>`
 
 export function initArchivedGrid(rootEl) {
   const grid = (rootEl ?? document).querySelector('[data-archived-grid]')
   if (!grid || grid.dataset.ready) return
   grid.dataset.ready = 'true'
 
-  const images = collectImages()
+  const media = collectMedia()
 
-  /* Leserekkefølgen skal gå VENSTRE → HØYRE: bildene deles rundgang-vis på
-     kolonnene (i % n), så bilde 1–4 danner øverste visuelle rad, 5–8 neste
-     osv. (CSS `columns` flyter nedover per kolonne — feil retning.) */
-  const narrow = window.matchMedia('(max-width: 900px)')
-  const cellHtml = (image, index) => `<div class="archived-grid__cell">
-      <button type="button" class="archived-grid__item" data-index="${index}" aria-label="Show ${image.alt} large">
-        <img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async" />
+  const cellHtml = (item, index) => `<div class="archived-grid__cell">
+      <button type="button" class="archived-grid__item" data-index="${index}" aria-label="Show ${item.alt} large">
+        ${
+          item.type === 'video'
+            ? `<video autoplay loop muted playsinline preload="metadata" poster="${item.poster}" disablepictureinpicture disableremoteplayback tabindex="-1"><source src="${item.src}" type="video/mp4" /></video>`
+            : `<img src="${item.src}" alt="${item.alt}" loading="lazy" decoding="async" />`
+        }
       </button>
       ${
-        image.firstOfProject
-          ? `<span class="archived-grid__name">${image.title}</span>
-             <span class="archived-grid__meta">${image.meta}</span>`
+        item.firstOfProject
+          ? `<span class="archived-grid__name">${item.title}</span>
+             <span class="archived-grid__meta">${item.meta}</span>`
           : ''
       }
     </div>`
 
+  /* Leserekkefølgen går VENSTRE → HØYRE: cellene deles rundgang-vis på
+     kolonnene, så celle 1–4 danner øverste visuelle rad (kortet først). */
+  const narrow = window.matchMedia('(max-width: 900px)')
   const render = () => {
     const columnCount = narrow.matches ? 2 : 4
     const columns = Array.from({ length: columnCount }, () => [])
-    images.forEach((image, index) => {
-      columns[index % columnCount].push(cellHtml(image, index))
+    const cells = [CARD_HTML, ...media.map(cellHtml)]
+    cells.forEach((cell, index) => {
+      columns[index % columnCount].push(cell)
     })
     grid.innerHTML = columns.map((cells) => `<li class="archived-grid__col">${cells.join('')}</li>`).join('')
   }
@@ -71,12 +92,15 @@ export function initArchivedGrid(rootEl) {
   let box = null
 
   const show = (index) => {
-    current = (index + images.length) % images.length
-    const image = images[current]
-    box.querySelector('img').src = image.src
-    box.querySelector('img').alt = image.alt
+    current = (index + media.length) % media.length
+    const item = media[current]
+    const frame = box.querySelector('.archived-lightbox__media')
+    frame.innerHTML =
+      item.type === 'video'
+        ? `<video autoplay loop muted playsinline poster="${item.poster}"><source src="${item.src}" type="video/mp4" /></video>`
+        : `<img src="${item.src}" alt="${item.alt}" />`
     box.querySelector('.archived-lightbox__caption').textContent =
-      `${image.title} — ${current + 1}/${images.length}`
+      `${item.title} — ${current + 1}/${media.length}`
   }
 
   const close = () => {
@@ -105,7 +129,7 @@ export function initArchivedGrid(rootEl) {
     box = document.createElement('div')
     box.className = 'archived-lightbox'
     box.innerHTML = `
-      <img src="" alt="" />
+      <div class="archived-lightbox__media"></div>
       <p class="archived-lightbox__caption"></p>
       <button type="button" class="case-nav case-nav--prev" aria-label="Previous image">‹</button>
       <button type="button" class="case-nav case-nav--next" aria-label="Next image">›</button>
@@ -120,7 +144,7 @@ export function initArchivedGrid(rootEl) {
     })
     box.querySelector('.archived-lightbox__close').addEventListener('click', close)
     box.addEventListener('click', (event) => {
-      if (event.target === box) close()
+      if (event.target === box || event.target.classList.contains('archived-lightbox__media')) close()
     })
     document.addEventListener('keydown', onKey, true)
     document.body.append(box)
