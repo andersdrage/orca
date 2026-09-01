@@ -99,8 +99,10 @@ export function initArchivedGrid(rootEl) {
       item.type === 'video'
         ? `<video autoplay loop muted playsinline poster="${item.poster}"><source src="${item.src}" type="video/mp4" /></video>`
         : `<img src="${item.src}" alt="${item.alt}" />`
+    /* Telleren er prosjekt-intern: «Brathwait — 5/23», ikke posisjon i hele grid-en. */
+    const group = media.filter((entry) => entry.title === item.title)
     box.querySelector('.archived-lightbox__caption').textContent =
-      `${item.title} — ${current + 1}/${media.length}`
+      `${item.title} — ${group.indexOf(item) + 1}/${group.length}`
   }
 
   const close = () => {

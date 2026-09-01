@@ -2090,6 +2090,22 @@ body.world-map-intro .timeline-tile__hover-label {
 body.world-map-intro .world-page {
   transition: border-radius 600ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
+/* Kart-viewet skal ikke avsløre kjellerens innhold: bilder/video/kort vises
+   som grå skjelettflater til zoomen har landet. */
+body.world-map-intro .archived-grid .archived-grid__item {
+  background: #e8e8ea;
+  border-radius: 10px;
+}
+
+body.world-map-intro .archived-grid img,
+body.world-map-intro .archived-grid video {
+  opacity: 0;
+}
+
+body.world-map-intro .archived-card {
+  background: #e8e8ea;
+  color: transparent;
+}
 /* ── slutt PROTOTYP ── */
 
 /* ── Design-revisjon (D): overlay-panelet. Dev-verktøy. ── */
@@ -2339,6 +2355,7 @@ body.world-map-intro .world-page {
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
+  line-height: 1;
   text-transform: uppercase;
 }
 
