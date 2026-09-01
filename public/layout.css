@@ -2189,19 +2189,31 @@ body.world-map-intro .world-page {
   }
 }
 
-/* ── Arkiv-kjelleren: 4-kolonners prosjektgrid (à la offgrid.inc) ── */
+/* ── Arkiv-kjelleren: masonry-grid med ALLE bildene rett ut (à la offgrid.inc).
+   4 kolonner over ~90 % av sidebredden; første bilde per prosjekt bærer
+   navn + service/år. ── */
 .archived-grid {
   margin: 0;
   padding: 2.5rem 0 0;
   list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem 1.25rem;
+  width: 90vw;
+  margin-left: calc(50% - 45vw);
+  columns: 4;
+  column-gap: 1.25rem;
 }
 
-.archived-grid a {
+.archived-grid li {
+  break-inside: avoid;
+  margin-bottom: 1.75rem;
+}
+
+.archived-grid__item {
   display: block;
-  text-decoration: none;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
 }
 
 .archived-grid img {
@@ -2212,8 +2224,8 @@ body.world-map-intro .world-page {
   transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
-.archived-grid a:hover img,
-.archived-grid a:focus-visible img {
+.archived-grid__item:hover img,
+.archived-grid__item:focus-visible img {
   transform: scale(1.02);
 }
 
@@ -2234,7 +2246,7 @@ body.world-map-intro .world-page {
 
 @media (max-width: 900px) {
   .archived-grid {
-    grid-template-columns: repeat(2, 1fr);
+    columns: 2;
   }
 }
 
@@ -2242,6 +2254,42 @@ body.world-map-intro .world-page {
   .archived-grid img {
     transition: none;
   }
+}
+
+/* Lightbox: klikk på et bilde → stor visning med ‹ ›-navigasjon. */
+.archived-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 250, 250, 0.96);
+}
+
+.archived-lightbox img {
+  max-width: min(1400px, 86vw);
+  max-height: 86svh;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(24, 24, 27, 0.18);
+}
+
+.archived-lightbox__caption {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #a1a1aa;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.archived-lightbox__close {
+  font-size: 1.1rem;
+  color: #18181b;
 }
 
 /* Prev/neste på arkiverte case-sider: runde piler midt på sidene, samme

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/drage-logo.svg" type="image/svg+xml" sizes="any" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Testside — skal ikke indekseres. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#000000" />
+    <title>Logo test</title>
+    <link rel="stylesheet" href="/src/logo-test.css" />
+  </head>
+  <body>
+    <a href="/" class="back-link">Anders Drage</a>
+
+    <main class="stage" aria-label="Spinning dragon logo surrounded by a 3D halo of work cards">
+      <div class="halo" id="halo" aria-hidden="true"></div>
+      <video class="stage__logo" autoplay loop muted playsinline preload="auto" aria-hidden="true">
+        <source src="/images/drage-logo-loop.mp4" type="video/mp4" />
+      </video>
+    </main>
+
+    <script type="module" src="/src/logo-test.js"></script>
+  </body>
+</html>
