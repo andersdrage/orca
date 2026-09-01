@@ -2198,13 +2198,17 @@ body.world-map-intro .world-page {
   list-style: none;
   width: 90vw;
   margin-left: calc(50% - 45vw);
-  columns: 4;
-  column-gap: 1.25rem;
+  display: flex;
+  gap: 1.25rem;
 }
 
-.archived-grid li {
-  break-inside: avoid;
-  margin-bottom: 1.75rem;
+/* Kolonnene fylles rundgang-vis av JS — leserekkefølgen går venstre → høyre. */
+.archived-grid__col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
 .archived-grid__item {
@@ -2244,11 +2248,7 @@ body.world-map-intro .world-page {
   font-size: 0.75rem;
 }
 
-@media (max-width: 900px) {
-  .archived-grid {
-    columns: 2;
-  }
-}
+/* Mobil: JS re-distribuerer til 2 kolonner (media-query-lytter). */
 
 @media (prefers-reduced-motion: reduce) {
   .archived-grid img {

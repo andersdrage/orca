@@ -38,21 +38,33 @@ export function initArchivedGrid(rootEl) {
   grid.dataset.ready = 'true'
 
   const images = collectImages()
-  grid.innerHTML = images
-    .map(
-      (image, index) => `<li>
-        <button type="button" class="archived-grid__item" data-index="${index}" aria-label="Show ${image.alt} large">
-          <img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async" />
-        </button>
-        ${
-          image.firstOfProject
-            ? `<span class="archived-grid__name">${image.title}</span>
-               <span class="archived-grid__meta">${image.meta}</span>`
-            : ''
-        }
-      </li>`,
-    )
-    .join('')
+
+  /* Leserekkefølgen skal gå VENSTRE → HØYRE: bildene deles rundgang-vis på
+     kolonnene (i % n), så bilde 1–4 danner øverste visuelle rad, 5–8 neste
+     osv. (CSS `columns` flyter nedover per kolonne — feil retning.) */
+  const narrow = window.matchMedia('(max-width: 900px)')
+  const cellHtml = (image, index) => `<div class="archived-grid__cell">
+      <button type="button" class="archived-grid__item" data-index="${index}" aria-label="Show ${image.alt} large">
+        <img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async" />
+      </button>
+      ${
+        image.firstOfProject
+          ? `<span class="archived-grid__name">${image.title}</span>
+             <span class="archived-grid__meta">${image.meta}</span>`
+          : ''
+      }
+    </div>`
+
+  const render = () => {
+    const columnCount = narrow.matches ? 2 : 4
+    const columns = Array.from({ length: columnCount }, () => [])
+    images.forEach((image, index) => {
+      columns[index % columnCount].push(cellHtml(image, index))
+    })
+    grid.innerHTML = columns.map((cells) => `<li class="archived-grid__col">${cells.join('')}</li>`).join('')
+  }
+  render()
+  narrow.addEventListener('change', render)
 
   /* ── Lightbox ── */
   let current = -1
