@@ -11,6 +11,41 @@ if (root) {
      også etter direktebesøk på case-URL-en. */
   sessionStorage.setItem('timeline:last-case', root.dataset.caseId)
   initCoverCycle(root.dataset.caseId)
+  initArchivedCaseNav(root.dataset.caseId)
+}
+
+/* Arkiverte caser (kjelleren): ‹ › blar til forrige/neste arkiverte prosjekt
+   (også ← →). Hero-til-hero view transition-morphen binder byttene sammen. */
+function initArchivedCaseNav(caseId) {
+  const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
+  const index = ARCHIVED_ORDER.indexOf(caseId)
+  if (index === -1) return
+  const total = ARCHIVED_ORDER.length
+  const prevHref = `/${ARCHIVED_ORDER[(index - 1 + total) % total]}/`
+  const nextHref = `/${ARCHIVED_ORDER[(index + 1) % total]}/`
+
+  const arrow = (href, direction, label, glyph) => {
+    const link = document.createElement('a')
+    link.href = href
+    link.className = `case-nav case-nav--${direction}`
+    link.setAttribute('aria-label', label)
+    link.textContent = glyph
+    document.body.append(link)
+  }
+  arrow(prevHref, 'prev', 'Previous archived project', '‹')
+  arrow(nextHref, 'next', 'Next archived project', '›')
+
+  window.addEventListener('keydown', (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return
+    if (document.querySelector('dialog[open]')) return
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      location.href = prevHref
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      location.href = nextHref
+    }
+  })
 }
 
 /* Case-heroen følger cover-varianten valgt med B på forsiden (sessionStorage) —

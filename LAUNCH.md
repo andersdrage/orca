@@ -12,6 +12,9 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 - [ ] **Nettavisen-intro** («Design for Nettavisen, one of Norway’s largest news sites.») — bekreft/omskriv.
 - [ ] **Uber-intro** («Product design for Uber.») — bekreft/omskriv.
 - [ ] **Boligmappa-intro** («Design for Boligmappa — the digital home folder for Norwegian homes.») — bekreft/omskriv; vurder flere bilder/credits.
+- [ ] **Archived work-grid: service/årstall er mine gjetninger** (HMKG «Print design, 2024»,
+      Humming People «LP & booklet design, 2016», Brathwait «Brand + UX design, 2015»,
+      Mountain Milk «Packaging design, 2021») — bekreft/korriger.
 - [ ] **Uber-credits: «Simon»** mangler etternavn (Designers: Ben Mingo, Anders Drage and Simon) — finn fullt navn.
 - [ ] **Gratitude-sidenotater på People** («People I owe») — fyll inn en kort personlig
       note per navn (kolonnen står tom i markupen, klar til bruk).

@@ -2188,3 +2188,96 @@ body.world-map-intro .world-page {
     opacity: 1;
   }
 }
+
+/* ── Arkiv-kjelleren: 4-kolonners prosjektgrid (à la offgrid.inc) ── */
+.archived-grid {
+  margin: 0;
+  padding: 2.5rem 0 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem 1.25rem;
+}
+
+.archived-grid a {
+  display: block;
+  text-decoration: none;
+}
+
+.archived-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
+}
+
+.archived-grid a:hover img,
+.archived-grid a:focus-visible img {
+  transform: scale(1.02);
+}
+
+.archived-grid__name {
+  display: block;
+  margin-top: 0.6rem;
+  color: #18181b;
+  font-size: 0.875rem;
+}
+
+.archived-grid__meta {
+  display: block;
+  margin-top: 0.1rem;
+  color: #a1a1aa;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .archived-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archived-grid img {
+    transition: none;
+  }
+}
+
+/* Prev/neste på arkiverte case-sider: runde piler midt på sidene, samme
+   utseende som lukkeknappen. Hero-til-hero-morphen (case-cover) binder
+   sidebyttene sammen. */
+.case-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(228, 228, 231, 0.9);
+  border-radius: 9999px;
+  background: rgba(250, 250, 250, 0.92);
+  color: #18181b;
+  font-size: 1.25rem;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    transform 200ms cubic-bezier(0.32, 0.08, 0.24, 1),
+    background-color 160ms ease;
+}
+
+.case-nav--prev {
+  left: 30px;
+}
+
+.case-nav--next {
+  right: 30px;
+}
+
+.case-nav:hover {
+  background: #ececef;
+  transform: translateY(-50%) scale(1.08);
+}

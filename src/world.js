@@ -8,6 +8,7 @@
    Direktebesøk på /about/ eller /praise/ booter samme verden med kameraet
    stående på riktig side; søsknene hentes og monteres rundt. */
 
+import { initArchivedGrid } from './archived-grid.js'
 import { initTimeline } from './timeline.js'
 
 /* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
@@ -292,11 +293,9 @@ export function initWorld(header) {
         const footer = doc.querySelector('#site-layout footer')
         if (main) slots[index].append(document.importNode(main, true))
         if (footer) slots[index].append(document.importNode(footer, true))
-        /* Forsiden og arkiv-kjelleren trenger tidslinje-motoren sin når de er
-           hentet inn — scoped til egen scroller (to tidslinjer i dokumentet). */
-        if (page.path === '/' || page.path === '/archived-work/') {
-          initTimeline(slots[index].querySelector('[data-timeline]'))
-        }
+        /* Forsiden trenger tidslinje-motoren, kjelleren trenger grid-modulen. */
+        if (page.path === '/') initTimeline(slots[index].querySelector('[data-timeline]'))
+        if (page.path === '/archived-work/') initArchivedGrid(slots[index])
       })
       .catch(() => {})
   })
