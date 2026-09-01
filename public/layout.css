@@ -6,6 +6,9 @@ body {
   margin: 0;
   background-color: #fafafa;
   color: #3f3f46;
+  /* Plantin (grunnfonten) settes -4 % tettere, som i Figma. Sans-øyene
+     (Maison/Supply) nullstiller eller setter egen sporing selv. */
+  letter-spacing: -0.04em;
 }
 
 /* Skip-link må ikke avhenge av Tailwind (som lastes async via Vite) — unngår FOUC/blink ved navigasjon. */
@@ -1036,7 +1039,18 @@ body.world-mode {
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
+/* Nullstiller Plantin-sporingen (-4 % på body) for sans-øyene — i et lag med
+   LAVERE prioritet enn Tailwinds utilities, så tracking-widest o.l. fortsatt
+   vinner. (Ulagdelt hadde denne slått utility-klassene.) */
+@layer components {
+  .font-maison,
+  .font-supply {
+    letter-spacing: normal;
+  }
+}
+
 .timeline-intro {
+  letter-spacing: normal;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -1528,6 +1542,7 @@ a.timeline-tile:focus-visible {
   color: #a1a1aa;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.875rem;
+  letter-spacing: normal;
 }
 
 .archive-name {
@@ -2087,6 +2102,10 @@ body.world-map-intro .world-page {
   padding: 4vh 0;
 }
 
+#design-audit-panel {
+  letter-spacing: normal;
+}
+
 #design-audit-panel .da-inner {
   width: min(860px, 92vw);
   margin: 0 auto;
@@ -2244,7 +2263,7 @@ body.world-map-intro .world-page {
   justify-content: space-between;
   aspect-ratio: 870 / 1000;
   border-radius: 10px;
-  background: #e8511f;
+  background: #ff5c00;
   color: #fff;
   padding: clamp(1.4rem, 2.4vw, 2.5rem);
 }
@@ -2253,8 +2272,9 @@ body.world-map-intro .world-page {
   margin: 0;
   font-family: DragePlantin, Georgia, 'Times New Roman', serif;
   font-weight: 400;
-  font-size: clamp(2rem, 3.4vw, 3.4rem);
-  line-height: 1.02;
+  font-size: clamp(1.7rem, 2.8vw, 2.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
 }
 
 .archived-card__meta {
@@ -2279,6 +2299,7 @@ body.world-map-intro .world-page {
   color: #a1a1aa;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.75rem;
+  letter-spacing: normal;
 }
 
 /* Mobil: JS re-distribuerer til 2 kolonner (media-query-lytter). */
