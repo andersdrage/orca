@@ -93,10 +93,28 @@ export function initWorld(header) {
 
   /* Frostet header-bakgrunn følger den aktive sidens interne scroll. */
   const sections = [...world.children]
+
+  /* Hjørnelenkene ligger over den SVARTE footeren når man scroller til bunns.
+     Footeren er sticky (alltid geometrisk i viewporten, bare dekket av
+     innholdskortet), så synligheten må regnes fra gjenstående scroll: den er
+     avdekket i lenkesonen når kolonna er nesten scrollet ut. */
+  const updateFooterContrast = () => {
+    const section = sections[cameraIndex]
+    const footer = section?.querySelector('.site-footer')
+    if (!footer) {
+      document.body.classList.remove('footer-in-view')
+      return
+    }
+    const remaining = section.scrollHeight - section.scrollTop - section.clientHeight
+    document.body.classList.toggle('footer-in-view', remaining < footer.offsetHeight - 80)
+  }
+  const watchFooters = updateFooterContrast
   function syncHeaderScrollState() {
     /* Ingen frostet toppbar noe sted i verdenen — logo/nav svever fritt over innholdet. */
     header.classList.remove('is-scrolled')
+    updateFooterContrast()
   }
+  syncHeaderScrollState()
   sections.forEach((section, index) => {
     section.addEventListener(
       'scroll',
@@ -296,6 +314,7 @@ export function initWorld(header) {
         /* Forsiden trenger tidslinje-motoren, kjelleren trenger grid-modulen. */
         if (page.path === '/') initTimeline(slots[index].querySelector('[data-timeline]'))
         if (page.path === '/archived-work/') initArchivedGrid(slots[index])
+        watchFooters()
       })
       .catch(() => {})
   })

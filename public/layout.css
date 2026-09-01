@@ -1451,6 +1451,21 @@ a.timeline-tile:focus-visible {
   color: #18181b;
 }
 
+/* Når den svarte footeren når bunn-sonen (IntersectionObserver i world.js),
+   lysner hjørnelenkene så de leses mot mørk flate. Rød understrek funker
+   på begge. */
+body.footer-in-view .corner-links a {
+  color: #d4d4d8;
+}
+
+body.footer-in-view .corner-links a:hover {
+  color: #fafafa;
+}
+
+body.footer-in-view .corner-links a[aria-current='page'] {
+  color: #fafafa;
+}
+
 .corner-links a[aria-current='page'] {
   color: #18181b;
   text-decoration: underline;
