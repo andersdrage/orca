@@ -1,4 +1,4 @@
-/* /logo-test — spinnende drage-logo med 3D-halo av arbeidskort.
+/* /logo — spinnende drage-logo med 3D-halo av ekstruderte kort (WebGL).
    Svart flate: videoens svarte bakgrunn går i ett med siden (som i footeren). */
 
 * {
@@ -40,9 +40,15 @@ body {
   display: grid;
   place-items: center;
   height: 100svh;
-  /* Perspektivet gir kortene dybde når de vris i rotateY. */
-  perspective: 1100px;
-  perspective-origin: 50% 50%;
+}
+
+/* WebGL-canvasen dekker hele scenen; three.js tegner halo-en her. */
+.halo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .stage__logo {
@@ -50,34 +56,6 @@ body {
   display: block;
   width: var(--logo-w, 280px);
   height: auto;
-  /* Logoen ligger over halo-kortene som passerer bak senteret. */
+  /* Logoen ligger over canvasen. */
   z-index: 2;
-}
-
-.halo {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-
-.halo__card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--card-w, 120px);
-  height: var(--card-h, 180px);
-  margin: calc(var(--card-h, 180px) / -2) 0 0 calc(var(--card-w, 120px) / -2);
-  border-radius: 10px;
-  overflow: hidden;
-  /* Transform settes direkte per frame i JS — aldri transition på denne. */
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.halo__card img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }

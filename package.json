@@ -17,5 +17,12 @@
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.4",
     "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "dialkit": "^1.4.3",
+    "motion": "^13.1.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "three": "^0.185.1"
   }
 }

@@ -36,7 +36,7 @@ export default defineConfig({
         mountainMilk: resolve(__dirname, 'mountain-milk/index.html'),
         offMarket: resolve(__dirname, 'off-market/index.html'),
         misc: resolve(__dirname, 'misc/index.html'),
-        logoTest: resolve(__dirname, 'logo-test/index.html'),
+        logo: resolve(__dirname, 'logo/index.html'),
       },
     },
   },
