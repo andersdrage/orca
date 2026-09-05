@@ -47,7 +47,7 @@ export const portfolioCases = [
     id: 'hjemla',
     title: 'Hjemla',
     intro:
-      'My first project at Boligmappa — an internal startup unlocking years of home data as a consumer service: value estimates, sold prices, and history for every home in Norway. I redesigned both the identity and the product.',
+      'Redesigned the identity and product for Hjemla, an internal startup at Boligmappa — turning cold property data into a warm, welcoming home for every home.',
     items: [
       { file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' },
       { file: 'hjemla-2-full.jpg', span: 'full', alt: 'Hjemla' },
@@ -119,7 +119,8 @@ export const portfolioCases = [
   {
     id: 'finn',
     title: 'FINN.no',
-    intro: 'Brand and UX design for FINN.no.',
+    intro:
+      'Helped shape a new visual identity and future vision for FINN.no at Brandlab — a design language that has evolved over a decade to connect everything from digital experiences and advertising to physical office spaces.',
     credits: [
       { role: 'Creative Director', names: 'Miriam Skovholt Mortensen' },
       { role: 'Designers', names: 'Anders Drage, Ludvig Bruneau Rossow and Truong Vu Pham' },
@@ -221,7 +222,7 @@ export const portfolioCases = [
     id: 'boligmappa',
     title: 'Boligmappa',
     intro:
-      'Leading design at Boligmappa — Norway’s most complete home record, used by over 1.2 million homeowners. Took the company through a full rebrand, new marketing pages, and a redesign of the entire logged-in product, grounded in user insight.',
+      'Led the rebrand of Boligmappa, a home documentation platform serving 1.2 million homeowners — redesigning its marketing website and logged-in experience.',
     items: [
       /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
