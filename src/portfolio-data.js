@@ -46,7 +46,8 @@ export const portfolioCases = [
   {
     id: 'hjemla',
     title: 'Hjemla',
-    intro: 'Case study in the works — more on this project soon.',
+    intro:
+      'My first project at Boligmappa — an internal startup unlocking years of home data as a consumer service: value estimates, sold prices, and history for every home in Norway. I redesigned both the identity and the product.',
     items: [
       { file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' },
       { file: 'hjemla-2-full.jpg', span: 'full', alt: 'Hjemla' },
@@ -219,7 +220,8 @@ export const portfolioCases = [
   {
     id: 'boligmappa',
     title: 'Boligmappa',
-    intro: 'Design for Boligmappa — the digital home folder for Norwegian homes.',
+    intro:
+      'Leading design at Boligmappa — Norway’s most complete home record, used by over 1.2 million homeowners. Took the company through a full rebrand, new marketing pages, and a redesign of the entire logged-in product, grounded in user insight.',
     items: [
       /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
