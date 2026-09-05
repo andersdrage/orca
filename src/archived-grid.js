@@ -20,6 +20,14 @@ const ARCHIVED = [
       (n) => `houelandek/${n}.jpg`,
     ),
   },
+  {
+    /* Slide 26 og utover fra den gamle showreel-presentasjonen (pres.key). */
+    id: 'showreel',
+    title: 'Showreel',
+    service: 'Mixed work',
+    year: '2014–2018',
+    files: Array.from({ length: 49 }, (_, i) => `showreel/${i + 26}.jpg`),
+  },
 ]
 
 function collectMedia() {
