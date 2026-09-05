@@ -103,7 +103,8 @@ export const portfolioCases = [
   {
     id: 'nettavisen',
     title: 'Nettavisen',
-    intro: 'Design for Nettavisen, one of Norway’s largest news sites.',
+    intro:
+      'Led an embedded design team through Nettavisen’s rebrand and product redesign — working in short sprints and testing with readers to better reflect the quality of its journalism and challenge its tabloid reputation.',
     credits: [
       { role: 'Creative Director', names: 'Anders Drage' },
       { role: 'Designers', names: 'Fredrik Lien Bjørgmo, Line, Neno Mindjek' },
@@ -207,15 +208,19 @@ export const portfolioCases = [
   {
     id: 'uber',
     title: 'Uber',
-    intro: 'Product design for Uber.',
+    intro:
+      'Helped redesign Uber’s global website alongside Ueno and Uber’s in-house design team — creating a friendlier digital presence and a flexible design system spanning thousands of pages.',
     credits: [
-      { role: 'Creative Director', names: 'Halli' },
-      { role: 'Designers', names: 'Ben Mingo, Anders Drage and Simon' },
+      { role: 'Creative Director', names: 'Haraldur Thorleifsson' },
+      { role: 'Designers', names: 'Ben Mingo, Robin Noguier, Jenny Johannesson and Anders Drage' },
+      { role: 'Uber', names: 'Shalin Amin and Strahan McMullen' },
     ],
     items: [
       /* Hero = samme cover som tidslinje-tilen; videoen under. */
       { file: 'uber-cover-1.jpg', span: 'full', alt: 'Uber' },
+      { file: 'uber-2-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
+      { file: 'uber-3-full.mp4', span: 'full', alt: 'Uber' },
     ],
   },
   {
