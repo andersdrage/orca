@@ -107,7 +107,7 @@ export const portfolioCases = [
       'Led an embedded design team through Nettavisen’s rebrand and product redesign — working in short sprints and testing with readers to better reflect the quality of its journalism and challenge its tabloid reputation.',
     credits: [
       { role: 'Creative Director', names: 'Anders Drage' },
-      { role: 'Designers', names: 'Fredrik Lien Bjørgmo, Line, Neno Mindjek' },
+      { role: 'Designers', names: 'Fredrik Lien Bjørgmo, Line Rosvoll Holmen, Neno Mindjek' },
       { role: 'Strategy & client director', names: 'Jonas Feiring' },
       { role: 'Client', names: 'Pål Nisja' },
     ],
@@ -154,6 +154,17 @@ export const portfolioCases = [
       { file: 'finn-16.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-17.jpg', span: 'full', alt: 'FINN.no' },
       { file: 'finn-18.jpg', span: 'full', alt: 'FINN.no' },
+      { file: 'finn-home-imac-v1.jpg', span: 'full', alt: 'FINN.no homepage concept on an iMac' },
+      { file: 'finn-property-viewing-v1.jpg', span: 'full', alt: 'FINN.no property viewing concept on a laptop' },
+      { file: 'finn-chat-ipad-v1.jpg', span: 'full', alt: 'FINN.no mobile chat and iPad editorial concepts' },
+      { file: 'finn-digital-overview-v1.jpg', span: 'full', alt: 'FINN.no visual identity across desktop, tablet and mobile' },
+      /* Office photographs close the case, in the original 1–6 order. */
+      { file: 'finn-lokaler/1-half-v1.jpg', span: 'half', alt: 'FINN-branded cushion with colorful geometric shapes' },
+      { file: 'finn-lokaler/2-half-v1.jpg', span: 'half', alt: 'FINN meeting rooms with illustrated glass walls' },
+      { file: 'finn-lokaler/3-half-v1.jpg', span: 'half', alt: 'Blue FINN illustration wall beneath a sloping office roof' },
+      { file: 'finn-lokaler/4-half-v1.jpg', span: 'half', alt: 'FINN office interior with colorful chairs and illustrated partitions' },
+      { file: 'finn-lokaler/5-half-v1.jpg', span: 'half', alt: 'FINN glass doors decorated with geometric frames and animal photographs' },
+      { file: 'finn-lokaler/6-half-v1.jpg', span: 'half', alt: 'FINN sign above a red wall-mounted coat rack' },
     ],
   },
   {
