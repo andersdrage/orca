@@ -3,8 +3,8 @@ import { after, before, describe, test } from 'node:test'
 import { preview } from 'vite'
 import { chromium, webkit } from 'playwright'
 
-const worldPaths = ['/', '/about/', '/praise/', '/archive/', '/people/', '/archived-work/']
-const casePaths = ['/micromilspec/', '/hjemla/', '/off-market/', '/boligmappa/', '/finn/', '/nettavisen/', '/uber/', '/misc/', '/hmkg/', '/humming-people/', '/brathwait/', '/mountain-milk/']
+const worldPaths = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
+const casePaths = ['/micromilspec/', '/hjemla/', '/off-market/', '/boligmappa/', '/finn/', '/nettavisen/', '/uber/', '/hmkg/', '/humming-people/', '/brathwait/', '/mountain-milk/']
 let server
 let base
 
@@ -50,10 +50,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('selected projects are named once and keyboard activation opens a case', async (t) => {
       const page = await visit(t, '/')
       const links = page.locator('.timeline-copy[data-copy="1"] a')
-      assert.equal(await links.count(), 8)
+      assert.equal(await links.count(), 7)
       const names = await links.evaluateAll((links) => links.map((link) => link.getAttribute('aria-label')))
       assert.ok(names.every(Boolean))
-      assert.equal(new Set(names).size, 8)
+      assert.equal(new Set(names).size, 7)
       for (const name of names) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 1)
       assert.equal(await page.locator('.timeline-copy[aria-hidden="true"] a:not([tabindex="-1"])').count(), 0)
       await page.getByRole('link', { name: 'MICROMILSPEC', exact: true }).focus()
@@ -99,7 +99,53 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await activeWorld(page, '/archived-work/')
     })
 
+    test('History uses the new route and keeps only the English NSB entry', async (t) => {
+      const page = await visit(t, '/history/')
+      await ready(page, '/history/')
+      assert.equal(await page.getByRole('main').getAttribute('aria-label'), 'History')
+      assert.equal(await page.locator('.archive-name').filter({ hasText: 'NSB' }).count(), 1)
+      assert.equal(await page.locator('.archive-name').filter({ hasText: 'NSB' }).textContent(), 'NSB Yearly Report')
+      assert.equal(await page.locator('a[href="/archive/"]').count(), 0)
+      await page.locator('.site-header a[href="/about/"]').click()
+      await activeWorld(page, '/about/')
+      await page.locator('.corner-links a[href="/history/"]').click()
+      await activeWorld(page, '/history/')
+      await page.goBack()
+      await activeWorld(page, '/about/')
+      await page.goForward()
+      await activeWorld(page, '/history/')
+    })
 
+    test('retired URLs are not redirected and all moved work has one destination', async (t) => {
+      const page = await visit(t, '/')
+      assert.equal(await page.getByRole('link', { name: 'Miscellaneous work', exact: true }).count(), 0)
+      for (const path of ['/misc', '/misc/', '/misc/index.html', '/archive', '/archive/', '/archive/index.html']) {
+        const response = await page.request.get(base + path + '?from=bookmark', { maxRedirects: 0 })
+        assert.equal(response.status(), 404)
+        assert.equal(response.headers().location, undefined)
+      }
+      await page.goto(base + '/archived-work/')
+      await ready(page, '/archived-work/')
+      const grid = page.locator('[data-archived-grid]')
+      assert.equal(await grid.locator('[data-project="kaos"] .archived-grid__name').textContent(), 'Shopift theme')
+      assert.equal(await grid.locator('.archived-card__meta').textContent(), 'Miscellaneous work (2012–Present)')
+      for (const [id, year] of [['agens', '2025'], ['aprila', '2018'], ['brevio', '2019'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
+        assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
+      }
+      for (const file of ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg', 'misc-aprila.jpg', 'misc-brevio.jpg', 'misc-logos.jpg', 'misc-nike.jpg', 'misc-pressworks.jpg', 'pressworks-mobile-v1.jpg']) {
+        assert.equal(await grid.locator(`img[src="/images/${file}"]`).count(), 1)
+      }
+      assert.equal(await grid.locator('img[src="/images/misc-nettavisen.jpg"]').count(), 0)
+      await page.goto(base + '/nettavisen/')
+      const moved = page.locator('img[src="/images/misc-nettavisen.jpg"]')
+      assert.equal(await moved.count(), 1)
+      await page.locator('.portfolio-item').filter({ has: moved }).scrollIntoViewIfNeeded()
+      await page.waitForFunction(() => {
+        const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
+        return img.complete && img.naturalWidth > 0
+      })
+      assert.equal(await page.locator('.site-footer__logo-video source').getAttribute('src'), '/images/dragon-footer-mark-v1.mp4')
+    })
 
 
 
@@ -107,7 +153,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await ready(page, '/praise/')
       await page.locator('.site-header a[href="/praise/"]').click()
-      await page.locator('.corner-links a[href="/archive/"]').click()
+      await page.locator('.corner-links a[href="/history/"]').click()
       await page.locator('.site-header a[href="/about/"]').click()
       await activeWorld(page, '/about/')
       await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling'))
@@ -165,8 +211,96 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.title(), 'Delayed Praise result')
     })
 
+    test('retry initializes the homepage and archived gallery exactly once', async (t) => {
+      const page = await visit(t, '/about/')
+      let failing = true
+      await page.route((url) => worldPaths.includes(url.pathname) && ['/', '/archived-work/'].includes(url.pathname), (route) => {
+        if (!failing) return route.continue()
+        return route.fulfill({ status: 503, body: 'Unavailable' })
+      })
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await page.locator('.site-header__brand').click()
+      await page.getByRole('button', { name: 'Try again' }).waitFor()
+      failing = false
+      await page.getByRole('button', { name: 'Try again' }).click()
+      await ready(page, '/')
+      assert.equal(await page.locator('.timeline-copy').count(), 3)
+      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 7)
+      await page.locator('.site-header a[href="/about/"]').click()
+      await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
+      await page.getByRole('button', { name: 'Try again' }).click()
+      await ready(page, '/archived-work/')
+      assert.equal(await page.locator('.archived-grid__item').count(), 116)
+      await page.locator('.world-page:not([inert]) [data-project="hmkg"] button').first().click()
+      assert.equal(await page.getByRole('dialog').count(), 1)
+    })
 
+    test('lightbox traps focus, announces its counter and returns to the trigger after resizing', async (t) => {
+      const page = await visit(t, '/archived-work/')
+      const trigger = page.locator('.world-page:not([inert]) [data-project="hmkg"] button').first()
+      const triggerIndex = await trigger.getAttribute('data-index')
+      await trigger.focus()
+      await page.keyboard.press('Enter')
+      const dialog = page.getByRole('dialog', { name: 'Archived work image viewer' })
+      await dialog.waitFor()
+      assert.equal(await dialog.getByRole('status').textContent(), 'HMKG — 1/4')
+      for (const key of ['Tab', 'Tab', 'Tab', 'Shift+Tab', 'Shift+Tab', 'Shift+Tab']) {
+        await page.keyboard.press(key)
+        assert.equal(await page.evaluate(() => !!document.activeElement.closest('dialog[open]')), true)
+      }
+      await page.keyboard.press('ArrowRight')
+      assert.equal(await dialog.getByRole('status').textContent(), 'HMKG — 2/4')
+      await page.keyboard.press('ArrowLeft')
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.waitForFunction(() => document.querySelectorAll('.archived-project[data-project="hmkg"] .archived-grid__col').length === 2)
+      await page.keyboard.press('Escape')
+      assert.equal(await dialog.count(), 0)
+      assert.equal(await page.evaluate(() => document.activeElement.dataset.index), triggerIndex)
+      await page.keyboard.press('Enter')
+      await page.getByRole('button', { name: 'Close', exact: true }).click()
+      assert.equal(await page.evaluate(() => document.activeElement.dataset.index), triggerIndex)
+      await page.keyboard.press('Enter')
+      await page.mouse.click(10, 100)
+      assert.equal(await dialog.count(), 0)
+      assert.equal(await page.evaluate(() => document.activeElement.dataset.index), triggerIndex)
+    })
 
+    test('archived projects have separate blocks and retain every image and lightbox position', async (t) => {
+      const page = await visit(t, '/archived-work/')
+      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['brevio', 1], ['nike', 1], ['pressworks', 2], ['hmkg', 4], ['humming-people', 11], ['brathwait', 23], ['mountain-milk', 6], ['houelandek', 16], ['pelp', 10], ['godt-levert', 6], ['kaos', 14], ['daccord', 9], ['hellstrom', 2], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
+      const blocks = page.locator('.archived-project')
+      assert.deepEqual(await blocks.evaluateAll((blocks) => blocks.map((block) => [block.dataset.project, block.querySelectorAll('button').length])), expected)
+      assert.equal(await page.locator('.archived-card').count(), 1)
+      const indices = await blocks.locator('button').evaluateAll((buttons) => buttons.map((button) => Number(button.dataset.index)).sort((a, b) => a - b))
+      assert.deepEqual(indices, Array.from({ length: 116 }, (_, i) => i))
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        await page.waitForFunction((count) => document.querySelector('.archived-project__grid')?.children.length === count, width > 900 ? 4 : 2)
+        for (let i = 0; i < expected.length; i++) {
+          const block = blocks.nth(i)
+          await block.scrollIntoViewIfNeeded()
+          // Decode every image in this block so the separation is checked at final height.
+          await block.locator('img').evaluateAll((images) => Promise.all(images.map((img) => img.decode())))
+          assert.equal(await block.locator('.archived-grid__col').count(), width > 900 ? 4 : 2)
+          assert.equal(await block.locator('button').evaluateAll((buttons) => new Set(buttons.map((button) => button.getAttribute('aria-label'))).size), i === 0 ? 2 : 1)
+          const bounds = await block.evaluate((block) => {
+            const rect = block.getBoundingClientRect()
+            const previous = block.previousElementSibling?.getBoundingClientRect()
+            return { left: rect.left, right: rect.right, viewport: innerWidth, gap: previous ? rect.top - previous.bottom : null }
+          })
+          assert.ok(bounds.left >= 0 && bounds.right <= bounds.viewport)
+          if (bounds.gap !== null) assert.ok(bounds.gap >= 63)
+        }
+        const brathwait = page.locator('.archived-project[data-project="brathwait"] button').first()
+        const triggerIndex = await brathwait.getAttribute('data-index')
+        await brathwait.click()
+        assert.equal(await page.getByRole('dialog').getByRole('status').textContent(), 'Brathwait — 1/23')
+        await page.keyboard.press('ArrowRight')
+        assert.equal(await page.getByRole('dialog').getByRole('status').textContent(), 'Brathwait — 2/23')
+        await page.keyboard.press('Escape')
+        assert.equal(await page.evaluate(() => document.activeElement.dataset.index), triggerIndex)
+      }
+    })
 
     test('the error screen is centered and flat, with one recovery action and a still for reduced motion', async (t) => {
       const page = await visit(t, '/about/', { viewport: { width: 390, height: 844 } })
@@ -274,7 +408,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     })
 
     test('an explicit world entry is preserved through an archived case chain and reload', async (t) => {
-      const page = await visit(t, '/archive/')
+      const page = await visit(t, '/history/')
       // The gallery intentionally opens a lightbox; supply a test link to exercise
       // the supported same-origin case entry without changing production content.
       await page.evaluate(() => {
@@ -289,7 +423,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForURL('**/humming-people/')
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.keyboard.press('Escape')
-      await page.waitForURL('**/archive/')
+      await page.waitForURL('**/history/')
     })
 
     test('selected case close restores the timeline and transcript Escape stays in the case', async (t) => {

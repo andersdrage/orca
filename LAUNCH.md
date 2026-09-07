@@ -14,7 +14,7 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 - [ ] **Boligmappa-intro** («Design for Boligmappa — the digital home folder for Norwegian homes.») — bekreft/omskriv; vurder flere bilder/credits.
 - [ ] **Archived work-grid: service/årstall er mine gjetninger** (HMKG «Print design, 2024»,
       Humming People «LP & booklet design, 2016», Brathwait «Brand + UX design, 2015»,
-      Mountain Milk «Packaging design, 2021») — bekreft/korriger.
+      Mountain Milk «Packaging design, 2011» (bekreftet)) — bekreft/korriger.
 - [ ] **Uber-credits: «Simon»** mangler etternavn (Designers: Ben Mingo, Anders Drage and Simon) — finn fullt navn.
 - [ ] **Gratitude-sidenotater på People** («People I owe») — fyll inn en kort personlig
       note per navn (kolonnen står tom i markupen, klar til bruk).
@@ -45,7 +45,5 @@ Gjennomgås før lansering. Kryss av med `[x]`.
 
 ## Avklaringer
 
-- [ ] «NSB årsrapport digitalt» sto to ganger under 2016 i arkiv-kilden — én er publisert;
-      bekreft om det faktisk var to utgaver.
-- [ ] **Nettavisen ligger nå både som egen case og som `misc-nettavisen.jpg` i
-      Miscellaneous work** — skal misc-blokken fjernes/flyttes inn i casen?
+- [x] **NSB:** Beholdt den engelske oppføringen «NSB Yearly Report» (2017), fjernet den norske fra 2016 etter avklaring med Anders.
+- [x] **Nettavisen-bildet fra Miscellaneous work** — flyttet inn i Nettavisen-casen.

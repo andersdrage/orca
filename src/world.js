@@ -19,7 +19,7 @@ const PAGES = [
   { path: '/', title: 'Selected work', x: 0, y: 0 },
   { path: '/about/', title: 'About', x: 1, y: 0 },
   { path: '/praise/', title: 'Praise', x: 2, y: 0 },
-  { path: '/archive/', title: 'History', x: 0, y: 1 },
+  { path: '/history/', title: 'History', x: 0, y: 1 },
   { path: '/people/', title: 'People', x: 1, y: 1 },
   /* Kjelleren: arkivert arbeid ligger en etasje UNDER arkivet — kameraet
      stiger ned forbi arkivlisten for å nå det. */
@@ -182,7 +182,7 @@ export function initWorld(header) {
     /* Ikke ved case-retur — der eier tilbake-morphen hele ankomsten. */
     try {
       const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-      if (/^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
+      if (/^\/(micromilspec|off-market|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
     } catch {
       /* ugyldig referrer → kjør introen */
     }

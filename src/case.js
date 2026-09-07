@@ -7,7 +7,7 @@ import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
 const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
-const OVERVIEWS = ['/', '/about/', '/praise/', '/archive/', '/people/', '/archived-work/']
+const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
 const returnOverview = getReturnOverview()
 
 function previousUrl() {

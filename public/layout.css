@@ -174,7 +174,7 @@ body.world-mode {
   background: #e9e6e0;
 }
 
-.world-page[data-path='/archive/'] {
+.world-page[data-path='/history/'] {
   grid-column: 1;
   grid-row: 2;
 }
@@ -1258,59 +1258,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   }
 }
 
-/* ── Bildestabel (misc): tre kort rotert oppå hverandre med skygge bakover.
-   Hover vifter dem ut så man ser at det er flere. Transforms ligger på
-   KORTENE (indre elementer) — elastikk-scrollen eier tilens egen transform. */
-.timeline-tile--stack {
-  overflow: visible;
-  background: none;
-}
 
-.timeline-tile__stack {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-.timeline-tile__stack-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: clamp(14px, 2vw, 22px);
-  box-shadow: 0 16px 36px rgba(24, 24, 27, 0.28);
-}
-
-/* Første kort i markupen er toppkortet. */
-.timeline-tile__stack-img:nth-child(1) {
-  z-index: 2;
-}
-
-.timeline-tile__stack-img:nth-child(2) {
-  z-index: 1;
-  transform: rotate(4.5deg) translate(4%, -2%);
-}
-
-/* Ved klikk: kortene samler seg momentant så morph-snapshotet er én flate. */
-a.timeline-tile.is-navigating .timeline-tile__stack-img {
-  transition: none;
-  animation: none;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Entré: stabelen stiger inn som én gruppe (samme kurve som enkeltbildene). */
-.is-entering-home .timeline-tile__stack {
-  animation: entrance-rise 0.55s ease both;
-  animation-delay: 840ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .timeline-tile__stack-img {
-    transition: none;
-  }
-}
 
 /* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
    med fjær-easing (overshoot ~8 % som setter seg) — bevegelse, ikke fade. */
@@ -1447,7 +1395,7 @@ a.timeline-tile:focus-visible {
   pointer-events: auto;
 }
 
-.corner-links a[href='/archive/'] {
+.corner-links a[href='/history/'] {
   left: 30px;
 }
 
@@ -2257,15 +2205,26 @@ body.world-map-intro .archived-card {
   }
 }
 
-/* ── Arkiv-kjelleren: masonry-grid med ALLE bildene rett ut (à la offgrid.inc).
-   4 kolonner over ~90 % av sidebredden; første bilde per prosjekt bærer
-   navn + service/år. ── */
+/* Each archived project has a separate block, with 4 masonry columns inside. */
 .archived-grid {
   margin: 0;
   padding: 2.5rem 0 0;
   list-style: none;
   width: 90vw;
   margin-left: calc(50% - 45vw);
+  display: grid;
+  gap: clamp(4rem, 8vw, 8rem);
+}
+
+.archived-project {
+  min-width: 0;
+}
+
+.archived-project__header {
+  margin-bottom: 1.5rem;
+}
+
+.archived-project__grid {
   display: flex;
   gap: 1.25rem;
 }
@@ -2337,15 +2296,22 @@ body.world-map-intro .archived-card {
 
 .archived-grid__name {
   display: block;
-  margin-top: 0.6rem;
+  margin: 0.6rem 0 0;
   color: #18181b;
   font-size: 0.875rem;
 }
 
+.archived-project__header .archived-grid__name {
+  margin-top: 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 .archived-grid__meta {
   display: block;
-  margin-top: 0.1rem;
-  color: #a1a1aa;
+  margin: 0.4rem 0 0;
+  color: #71717a;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.75rem;
   letter-spacing: normal;
@@ -2363,11 +2329,26 @@ body.world-map-intro .archived-card {
 .archived-lightbox {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(250, 250, 250, 0.96);
+}
+
+.archived-lightbox:not([open]) {
+  display: none;
+}
+
+.archived-lightbox::backdrop {
+  background: transparent;
 }
 
 .page-state {

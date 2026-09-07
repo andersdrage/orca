@@ -1,6 +1,5 @@
 import { portfolioCases } from './portfolio-data.js'
 import micromilspecStoryUrl from './micromilspec-story.mp3?url'
-import miscWorkUrl from './misc-work.mp3?url'
 import offmarketStoryUrl from './offmarket-story.mp3?url'
 import headphonesIconUrl from './assets/icons/headphones.svg?url'
 import closeIconUrl from './assets/icons/close.svg?url'
@@ -123,23 +122,7 @@ const projectAudio = {
       'Super fun project, and one I’m still very grateful for.',
     ],
   },
-  misc: {
-    src: miscWorkUrl,
-    fallbackDuration: 86,
-    durationLabel: '01:26',
-    ariaName: 'Miscellaneous work',
-    title: 'My personal notes on selected work',
-    body: [
-      'The last part of my portfolio is more of a collection of fragments from different client projects, startups, and side quests over the years.',
-      'Some of it comes from my time in San Francisco. At one point, Halli — an incredibly well-known designer — randomly DM’d me on Twitter and asked if I wanted to stop by the office. Little did I know that would extend my stay in San Francisco by another three weeks.',
-      'That eventually led to me contributing to one of the highest-profile projects I’ve ever worked on: the Uber redesign back in 2016, during the peak of the company’s growth.',
-      'The level of talent on that project was honestly intimidating. I remember sitting in meetings almost afraid to say anything, because everyone around the table was just unbelievably good.',
-      'The work shown here ranges from projects like that all the way to helping a group of people start a bank in Oslo.',
-      'There’s also work from Brevio, another startup I was involved in within the audit industry, where I worked a lot on systems design. You’ll also see work for Finn, the Nettavisen redesign, some Nike work that came out of connections from San Francisco, a collection of logos, and Pressworks — a platform I genuinely loved working on together with a great founder named Christian.',
-      'So this section is really a mix of different things I’ve been fortunate enough to work on over the years.',
-      'If there’s anything you’re curious about, feel free to reach out.',
-    ],
-  },
+
 }
 
 function projectAudioHtml(singleCase) {

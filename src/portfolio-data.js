@@ -1,7 +1,7 @@
 /** @typedef {{ file: string, alt?: string, caption?: string }} MediaItem */
 
 /**
- * Order: MICROMILSPEC → Off Market → misc (Uber first).
+ * Dedicated case studies; archived-only projects live in archived-grid.js.
  * `span` matches filename: full | half
  * `caption` – valgfri kort tekst under bildet/video (10px, sentrert, zinc-600)
  */
@@ -115,6 +115,7 @@ export const portfolioCases = [
       /* Hero = samme cover som tidslinje-tilen. */
       { file: 'nettavisen-cover.jpg', span: 'full', alt: 'Nettavisen' },
       { file: 'na-03.mp4', span: 'full', alt: 'Nettavisen' },
+      { file: 'misc-nettavisen.jpg', span: 'full', alt: 'Nettavisen digital design overview' },
     ],
   },
   {
@@ -263,25 +264,6 @@ export const portfolioCases = [
     items: [
       /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
-    ],
-  },
-  {
-    id: 'misc',
-    title: 'Miscellaneous work',
-    intro: 'Fragments from client and side projects.',
-    items: [
-      /* Hero = toppkortet i tile-stabelen. */
-      { file: 'agens-1.png', span: 'full', alt: 'Agens' },
-      { file: 'misc-agens-1.jpg', span: 'full', alt: 'Agens' },
-      { file: 'misc-agens-2.jpg', span: 'full', alt: 'Agens' },
-      { file: 'misc-agens-3.jpg', span: 'full', alt: 'Agens' },
-      { file: 'misc-agens-4.jpg', span: 'full', alt: 'Agens' },
-      { file: 'misc-aprila.jpg', span: 'full', alt: 'Aprila Bank' },
-      { file: 'misc-brevio.jpg', span: 'full', alt: 'Brevio' },
-      { file: 'misc-logos.jpg', span: 'full', alt: 'Logos' },
-      { file: 'misc-nettavisen.jpg', span: 'full', alt: 'Nettavisen' },
-      { file: 'misc-nike.jpg', span: 'full', alt: 'Nike' },
-      { file: 'misc-pressworks.jpg', span: 'full', alt: 'Pressworks' },
     ],
   },
 ]

@@ -21,7 +21,6 @@ const targets = [
   { path: '/hjemla/', name: 'hjemla', fullPage: true },
   { path: '/off-market/', name: 'off-market', fullPage: true },
   { path: '/hmkg/', name: 'hmkg', fullPage: true },
-  { path: '/misc/', name: 'misc', fullPage: true },
   { path: '/mountain-milk/', name: 'mountain-milk', fullPage: true },
   { path: '/humming-people/', name: 'humming-people', fullPage: true },
   { path: '/finn/', name: 'finn', fullPage: true },
@@ -31,7 +30,7 @@ const targets = [
   { path: '/brathwait/', name: 'brathwait', fullPage: true },
   { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
   { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
-  { path: '/archive/', name: 'archive', element: '.world-page[data-path="/archive/"] .world-column' },
+  { path: '/history/', name: 'history', element: '.world-page[data-path="/history/"] .world-column' },
   { path: '/people/', name: 'people', element: '.world-page[data-path="/people/"] .world-column' },
   { path: '/archived-work/', name: 'archived-work', element: '.world-page[data-path="/archived-work/"] .world-column' },
 ]

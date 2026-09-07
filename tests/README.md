@@ -2,4 +2,6 @@
 
 Run `npm test` for Chromium or `TEST_BROWSERS=chromium,webkit npm test` for both engines. The runner builds the site and starts an isolated production preview.
 
-Covers named links, world focus and skip links, failure/retry states, case return navigation, optional storage, error/404 layouts and dragon fallback behavior. Real iOS, full animation fidelity and audio failure recovery remain separate audit work.
+Covers navigation, focus, errors/404, storage and case returns, plus History, removed legacy routes, archived project groups and lightbox keyboard/focus behavior. There are 116 archive media items across 20 projects in 19 blocks.
+
+Real iOS, full animation fidelity, screenshot-script lazy media traversal and audio failure recovery remain separate audit work.
