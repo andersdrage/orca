@@ -2,13 +2,15 @@
    view transitions mellom sider) spilles på 30 % hastighet så de kan inspiseres
    uten skjermopptak. Valget lagres i sessionStorage og overlever sidebytter. */
 
+import { sessionState } from './session-state.js'
+
 const RATE = 0.3
 const STORAGE_KEY = 'debug:slow-animations'
 
 export function initAnimationInspector() {
   let panel = null
 
-  const isEnabled = () => sessionStorage.getItem(STORAGE_KEY) === '1'
+  const isEnabled = () => sessionState.getItem(STORAGE_KEY) === '1'
 
   function setAllPlaybackRates(rate) {
     document.getAnimations().forEach((animation) => {
@@ -28,7 +30,7 @@ export function initAnimationInspector() {
       <p class="debug-panel__hint">Press S to hide</p>`
     document.body.append(panel)
     panel.querySelector('[data-debug-slow]').addEventListener('change', (event) => {
-      sessionStorage.setItem(STORAGE_KEY, event.target.checked ? '1' : '0')
+      sessionState.setItem(STORAGE_KEY, event.target.checked ? '1' : '0')
       setAllPlaybackRates(event.target.checked ? RATE : 1)
     })
   }

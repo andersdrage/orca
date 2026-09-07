@@ -10,19 +10,20 @@
 
 import { initArchivedGrid } from './archived-grid.js'
 import { initTimeline } from './timeline.js'
+import { createPageStateContent, syncPageStateMedia } from './page-state.js'
 
 /* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
    forsiden — lenken bor i nedre venstre hjørne, og kameraet panorerer nedover
    for å nå det. Diagonale reiser (f.eks. About → arkiv) panorerer skrått. */
 const PAGES = [
-  { path: '/', x: 0, y: 0 },
-  { path: '/about/', x: 1, y: 0 },
-  { path: '/praise/', x: 2, y: 0 },
-  { path: '/archive/', x: 0, y: 1 },
-  { path: '/people/', x: 1, y: 1 },
+  { path: '/', title: 'Selected work', x: 0, y: 0 },
+  { path: '/about/', title: 'About', x: 1, y: 0 },
+  { path: '/praise/', title: 'Praise', x: 2, y: 0 },
+  { path: '/archive/', title: 'History', x: 0, y: 1 },
+  { path: '/people/', title: 'People', x: 1, y: 1 },
   /* Kjelleren: arkivert arbeid ligger en etasje UNDER arkivet — kameraet
      stiger ned forbi arkivlisten for å nå det. */
-  { path: '/archived-work/', x: 0, y: 2 },
+  { path: '/archived-work/', title: 'Archived work', x: 0, y: 2 },
 ]
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
@@ -57,8 +58,46 @@ export function initWorld(header) {
   document.body.classList.add('world-mode')
   document.body.classList.toggle('page-home', PAGES[selfIndex].path === '/')
 
-  const titles = PAGES.map((page) => (page.path === location.pathname ? document.title : null))
+  const sections = [...world.children]
+  const skipLink = document.querySelector('.skip-link')
+  const titles = PAGES.map((page) => (page.path === location.pathname ? document.title : `${page.title} — Anders Drage`))
+  const loads = PAGES.map((_, index) => ({ status: index === selfIndex ? 'ready' : 'idle', promise: null }))
   let cameraIndex = selfIndex
+  let travelId = 0
+
+  function prepareMain(main, index) {
+    main.id = `world-${PAGES[index].path.split('/')[1] || 'home'}-content`
+    main.tabIndex = -1
+    main.setAttribute('aria-label', PAGES[index].title)
+  }
+
+  function focusPage(index) {
+    slots[index].querySelector('main')?.focus({ preventScroll: true })
+  }
+
+  function syncAccessibility(index, { focus = false } = {}) {
+    // Inert preserves the visible cards during travel, but removes hidden pages
+    // from keyboard navigation, the accessibility tree, and browser Find.
+    sections[index].inert = false
+    sections[index].removeAttribute('aria-hidden')
+    if (focus) focusPage(index)
+    sections.forEach((section, slotIndex) => {
+      if (slotIndex === index) return
+      section.inert = true
+      section.setAttribute('aria-hidden', 'true')
+    })
+    const main = slots[index].querySelector('main')
+    if (skipLink && main) skipLink.href = `#${main.id}`
+    syncPageStateMedia(world)
+  }
+
+  prepareMain(ownMain, selfIndex)
+  syncAccessibility(selfIndex)
+  skipLink?.addEventListener('click', (event) => {
+    event.preventDefault()
+    sections[cameraIndex].scrollTop = 0
+    focusPage(cameraIndex)
+  })
 
   const setTransform = (index) => {
     const { x, y } = PAGES[index]
@@ -90,9 +129,6 @@ export function initWorld(header) {
       if (index !== -1 && index !== cameraIndex) navigateTo(index)
     })
   })
-
-  /* Frostet header-bakgrunn følger den aktive sidens interne scroll. */
-  const sections = [...world.children]
 
   /* Hjørnelenkene ligger over den SVARTE footeren når man scroller til bunns.
      Footeren er sticky (alltid geometrisk i viewporten, bare dekket av
@@ -194,6 +230,7 @@ export function initWorld(header) {
 
   function navigateTo(index, { push = true } = {}) {
     if (index === cameraIndex) return
+    const journey = ++travelId
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const dx = PAGES[index].x - PAGES[cameraIndex].x
     const dy = PAGES[index].y - PAGES[cameraIndex].y
@@ -226,6 +263,7 @@ export function initWorld(header) {
     cameraIndex = index
     if (titles[index]) document.title = titles[index]
     if (push) history.pushState({ world: index }, '', PAGES[index].path)
+    syncAccessibility(index, { focus: true })
 
     if (panMs === 0) {
       sections.forEach((section) => {
@@ -254,6 +292,7 @@ export function initWorld(header) {
     )
 
     const land = () => {
+      if (journey !== travelId) return
       arriving.style.transform = ''
       const zoom = arriving.animate(
         [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
@@ -262,6 +301,7 @@ export function initWorld(header) {
       /* Den røde understrekingen på aktiv lenke fader inn FØRST når reisen er
          helt ferdig (CSS-transition på text-decoration-color). */
       const clearTravel = () => {
+        if (journey !== travelId) return
         world.classList.remove('is-travelling')
         header.classList.remove('nav-travelling')
         updateAriaCurrent(cameraIndex)
@@ -299,23 +339,63 @@ export function initWorld(header) {
     if (index !== cameraIndex) navigateTo(index)
   })
 
-  /* Monter søskensidene rundt den vi står på. */
-  PAGES.forEach((page, index) => {
-    if (index === selfIndex) return
-    fetch(page.path)
-      .then((response) => response.text())
-      .then((html) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html')
-        titles[index] = doc.title
-        const main = doc.querySelector('#site-layout main')
+  function showLoadState(index, status) {
+    const column = slots[index]
+    const hadFocus = column.contains(document.activeElement)
+    const main = document.createElement('main')
+    prepareMain(main, index)
+    main.className = 'page-state world-page-state'
+    main.append(createPageStateContent(status, () => loadPage(index)))
+    column.replaceChildren(main)
+    sections[index].dataset.loadState = status
+    syncAccessibility(cameraIndex, { focus: hadFocus && index === cameraIndex })
+  }
+
+  function loadPage(index) {
+    const state = loads[index]
+    if (state.status === 'ready' || state.status === 'loading') return state.promise
+    state.status = 'loading'
+    showLoadState(index, 'loading')
+    const controller = new AbortController()
+    // A stalled request must eventually offer the same recovery as a rejection.
+    const timeout = setTimeout(() => controller.abort(), 15000)
+    state.promise = (async () => {
+      try {
+        const response = await fetch(PAGES[index].path, { signal: controller.signal })
+        if (!response.ok) throw new Error(`Page request failed: ${response.status}`)
+        const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+        const sourceMain = doc.querySelector('#site-layout main')
+        if (!sourceMain) throw new Error('Page content is missing')
+        const main = document.importNode(sourceMain, true)
+        // Imported scripts are not page initializers; these modules mount below.
+        main.querySelectorAll('script').forEach((script) => script.remove())
+        prepareMain(main, index)
         const footer = doc.querySelector('#site-layout footer')
-        if (main) slots[index].append(document.importNode(main, true))
+        const hadFocus = slots[index].contains(document.activeElement)
+        slots[index].replaceChildren(main)
         if (footer) slots[index].append(document.importNode(footer, true))
-        /* Forsiden trenger tidslinje-motoren, kjelleren trenger grid-modulen. */
-        if (page.path === '/') initTimeline(slots[index].querySelector('[data-timeline]'))
-        if (page.path === '/archived-work/') initArchivedGrid(slots[index])
+        if (PAGES[index].path === '/') initTimeline(main.querySelector('[data-timeline]'))
+        if (PAGES[index].path === '/archived-work/') initArchivedGrid(slots[index])
+        titles[index] = doc.title || titles[index]
+        state.status = 'ready'
+        sections[index].dataset.loadState = 'ready'
+        if (index === cameraIndex) document.title = titles[index]
+        syncAccessibility(cameraIndex, { focus: hadFocus && index === cameraIndex })
         watchFooters()
-      })
-      .catch(() => {})
+      } catch {
+        state.status = 'error'
+        showLoadState(index, 'error')
+      } finally {
+        clearTimeout(timeout)
+        state.promise = null
+      }
+    })()
+    return state.promise
+  }
+
+  /* Monter søskensidene rundt den vi står på. */
+  sections[selfIndex].dataset.loadState = 'ready'
+  PAGES.forEach((_, index) => {
+    if (index !== selfIndex) loadPage(index)
   })
 }

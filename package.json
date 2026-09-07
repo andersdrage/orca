@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "npm run build && node --test tests/frontend.test.mjs",
     "optimize-media": "node scripts/optimize-media.mjs",
     "screenshots": "node scripts/screenshots.mjs"
   },

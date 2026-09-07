@@ -3,6 +3,7 @@
    (wrap ved 0.5/1.5 × kopibredde) så loopen aldri møter en kant. */
 
 import { micromilspecCovers } from './portfolio-data.js'
+import { sessionState } from './session-state.js'
 
 const TILES = [
   {
@@ -162,7 +163,7 @@ function tileHtml(tile) {
       ? `<span class="timeline-tile__hover-label" aria-hidden="true">${tile.title}</span>`
       : ''
   return tile.href
-    ? `<a class="${classes}" href="${tile.href}" data-tile-id="${tile.id}" style="${style}">${image}${hoverLabel}${title}</a>`
+    ? `<a class="${classes}" href="${tile.href}" aria-label="${tile.title}" data-tile-id="${tile.id}" style="${style}">${image}${hoverLabel}${title}</a>`
     : `<div class="${classes}" style="${style}" aria-hidden="true">${image}</div>`
 }
 
@@ -182,7 +183,7 @@ export function initTimeline(scrollerEl) {
      (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
      Settes idempotent (indeks 0 = standard) siden TILES er modul-state. */
   try {
-    let coverIndex = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    let coverIndex = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (!micromilspecCovers[coverIndex]) coverIndex = 0
     const micromilspecTile = TILES.find((tile) => tile.id === 'micromilspec')
     micromilspecTile.image = `/images/${micromilspecCovers[coverIndex].file}`
@@ -411,7 +412,7 @@ export function initTimeline(scrollerEl) {
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     if (/^\/(micromilspec|off-market|misc|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
-      const id = sessionStorage.getItem('timeline:last-case')
+      const id = sessionState.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
         /* offsetLeft: layout-koordinater — upåvirket av transforms (se placeIntro). */
@@ -529,7 +530,7 @@ export function initTimeline(scrollerEl) {
      preloades i idle-tid så byttet er momentant. */
   let coverIndex = 0
   try {
-    coverIndex = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    coverIndex = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (!micromilspecCovers[coverIndex]) coverIndex = 0
   } catch {
     coverIndex = 0
@@ -551,7 +552,7 @@ export function initTimeline(scrollerEl) {
     if (!scroller.querySelector('[data-tile-id="micromilspec"]')) return
     coverIndex = (coverIndex + 1) % micromilspecCovers.length
     try {
-      sessionStorage.setItem('micromilspec:cover', String(coverIndex))
+      sessionState.setItem('micromilspec:cover', String(coverIndex))
     } catch {
       /* valget gjelder da bare til neste last */
     }
@@ -775,9 +776,9 @@ export function initTimeline(scrollerEl) {
     tile.classList.add('is-navigating')
     assignNeighborNames(tile)
     tile.style.viewTransitionName = 'case-cover'
-    sessionStorage.setItem('timeline:last-case', tile.dataset.tileId)
+    sessionState.setItem('timeline:last-case', tile.dataset.tileId)
     const rect = tile.getBoundingClientRect()
-    sessionStorage.setItem(
+    sessionState.setItem(
       'timeline:zoom-origin',
       `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`,
     )
@@ -797,7 +798,7 @@ export function initTimeline(scrollerEl) {
     }
     if (!fromCase) return
 
-    const id = sessionStorage.getItem('timeline:last-case')
+    const id = sessionState.getItem('timeline:last-case')
     if (!id) return
     /* Sikt morphen mot instansen som faktisk er PÅ SKJERMEN — etter wrap-sikker
        normalisering kan det være en annen loop-kopi enn midt-kopien (typisk for

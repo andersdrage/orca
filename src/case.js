@@ -1,15 +1,66 @@
 import { initHeader } from './header.js'
-import { micromilspecCovers } from './portfolio-data.js'
+import { micromilspecCovers, portfolioCases } from './portfolio-data.js'
+import { sessionState } from './session-state.js'
 import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
+const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
+const OVERVIEWS = ['/', '/about/', '/praise/', '/archive/', '/people/', '/archived-work/']
+const returnOverview = getReturnOverview()
+
+function previousUrl() {
+  try {
+    const url = new URL(window.navigation?.activation?.from?.url ?? document.referrer)
+    return url.origin === location.origin ? url : null
+  } catch {
+    return null
+  }
+}
+
+function getReturnOverview() {
+  // History state belongs to this entry, so reload and Back do not lose its origin.
+  const saved = history.state?.caseOverview
+  if (OVERVIEWS.includes(saved)) return saved
+  const from = previousUrl()
+  let overview = ARCHIVED_ORDER.includes(root?.dataset.caseId) ? '/archived-work/' : '/'
+  if (OVERVIEWS.includes(from?.pathname)) overview = from.pathname
+  else {
+    try {
+      const pending = JSON.parse(sessionState.getItem('case:return'))
+      if (pending?.from === from?.pathname && pending?.to === location.pathname && OVERVIEWS.includes(pending?.overview)) {
+        overview = pending.overview
+      }
+    } catch {
+      // Missing or stale transition state uses the case's overview fallback.
+    }
+  }
+  history.replaceState({ ...history.state, caseOverview: overview }, '')
+  return overview
+}
+
+function rememberCaseReturn(href) {
+  const destination = new URL(href, location.href)
+  if (destination.origin !== location.origin) return
+  if (!portfolioCases.some((project) => destination.pathname === `/${project.id}/`)) return
+  sessionState.setItem('case:return', JSON.stringify({
+    from: location.pathname,
+    to: destination.pathname,
+    overview: returnOverview,
+  }))
+}
+
+document.addEventListener('click', (event) => {
+  const link = event.target.closest('a')
+  if (link) rememberCaseReturn(link.href)
+})
+
 if (root) {
   root.innerHTML = buildCaseHtml(root.dataset.caseId)
   /* Husk hvilken case vi står på — så «lukk» (og back) alltid kan morphe til riktig tile,
      også etter direktebesøk på case-URL-en. */
-  sessionStorage.setItem('timeline:last-case', root.dataset.caseId)
+  sessionState.setItem('timeline:last-case', root.dataset.caseId)
   initCoverCycle(root.dataset.caseId)
   initArchivedCaseNav(root.dataset.caseId)
 }
@@ -17,7 +68,6 @@ if (root) {
 /* Arkiverte caser (kjelleren): ‹ › blar til forrige/neste arkiverte prosjekt
    (også ← →). Hero-til-hero view transition-morphen binder byttene sammen. */
 function initArchivedCaseNav(caseId) {
-  const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
   const index = ARCHIVED_ORDER.indexOf(caseId)
   if (index === -1) return
   const total = ARCHIVED_ORDER.length
@@ -40,9 +90,11 @@ function initArchivedCaseNav(caseId) {
     if (document.querySelector('dialog[open]')) return
     if (event.key === 'ArrowLeft') {
       event.preventDefault()
+      rememberCaseReturn(prevHref)
       location.href = prevHref
     } else if (event.key === 'ArrowRight') {
       event.preventDefault()
+      rememberCaseReturn(nextHref)
       location.href = nextHref
     }
   })
@@ -57,7 +109,7 @@ function initCoverCycle(caseId) {
   if (!hero) return
 
   try {
-    const index = Number(sessionStorage.getItem('micromilspec:cover')) || 0
+    const index = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (index > 0 && micromilspecCovers[index]) {
       hero.src = `/images/${micromilspecCovers[index].file}`
     }
@@ -104,7 +156,7 @@ window.addEventListener('pagereveal', (event) => {
   }
   if (!fromHome) return
 
-  const origin = sessionStorage.getItem('timeline:zoom-origin')
+  const origin = sessionState.getItem('timeline:zoom-origin')
   const htmlRoot = document.documentElement
   if (origin) htmlRoot.style.setProperty('--vt-origin', origin)
   htmlRoot.classList.add('vt-zoom-in')
@@ -113,17 +165,11 @@ window.addEventListener('pagereveal', (event) => {
   event.viewTransition.finished.then(cleanup, cleanup)
 })
 
-/* Lukking: tilbake til tidslinjen med zoom-ut. history.back() bevarer
-   scroll-posisjon og gir traverse-morph; direktebesøk faller tilbake til forsiden. */
+/* Back preserves the timeline when it really is the preceding entry. After
+   case-to-case arrows, close exits to the saved overview; browser Back is untouched. */
 function closeCase() {
-  let sameOriginReferrer = false
-  try {
-    sameOriginReferrer = Boolean(document.referrer) && new URL(document.referrer).origin === location.origin
-  } catch {
-    sameOriginReferrer = false
-  }
-  if (sameOriginReferrer && history.length > 1) history.back()
-  else location.href = '/'
+  if (previousUrl()?.pathname === returnOverview && history.length > 1) history.back()
+  else location.href = returnOverview
 }
 
 function initCaseClose() {
