@@ -147,7 +147,63 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.site-footer__logo-video source').getAttribute('src'), '/images/dragon-footer-mark-v1.mp4')
     })
 
+    test('Uber country tabs keep one panel visible and support keyboard navigation', async (t) => {
+      const page = await visit(t, '/uber/')
+      const gallery = page.locator('[data-case-tabs]')
+      await gallery.scrollIntoViewIfNeeded()
+      const tabs = gallery.getByRole('tab')
+      const places = ['China', 'France', 'India', 'Ireland', 'Mexico', 'Morocco', 'Netherlands', 'Singapore', 'USA', 'Australia']
+      assert.deepEqual(await tabs.allTextContents(), places)
+      await gallery.locator('img').evaluateAll((images) => Promise.all(images.map((image) => image.decode())))
+      const initialHeight = (await gallery.boundingBox()).height
+      for (let i = 0; i < places.length; i++) {
+        await tabs.nth(i).click()
+        assert.equal(await gallery.getByRole('tab', { selected: true }).textContent(), places[i])
+        assert.equal(await gallery.getByRole('tabpanel').count(), 1)
+        assert.equal(await gallery.getByRole('tabpanel').getAttribute('aria-labelledby'), await tabs.nth(i).getAttribute('id'))
+        assert.equal(await gallery.getByRole('tabpanel').locator('img').getAttribute('alt'), `Uber website design — ${places[i]}`)
+        assert.ok(Math.abs((await gallery.boundingBox()).height - initialHeight) < 1)
+      }
+      await tabs.last().focus()
+      await page.keyboard.press('ArrowRight')
+      assert.equal(await gallery.getByRole('tab', { selected: true }).textContent(), 'China')
+      await page.keyboard.press('ArrowLeft')
+      assert.equal(await gallery.getByRole('tab', { selected: true }).textContent(), 'Australia')
+      await page.keyboard.press('Home')
+      await page.keyboard.press('ArrowRight')
+      assert.equal(await gallery.getByRole('tab', { selected: true }).textContent(), 'France')
+      await page.keyboard.press('End')
+      await page.keyboard.press('Tab')
+      assert.equal(await page.evaluate(() => document.activeElement.getAttribute('role')), 'tabpanel')
+      assert.equal(await gallery.locator('img[src="/images/uber-ueno-australia-full.jpg"]').count(), 1)
+      assert.equal(await page.locator('img[src$=".svg"][src*="uber-ueno"]').count(), 0)
+      assert.equal(await gallery.locator('.t-tabs-pill').evaluate((pill) => getComputedStyle(pill).transitionDuration), '0s')
+    })
 
+    test('Uber tab marker aligns after resize and mobile tabs scroll without page overflow', async (t) => {
+      const page = await visit(t, '/uber/', { reducedMotion: 'no-preference' })
+      const gallery = page.locator('[data-case-tabs]')
+      await gallery.scrollIntoViewIfNeeded()
+      await gallery.getByRole('tab', { name: 'Singapore', exact: true }).click()
+      await page.waitForFunction(() => {
+        const group = document.querySelector('[data-case-tabs]')
+        return group.querySelector('.t-tabs-pill').getAnimations().every((animation) => animation.playState === 'finished')
+      })
+      for (const width of [390, 1440]) {
+        await page.setViewportSize({ width, height: 900 })
+        await gallery.getByRole('tab', { selected: true }).focus()
+        await page.keyboard.press('End')
+        const geometry = await gallery.evaluate((group) => {
+          const tab = group.querySelector('[aria-selected="true"]').getBoundingClientRect()
+          const pill = group.querySelector('.t-tabs-pill').getBoundingClientRect()
+          const scroll = group.querySelector('.case-tabs__scroll').getBoundingClientRect()
+          return { difference: Math.abs(tab.x - pill.x) + Math.abs(tab.width - pill.width), visible: tab.left >= scroll.left && tab.right <= scroll.right + 1, overflow: document.documentElement.scrollWidth > innerWidth }
+        })
+        assert.ok(geometry.difference < 1)
+        assert.ok(geometry.visible)
+        assert.equal(geometry.overflow, false)
+      }
+    })
 
     test('rapid travel retains only the final destination in the tab order', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })

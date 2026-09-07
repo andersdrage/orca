@@ -3,6 +3,7 @@ import { micromilspecCovers, portfolioCases } from './portfolio-data.js'
 import { sessionState } from './session-state.js'
 import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
+import { initCaseTabs } from './case-tabs.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
@@ -58,6 +59,7 @@ document.addEventListener('click', (event) => {
 
 if (root) {
   root.innerHTML = buildCaseHtml(root.dataset.caseId)
+  initCaseTabs(root)
   /* Husk hvilken case vi står på — så «lukk» (og back) alltid kan morphe til riktig tile,
      også etter direktebesøk på case-URL-en. */
   sessionState.setItem('timeline:last-case', root.dataset.caseId)

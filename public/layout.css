@@ -955,6 +955,82 @@ body.world-mode {
   background-color: #f4f4f5;
 }
 
+/* Country variants share one image frame and a sliding, measured tab marker. */
+.case-tabs {
+  --tabs-dur: 250ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  width: min(100%, calc(82svh * 1290 / 762));
+  margin-inline: auto;
+}
+
+.case-tabs__scroll {
+  position: relative;
+  overflow-x: auto;
+  padding: 6px;
+  margin-bottom: 14px;
+  scrollbar-width: thin;
+}
+
+.t-tabs {
+  position: relative;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  margin-inline: auto;
+  border-radius: 48px;
+  background: #f1f1f1;
+}
+
+.t-tab {
+  position: relative;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  height: 30px;
+  padding: 4px 12px;
+  color: rgba(15, 15, 15, 0.8);
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 48px;
+  z-index: 1;
+  transition: color var(--tabs-dur) var(--tabs-ease);
+}
+
+.t-tab[aria-selected="true"] { color: #0f0f0f; }
+@media (hover: hover) and (pointer: fine) {
+  .t-tab:hover { color: #0f0f0f; }
+}
+
+.t-tab:focus-visible,
+.case-tabs [role="tabpanel"]:focus-visible {
+  outline: 2px solid #0f0f0f;
+  outline-offset: 3px;
+}
+
+.t-tabs-pill {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: 30px;
+  width: 0;
+  background: #fff;
+  border-radius: 48px;
+  transform: translateX(0);
+  transition: transform var(--tabs-dur) var(--tabs-ease), width var(--tabs-dur) var(--tabs-ease);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-tabs-pill, .t-tab { transition: none !important; }
+}
+
 /* Fullbredde-bilder i case-visning er aldri høyere enn 90 % av viewporten —
    hvert bilde skal kunne ses i sin helhet uten å scrolle. Figuren krymper til
    bildets bredde og sentreres, så det ikke blir grå letterbox-striper. */

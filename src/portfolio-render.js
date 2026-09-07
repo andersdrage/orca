@@ -71,6 +71,24 @@ function wrapFigure(item, eager = false) {
   </div>`
 }
 
+function tabsHtml(item) {
+  const tabs = item.tabs.map((tab, index) => `<button type="button" class="t-tab" role="tab"
+    id="${item.id}-tab-${index}" aria-controls="${item.id}-panel-${index}"
+    aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${escapeHtmlText(tab.label)}</button>`).join('')
+  const panels = item.tabs.map((tab, index) => `<div role="tabpanel" id="${item.id}-panel-${index}"
+    aria-labelledby="${item.id}-tab-${index}" tabindex="0"${index ? ' hidden' : ''}>
+    <figure class="portfolio-asset"><img src="/images/${escapeAttr(tab.file)}"
+      alt="Uber website design — ${escapeAttr(tab.label)}" width="${item.width}" height="${item.height}"
+      loading="lazy" decoding="async" /></figure>
+  </div>`).join('')
+  return `<div class="case-tabs" data-case-tabs>
+    <div class="case-tabs__scroll"><div class="t-tabs" role="tablist" aria-label="${escapeAttr(item.label)}">
+      <span class="t-tabs-pill" aria-hidden="true"></span>${tabs}
+    </div></div>
+    ${panels}
+  </div>`
+}
+
 const projectAudio = {
   micromilspec: {
     src: micromilspecStoryUrl,
@@ -203,6 +221,7 @@ function caseSection(singleCase, index) {
     /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
     const eager = rowIndex === 0
     if (row.kind === 'full') {
+      if (row.items[0].type === 'tabs') return tabsHtml(row.items[0])
       return wrapFigure(row.items[0], eager)
     }
     if (row.kind === 'third-row') {
