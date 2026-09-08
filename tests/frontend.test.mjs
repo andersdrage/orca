@@ -280,6 +280,44 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await activeWorld(page, '/archived-work/')
     })
 
+    test('returning to a world page resets its scroll before the camera transition', async (t) => {
+      for (const reducedMotion of ['reduce', 'no-preference']) {
+        const page = await visit(t, '/about/', { reducedMotion })
+        await ready(page, '/history/')
+        const scrollToBottom = async () => {
+          const top = await page.locator('.world-page:not([inert])').evaluate((el) => {
+            el.scrollTo({ top: el.scrollHeight, behavior: 'instant' })
+            return el.scrollTop
+          })
+          assert.ok(top > 100, 'the page really was scrolled')
+        }
+        await scrollToBottom()
+        await page.locator('.corner-links a[href="/history/"]').click()
+        await activeWorld(page, '/history/')
+        await scrollToBottom()
+        const positions = await page.evaluate(() => {
+          const from = document.querySelector('.world-page[data-path="/history/"]')
+          const to = document.querySelector('.world-page[data-path="/about/"]')
+          const fromBefore = from.scrollTop
+          const toBefore = to.scrollTop
+          document.querySelector('.site-header a[href="/about/"]').click()
+          return { fromBefore, fromAfter: from.scrollTop, toBefore, toAfter: to.scrollTop }
+        })
+        assert.ok(positions.toBefore > 100)
+        assert.equal(positions.toAfter, 0, 'reset happens synchronously before animation')
+        assert.equal(positions.fromAfter, positions.fromBefore, 'outgoing page does not jump')
+        await activeWorld(page, '/about/')
+        await scrollToBottom()
+        await page.goBack()
+        await activeWorld(page, '/history/')
+        assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
+        await page.goForward()
+        await activeWorld(page, '/about/')
+        await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling'))
+        assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
+      }
+    })
+
     test('History uses the new route and keeps only the English NSB entry', async (t) => {
       const page = await visit(t, '/history/')
       await ready(page, '/history/')
