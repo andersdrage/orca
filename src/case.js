@@ -124,6 +124,30 @@ initProjectTranscript()
 window.addEventListener('pagereveal', (event) => {
   if (!event.viewTransition) return
 
+  const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
+  let fromHome = false
+  try {
+    fromHome = new URL(fromUrl).pathname === '/'
+  } catch {
+    fromHome = false
+  }
+  const presentation = root?.querySelector('[data-layout="presentation"]')
+  if (fromHome && presentation && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const html = document.documentElement
+    html.classList.add('vt-zoom-in', 'vt-presentation-in')
+    document.body.classList.add('case-entering', 'case-transition-entrance')
+    const origin = sessionState.getItem('timeline:zoom-origin')
+    if (origin) html.style.setProperty('--vt-origin', origin)
+    root.querySelectorAll('video').forEach(video => video.pause())
+    const finish = () => {
+      html.classList.remove('vt-zoom-in', 'vt-presentation-in')
+      document.body.classList.remove('case-entering')
+      syncVisibleMedia()
+    }
+    event.viewTransition.finished.then(finish, finish)
+    return
+  }
+
   /* Innholdet under heroen holdes skjult under morphen og stiger inn nedenfra
      (opacity + translateY) først når overgangen er ferdig. Klassene settes kun
      når en view transition faktisk kjører — direktebesøk viser alt statisk. */
@@ -142,13 +166,6 @@ window.addEventListener('pagereveal', (event) => {
   const resumeVideos = () => syncVisibleMedia()
   event.viewTransition.finished.then(resumeVideos, resumeVideos)
 
-  const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-  let fromHome = false
-  try {
-    fromHome = new URL(fromUrl).pathname === '/'
-  } catch {
-    fromHome = false
-  }
   if (!fromHome) return
 
   const origin = sessionState.getItem('timeline:zoom-origin')

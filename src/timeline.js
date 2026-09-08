@@ -3,6 +3,7 @@
    (wrap ved 0.5/1.5 × kopibredde) så loopen aldri møter en kant. */
 
 import { micromilspecCovers } from './portfolio-data.js'
+import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
 
 const TILES = [
@@ -611,11 +612,24 @@ export function initTimeline(scrollerEl) {
     })
   }
 
+  window.addEventListener('pageshow', () => {
+    scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => tile.classList.remove('is-navigating', 'is-pressed'))
+  })
+
+  const releasePress = () => scroller.querySelectorAll('.is-pressed').forEach(tile => tile.classList.remove('is-pressed'))
+  scroller.addEventListener('pointerdown', event => {
+    const tile = event.target.closest('a.timeline-tile')
+    if (isSameTabNavigation(event, tile)) tile.classList.add('is-pressed')
+  }, { passive: true })
+  window.addEventListener('pointerup', releasePress, { passive: true })
+  window.addEventListener('pointercancel', releasePress, { passive: true })
+  window.addEventListener('blur', releasePress)
+
   /* Morph (view transition): kun den klikkede tilen får cover-navnet.
      Tilens senterpunkt lagres så case-siden kan ankre zoom-inn-skaleringen der. */
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
-    if (!tile) return
+    if (!isSameTabNavigation(event, tile)) return
     /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
     tile.classList.add('is-navigating')
     assignNeighborNames(tile)

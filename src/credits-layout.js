@@ -46,6 +46,7 @@ export function initCreditsLayout(root) {
       (event.target.closest('input, textarea, select, [role="textbox"]') || event.target.isContentEditable)) return
     if (document.querySelector('dialog[open]')) return
     event.preventDefault()
+    document.body.classList.remove('case-transition-entrance')
     if (key === 'p') presentation = !presentation
     else {
       presentation = false

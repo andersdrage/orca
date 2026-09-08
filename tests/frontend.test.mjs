@@ -665,6 +665,50 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('project transition gives immediate press feedback and reveals text behind the departing thumbnail', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
+        addEventListener('pagereveal', event => {
+          if (!event.viewTransition || location.pathname !== '/hjemla/') return
+          event.viewTransition.ready.then(() => {
+            window.transitionProbe = document.getAnimations()
+            window.transitionProbe.forEach(animation => animation.pause())
+          }, () => {})
+        })
+      })
+      await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
+      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+      await page.waitForTimeout(500)
+      await tile.hover()
+      await page.waitForTimeout(300)
+      await tile.dispatchEvent('pointerdown', { button: 0, pointerType: 'mouse' })
+      assert.equal(await tile.locator('img').evaluate(el => getComputedStyle(el).translate), '0px 3px')
+      await tile.dispatchEvent('pointercancel', { button: 0, pointerType: 'mouse' })
+      await tile.click()
+      await page.waitForURL('**/hjemla/', { waitUntil: 'domcontentloaded' })
+      await page.waitForFunction(() => window.transitionProbe?.length > 0)
+      const frame = await page.evaluate(() => {
+        window.transitionProbe.forEach(animation => { animation.currentTime = 280 })
+        const style = name => getComputedStyle(document.documentElement, name)
+        const thumbnail = style('::view-transition-old(case-cover)')
+        const intro = style('::view-transition-new(root)')
+        return { imageDisplay: thumbnail.display, imageOpacity: Number(thumbnail.opacity),
+          imageY: new DOMMatrixReadOnly(thumbnail.transform).m42, introOpacity: Number(intro.opacity),
+          names: window.transitionProbe.map(animation => animation.animationName) }
+      })
+      assert.equal(frame.imageDisplay, 'block')
+      assert.ok(frame.imageOpacity > 0 && frame.imageOpacity < 1)
+      assert.ok(frame.imageY > 3)
+      assert.ok(frame.introOpacity > 0, 'text is visible while the thumbnail departs')
+      assert.ok(frame.names.some(name => name === 'project-neighbor-left' || name === 'project-neighbor-right'))
+      await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
+      await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-in'))
+      assert.equal(await page.locator('.case-lead__intro').evaluate(el => getComputedStyle(el).opacity), '1')
+      await page.goBack({ waitUntil: 'domcontentloaded' })
+      await ready(page, '/')
+      assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
+    })
+
     if (engine === 'chromium') test('cold homepage to case transition captures a decoded hero without prerendering', async (t) => {
       const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
         window.addEventListener('pagereveal', (event) => {

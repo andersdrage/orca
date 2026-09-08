@@ -2980,3 +2980,72 @@ body.world-map-intro .archived-card {
 @media (max-height: 500px) {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
 }
+
+/* Press feedback is immediate and independent of the horizontal scroll spring. */
+a.timeline-tile:active .timeline-tile__image,
+a.timeline-tile.is-pressed .timeline-tile__image,
+a.timeline-tile.is-navigating .timeline-tile__image {
+  translate: 0 3px;
+  transition: none;
+}
+
+/* The presentation is captured fully drawn, then revealed by the page transition. */
+.case-transition-entrance [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro, .case-title-block, .title-block__credit dd) {
+  animation: none;
+}
+.case-transition-entrance.case-entering .case-below { opacity: 1; }
+html.vt-presentation-in::view-transition-group(case-cover) { z-index: 5; }
+html.vt-presentation-in::view-transition-group(case-close) { z-index: 6; }
+
+html.vt-presentation-in::view-transition-old(case-cover) {
+  display: block;
+  animation: project-thumbnail-away 520ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+html.vt-presentation-in::view-transition-old(root) {
+  transform-origin: var(--vt-origin, 50% 50%);
+  animation: project-world-away 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.vt-presentation-in::view-transition-new(root) {
+  transform-origin: 50% 40%;
+  animation: project-intro-arrive 660ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.vt-presentation-in::view-transition-old(push-l1),
+html.vt-presentation-in::view-transition-old(push-l2),
+html.vt-presentation-in::view-transition-old(push-l3),
+html.vt-presentation-in::view-transition-old(push-l4) {
+  animation: project-neighbor-left 520ms 40ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+html.vt-presentation-in::view-transition-old(push-r1),
+html.vt-presentation-in::view-transition-old(push-r2),
+html.vt-presentation-in::view-transition-old(push-r3),
+html.vt-presentation-in::view-transition-old(push-r4) {
+  animation: project-neighbor-right 520ms 40ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes project-thumbnail-away {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(160px) scale(0.96); }
+}
+@keyframes project-world-away {
+  to { opacity: 0; transform: scale(1.08); }
+}
+@keyframes project-intro-arrive {
+  from { opacity: 0; transform: translateY(18px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes project-neighbor-left {
+  to { opacity: 0; transform: translate(-40vw, 48px) scale(1.04); }
+}
+@keyframes project-neighbor-right {
+  to { opacity: 0; transform: translate(40vw, 48px) scale(1.04); }
+}
+html.vt-presentation-in::view-transition-group(root) { z-index: 0; }
+html.vt-presentation-in::view-transition-group(push-l1),
+html.vt-presentation-in::view-transition-group(push-l2),
+html.vt-presentation-in::view-transition-group(push-l3),
+html.vt-presentation-in::view-transition-group(push-l4),
+html.vt-presentation-in::view-transition-group(push-r1),
+html.vt-presentation-in::view-transition-group(push-r2),
+html.vt-presentation-in::view-transition-group(push-r3),
+html.vt-presentation-in::view-transition-group(push-r4) { z-index: 4; }
+html.vt-presentation-in::view-transition { background: #fafafa; }
