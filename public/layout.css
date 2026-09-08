@@ -604,6 +604,15 @@ body.world-mode {
   margin-inline: auto;
 }
 
+@media (max-width: 767px) {
+  .content-page--spacious { padding-top: 150px; }
+  /* The fixed mobile header is 56px tall; leave 150px below it. */
+  .world-column > .content-page--spacious { padding-top: calc(56px + 150px); }
+  .content-page--spacious > header > div:first-child { margin-top: 0; }
+}
+
+.people-thanks { white-space: nowrap; }
+
 /* Tekst, titler, bildetekster, seksjonsskille — 800px (header/intro/footer + #work). */
 #site-layout:has(#work) .work-narrow {
   box-sizing: border-box;
@@ -1475,20 +1484,6 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
 .archive-name a {
   color: inherit;
   text-decoration: none;
-}
-
-/* Ekstern lenke-pil (↗) etter presse-lenkene. */
-.archive-list--press .archive-name a::after {
-  content: '↗';
-  display: inline-block;
-  margin-left: 0.35em;
-  font-size: 0.8em;
-  color: var(--text-secondary);
-  text-decoration: none;
-}
-
-.archive-list--press .archive-name a:hover::after {
-  color: #52525b;
 }
 
 /* Venstre kolonne (årstall/gruppe) i Maison — meta-stemmen ved siden av serif-navnene. */
