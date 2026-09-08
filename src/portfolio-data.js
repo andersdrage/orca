@@ -22,11 +22,13 @@ export const portfolioCases = [
     year: '2019–2024',
     title: 'MICROMILSPEC',
     displayTitle: 'Micromilspec',
+    separateCreditRoles: ['Development'],
     layout: 'split',
     intro:
       'Co-built the brand, product, and operations — scaling to ~40 MNOK in sales across bespoke and military projects in three years.',
     credits: [
       { role: 'Co-founder', names: 'Henrik Rye' },
+      { role: 'Co-founder', names: 'Martin S' },
       { role: 'Development', names: 'Kim Ellefsen' },
       { role: 'Development', names: 'Mark Larratt' },
       { role: '3D', names: 'Alexander Kadim' },

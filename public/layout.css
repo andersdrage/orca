@@ -2858,6 +2858,18 @@ body.world-map-intro .archived-card {
   font-family: PPSupplyMono, ui-monospace, monospace;
 }
 [data-layout="presentation"] .case-credits { display: none; }
+/* The title block names the project visually; retain the heading for navigation. */
+#work [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  animation: none;
+}
 [data-layout="presentation"] .case-title-block {
   display: block;
   width: min(640px, 100%);
@@ -2927,10 +2939,10 @@ body.world-map-intro .archived-card {
   [data-layout="presentation"] .case-title-block {
     animation: case-presentation-in 650ms 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  [data-layout="presentation"] .title-block__credit :is(dt, dd) {
-    animation: case-presentation-in 650ms var(--contributor-delay) cubic-bezier(0.22, 1, 0.36, 1) both;
+  [data-layout="presentation"] .title-block__credit dd {
+    animation: case-copy-in 450ms 450ms ease-out both;
   }
-  .case-entering [data-layout="presentation"] :is(.case-title-block, .title-block__credit dt, .title-block__credit dd) {
+  .case-entering [data-layout="presentation"] :is(.case-title-block, .title-block__credit dd) {
     animation-play-state: paused;
   }
 }

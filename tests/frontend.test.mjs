@@ -219,6 +219,21 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/micromilspec/')
       for (const path of casePaths) {
         await page.goto(base + path)
+        const contributors = page.locator('.title-block__contributors')
+        if (await contributors.count()) {
+          assert.equal((await contributors.textContent()).includes('Anders Drage'), false, path)
+        }
+        assert.ok((await page.locator('.title-block__role dd').textContent()).trim())
+        if (path === '/micromilspec/') {
+          const developers = page.locator('.title-block__credit').filter({ has: page.locator('dt', { hasText: 'Development' }) })
+          assert.equal(await developers.count(), 2)
+          assert.ok((await contributors.textContent()).includes('Martin S'))
+        }
+        if (path === '/finn/') {
+          const designers = page.locator('.title-block__credit').filter({ has: page.locator('dt', { hasText: 'Designers' }) })
+          assert.equal(await designers.count(), 1)
+          assert.equal(await designers.locator('dd span').count(), 2)
+        }
         for (const width of [1440, 390]) {
           await page.setViewportSize({ width, height: 900 })
           await page.evaluate(() => document.fonts.ready)

@@ -71,17 +71,20 @@ function titleBlockHtml(singleCase) {
   const grouped = new Map()
   for (const credit of singleCase.credits ?? []) {
     const names = grouped.get(credit.role) ?? []
-    names.push(...credit.names.split(/,\s*|\s+and\s+/))
-    grouped.set(credit.role, names)
+    names.push(...credit.names.split(/,\s*|\s+and\s+/).filter(name => name.trim() !== 'Anders Drage'))
+    if (names.length) grouped.set(credit.role, names)
   }
   const ownCredit = singleCase.credits?.find(credit => credit.names.includes('Anders Drage'))
   const role = ownCredit?.role.replace(/^Designers$/, 'Designer') ?? 'Designer'
   const cell = (label, value, modifier = '') => `<div class="title-block__cell ${modifier}"><dt>${escapeHtmlText(label)}</dt><dd>${escapeHtmlText(value)}</dd></div>`
-  const contributors = [...grouped].map(([role, names], index) => `<div class="title-block__cell title-block__credit${names.length > 2 ? ' title-block__credit--wide' : ''}" style="--contributor-delay: ${320 + index * 55}ms">
+  const groups = [...grouped].flatMap(([role, names]) => singleCase.separateCreditRoles?.includes(role)
+    ? names.map(name => [role, [name]])
+    : [[role, names]])
+  const contributors = groups.map(([role, names]) => `<div class="title-block__cell title-block__credit${names.length > 2 ? ' title-block__credit--wide' : ''}">
     <dt>${escapeHtmlText(role)}</dt>
     <dd>${names.map(name => `<span>${escapeHtmlText(name)}</span>`).join('')}</dd>
   </div>`).join('')
-  const columns = grouped.size === 4 && [...grouped.values()].every(names => names.length <= 2) ? 2 : 3
+  const columns = groups.length === 4 && groups.every(([, names]) => names.length <= 2) ? 2 : 3
   return `<div class="case-title-block" style="--credit-columns: ${columns}" aria-label="Project details and credits">
     <dl class="title-block__header">
       ${cell('Project', singleCase.title, 'title-block__project')}
