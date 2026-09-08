@@ -1,10 +1,12 @@
 import { sessionState } from './session-state.js'
 import { syncVisibleMedia } from './visible-media.js'
+import { initCaseIntroScroll } from './case-intro-scroll.js'
 
 export function initCreditsLayout(root) {
   const credits = root.querySelector('.case-credits')
   const lead = root.querySelector('.case-lead, .case-legacy-lead')
   if (!lead) return
+  const updateIntroScroll = initCaseIntroScroll(lead)
   const hero = lead.querySelector('.case-cover-hero')
   const layouts = ['original', 'columns', 'below']
   const saved = sessionState.getItem('credits:layout')
@@ -26,6 +28,7 @@ export function initCreditsLayout(root) {
       if (layout === 'below') lead.prepend(hero)
       else lead.append(hero)
     }
+    updateIntroScroll()
   }
   apply()
 

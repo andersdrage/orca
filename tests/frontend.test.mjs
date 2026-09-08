@@ -178,6 +178,43 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await group.getAttribute('data-layout'), 'below')
     })
 
+    test('presentation intro pins behind media, fades with overlap and restores on scroll back', async (t) => {
+      const page = await visit(t, '/hjemla/', { reducedMotion: 'no-preference' })
+      await page.waitForTimeout(1200)
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }))
+        await page.waitForTimeout(100)
+        const measure = () => page.locator('.case-lead').evaluate(el => {
+          const copy = el.querySelector('.case-lead__copy')
+          return { top: el.getBoundingClientRect().top, copyTop: copy.getBoundingClientRect().top,
+            copyHeight: copy.offsetHeight, opacity: Number(getComputedStyle(copy).opacity),
+            mediaTop: el.nextElementSibling.getBoundingClientRect().top }
+        })
+        const start = await measure()
+        assert.equal(start.opacity, 1)
+        const overlapScroll = start.mediaTop - start.copyTop - start.copyHeight / 2
+        await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), overlapScroll)
+        await page.waitForTimeout(100)
+        const middle = await measure()
+        assert.ok(Math.abs(middle.top - start.top) < 2, 'intro stays in place')
+        assert.ok(middle.opacity > 0.35 && middle.opacity < 0.65, 'partial coverage fades the text')
+        await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), start.mediaTop - start.copyTop + 20)
+        await page.waitForTimeout(100)
+        assert.equal((await measure()).opacity, 0)
+        await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }))
+        await page.waitForTimeout(100)
+        assert.equal((await measure()).opacity, 1)
+      }
+      await page.keyboard.press('p')
+      await page.waitForTimeout(100)
+      assert.equal(await page.locator('.case-presentation-sticky').count(), 0)
+      await page.keyboard.press('p')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.waitForTimeout(100)
+      assert.equal(await page.locator('.case-presentation-sticky').count(), 0)
+    })
+
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')

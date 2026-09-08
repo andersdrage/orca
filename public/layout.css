@@ -2835,3 +2835,19 @@ body.world-map-intro .archived-card {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding: 5rem 0 6rem; }
   .case-credits[data-layout="presentation"] dl { gap: 1rem 1.5rem; }
 }
+
+/* Media scrolls over the pinned opening as one opaque layer, including its gaps. */
+.case-presentation-sticky { isolation: isolate; }
+#work .case-presentation-sticky > [data-layout="presentation"] {
+  position: sticky;
+  top: var(--intro-sticky-top, 2rem);
+  z-index: 0;
+}
+#work .case-presentation-sticky [data-layout="presentation"] > :is(.case-lead__copy, .case-legacy-copy) {
+  opacity: var(--intro-opacity, 1);
+}
+#work .case-presentation-sticky > [data-layout="presentation"] + .case-below {
+  position: relative;
+  z-index: 1;
+  background: #fafafa;
+}
