@@ -1347,19 +1347,10 @@ a.timeline-tile:focus-visible {
   white-space: nowrap;
 }
 
-/* Case navigation floats above the cover, with the close control on the right. */
+/* Project pages use only the close control; overview navigation stays hidden. */
 .page-case .site-header {
-  position: fixed;
-  left: 0;
-  margin-left: 0;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: none;
-  pointer-events: none;
+  display: none;
 }
-.page-case .site-header > div { min-height: 100px; }
-.page-case .site-header :is(a, nav) { pointer-events: auto; }
 
 /* Lukkeknapp på case-sider — flytende, frostet, under headeren. */
 .case-close {
