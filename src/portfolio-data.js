@@ -271,8 +271,6 @@ export const portfolioCases = [
           { file: 'uber-ueno-australia-full.jpg', label: 'Australia' },
         ],
       },
-      { file: 'uber-2-full.jpg', span: 'half', alt: 'Uber' },
-      { file: 'uber-ueno-ubercity-original.jpg', span: 'half', alt: 'Uber city page' },
       /* Fra Ueno sin case-studie av uber.com (web.archive.org, 2021-01-14). */
       { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-menu-full.mp4', span: 'full', alt: 'Uber' },
@@ -280,6 +278,7 @@ export const portfolioCases = [
       {
         type: 'gallery', span: 'full', label: 'Uber website pages',
         images: [
+          { file: 'uber-ueno-ubercity-original.jpg', alt: 'City' },
           { file: 'uber-ueno-rider-original.jpg', alt: 'Rider' },
           { file: 'uber-ueno-wheel-original.jpg', alt: 'Wheel' },
           { file: 'uber-ueno-career-1-2x.jpg', alt: 'Careers' },

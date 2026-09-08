@@ -470,11 +470,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('Uber long-page gallery opens readable images and restores the case on close', async (t) => {
       const page = await visit(t, '/uber/')
       const thumbs = page.locator('[data-case-image]')
-      assert.equal(await thumbs.count(), 4)
+      assert.equal(await thumbs.count(), 5)
+      assert.equal(await page.locator('img[src="/images/uber-2-full.jpg"]').count(), 0)
       assert.equal(await page.locator('img[src="/images/uber-ueno-home-top-full.jpg"]').count(), 0)
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
           const trigger = thumbs.nth(i)
           await trigger.click()
           const dialog = page.locator('.case-image-viewer[open]')
@@ -487,7 +488,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
             return el.scrollHeight <= el.clientHeight || el.scrollTop > 0
           }), true)
           await page.keyboard.press('ArrowRight')
-          assert.equal(await image.getAttribute('src'), await thumbs.nth((i + 1) % 4).getAttribute('data-case-image'))
+          assert.equal(await image.getAttribute('src'), await thumbs.nth((i + 1) % 5).getAttribute('data-case-image'))
           await page.keyboard.press('Escape')
           assert.equal(await page.locator('dialog[open]').count(), 0)
           assert.equal(await trigger.evaluate((el) => el === document.activeElement), true)
