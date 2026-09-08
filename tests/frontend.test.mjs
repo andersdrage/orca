@@ -731,6 +731,32 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
     })
 
+    test('centre magnification follows scrolling without changing layout and respects reduced motion', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
+      const scroller = page.locator('[data-timeline]')
+      await scroller.dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
+      const position = await tile.evaluate(el => el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2)
+      const initialWidth = await tile.evaluate(el => el.offsetWidth)
+      const scale = () => tile.evaluate(el => Number(getComputedStyle(el).scale))
+      const settle = async offset => {
+        await scroller.evaluate((el, left) => el.scrollTo({ left, behavior: 'instant' }), position + offset)
+        await page.waitForTimeout(900)
+      }
+      await settle(0)
+      assert.ok(Math.abs(await scale() - 1.2) < 0.001, 'centre thumbnail is 20% larger')
+      await settle(400)
+      const passingScale = await scale()
+      assert.ok(passingScale > 1 && passingScale < 1.2, 'size decreases gradually away from centre')
+      assert.equal(await tile.evaluate(el => el.offsetWidth), initialWidth, 'magnification does not shift the underlying layout')
+      await settle(0)
+      assert.ok(Math.abs(await scale() - 1.2) < 0.001, 'reversing scroll restores full magnification')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.waitForFunction(() => [...document.querySelectorAll('.timeline-tile')].every(el => getComputedStyle(el).scale === '1'))
+    })
+
     test('same size thumbnail setting swaps covers, survives navigation and restores originals', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')

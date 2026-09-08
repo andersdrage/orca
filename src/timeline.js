@@ -483,9 +483,31 @@ export function initTimeline(scrollerEl) {
   }
   measureTiles()
 
+  // Scale around the visible centre without changing layout widths or loop seams.
+  // A cosine falloff gives neighbouring tiles a gradual handoff, with no winner snap.
+  function updateMagnification() {
+    const viewportWidth = window.innerWidth
+    const radius = viewportWidth * 0.65
+    const tension = finePointer.matches ? scroller.scrollLeft - elasticCurrent : 0
+    tileGeometry.forEach(entry => {
+      if (entry.tile.classList.contains('is-navigating')) return
+      const xNorm = (entry.contentLeft - elasticCurrent) / viewportWidth
+      const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
+      const center = entry.contentLeft + entry.width / 2 - elasticCurrent + tension * lag
+      const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
+      const scale = reducedMotionQuery.matches ? '1' : (1 + 0.1 * (1 + Math.cos(distance * Math.PI))).toFixed(4)
+      if (entry.magnification !== scale) {
+        entry.tile.style.setProperty('--tile-magnification', scale)
+        entry.magnification = scale
+      }
+    })
+  }
+  updateMagnification()
+
   /* Sømfokus: når siste prosjekt nærmer seg venstre kant (= ny runde starter til
      høyre for det), fader det ut og overlater oppmerksomheten til restarten. */
   function updateSeamFade() {
+    updateMagnification()
     const viewportWidth = window.innerWidth
     tileGeometry.forEach((entry) => {
       if (!entry.fades) return
@@ -664,6 +686,7 @@ export function initTimeline(scrollerEl) {
       tile.classList.remove('is-navigating', 'is-pressed')
       tile.style.removeProperty('scale')
     })
+    updateMagnification()
   }
   window.addEventListener('pageshow', resetPressState)
 
@@ -691,7 +714,8 @@ export function initTimeline(scrollerEl) {
     if (sessionState.getItem('case:presentation') !== 'false') {
       // Transfer the hover enlargement to the snapshot's outer box. Keeping it
       // on the image clips its rounded corners to the smaller tile bounds.
-      tile.style.scale = String(new DOMMatrixReadOnly(getComputedStyle(tile.querySelector('img')).transform).a)
+      const magnification = parseFloat(getComputedStyle(tile).scale) || 1
+      tile.style.scale = String(magnification * new DOMMatrixReadOnly(getComputedStyle(tile.querySelector('img')).transform).a)
     }
     /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
     tile.classList.add('is-navigating')
