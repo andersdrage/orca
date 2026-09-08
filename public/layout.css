@@ -2740,3 +2740,101 @@ body.world-map-intro .archived-card {
 .media-playback:focus-visible { outline: 2px solid #18181b; outline-offset: 3px; }
 
 #work .work-media > .portfolio-item .portfolio-asset video { width: 100%; }
+
+/* P: a quiet, text-first project opening. C layouts stay available underneath. */
+#work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  min-height: calc(100svh - 4rem);
+  padding: clamp(6rem, 15svh, 12rem) 0;
+  margin-left: calc((100% - min(1500px, calc(100vw - 3rem))) / 2);
+  transform: none;
+}
+#work [data-layout="presentation"] > .case-cover-hero { display: none; }
+#work [data-layout="presentation"] > :is(.case-lead__copy, .case-legacy-copy) {
+  display: block;
+  width: min(100%, 1080px);
+  max-width: none;
+  margin: 0 auto;
+  text-align: center;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+[data-layout="presentation"] :is(.case-lead__title, .case-legacy-title) {
+  margin: 0 0 clamp(2rem, 3.4vw, 3.25rem);
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: clamp(0.8125rem, 1.15vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #18181b;
+}
+[data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) {
+  margin: 0;
+  font-family: DragePlantin, Georgia, serif;
+  font-size: clamp(1.75rem, 2.85vw, 3rem);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+  text-align: center;
+  text-wrap: balance;
+  color: #18181b;
+}
+#work .case-credits[data-layout="presentation"] {
+  max-width: 840px;
+  margin: clamp(3rem, 5vw, 5rem) auto 0;
+  padding: 0;
+  border: 0;
+  container-type: normal;
+}
+.case-credits[data-layout="presentation"] .case-credits__label { display: none; }
+.case-credits[data-layout="presentation"] dl {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem 2.25rem;
+}
+.case-credits[data-layout="presentation"] .case-credits__row {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+}
+.case-credits[data-layout="presentation"] .case-credits__row::after { display: none; }
+/* Keep roles available to screen readers while the visual credits show names only. */
+.case-credits[data-layout="presentation"] .case-credits__role {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.case-credits[data-layout="presentation"] .case-credits__names {
+  font-size: clamp(0.8125rem, 1.15vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+}
+@keyframes case-presentation-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title, .case-lead__intro, .case-legacy-intro, .case-credits__row) {
+    animation: case-presentation-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) { animation-delay: 100ms; }
+  [data-layout="presentation"] .case-credits__row { animation-delay: var(--contributor-delay); }
+  .case-entering [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title, .case-lead__intro, .case-legacy-intro, .case-credits__row) {
+    animation-play-state: paused;
+  }
+}
+@media (max-width: 767px) {
+  #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding: 5rem 0 6rem; }
+  .case-credits[data-layout="presentation"] dl { gap: 1rem 1.5rem; }
+}

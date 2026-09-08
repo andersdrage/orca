@@ -135,6 +135,46 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await lead.evaluate((el) => el.lastElementChild.classList.contains('case-cover-hero')), true)
     })
 
+    test('P presentation preserves the chosen C layout, contributors and responsive content', async (t) => {
+      const page = await visit(t, '/hjemla/')
+      await page.keyboard.press('c')
+      await page.keyboard.press('c')
+      const names = await page.locator('.case-credits__names').allTextContents()
+      await page.keyboard.press('p')
+      const group = page.locator('.case-lead, .case-legacy-lead')
+      assert.equal(await group.getAttribute('data-layout'), 'presentation')
+      assert.equal(await page.locator('.case-cover-hero').isVisible(), false)
+      assert.deepEqual(await page.locator('.case-credits__names').allTextContents(), names)
+      assert.equal(await page.locator('.case-credits__row').first().evaluate(el => getComputedStyle(el).animationName), 'none')
+      for (const path of ['/hjemla/', '/uber/', '/boligmappa/']) {
+        await page.goto(base + path)
+        assert.equal(await group.getAttribute('data-layout'), 'presentation')
+        for (const width of [1440, 390]) {
+          await page.setViewportSize({ width, height: 900 })
+          const geometry = await group.evaluate(el => {
+            const intro = el.querySelector('.case-lead__intro, .case-legacy-intro').getBoundingClientRect()
+            const credits = el.querySelector('.case-credits')?.getBoundingClientRect()
+            return { center: (intro.left + intro.right) / 2, below: !credits || credits.top >= intro.bottom,
+              overflow: document.documentElement.scrollWidth > innerWidth }
+          })
+          assert.ok(Math.abs(geometry.center - width / 2) < 2, path)
+          assert.equal(geometry.below, true)
+          assert.equal(geometry.overflow, false)
+        }
+      }
+      await page.keyboard.press('p')
+      assert.equal(await group.getAttribute('data-layout'), 'below')
+      assert.equal(await page.locator('.case-cover-hero').isVisible(), true)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.keyboard.press('p')
+      await page.keyboard.press('p')
+      await page.keyboard.press('p')
+      await page.waitForTimeout(1300)
+      assert.equal(await page.locator('.case-legacy-intro').evaluate(el => getComputedStyle(el).opacity), '1')
+      await page.keyboard.press('p')
+      assert.equal(await group.getAttribute('data-layout'), 'below')
+    })
+
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')
