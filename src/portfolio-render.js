@@ -97,8 +97,8 @@ function tabsHtml(item) {
 function galleryHtml(item) {
   return `<div class="case-gallery" role="group" aria-label="${escapeAttr(item.label)}">
     ${item.images.map((image) => `<button type="button" class="case-gallery__item" data-case-image="/images/${escapeAttr(image.file)}" data-image-label="${escapeAttr(image.alt)}" aria-label="Enlarge ${escapeAttr(image.alt)}">
+      <span>${escapeHtmlText(image.alt)} <span aria-hidden="true">+</span></span>
       <img src="/images/${escapeAttr(image.file)}" ${mediaSize(image.file)} alt="" loading="lazy" decoding="async" />
-      <span>${escapeHtmlText(image.alt)} <span aria-hidden="true">↗</span></span>
     </button>`).join('')}
   </div>`
 }
