@@ -19,6 +19,7 @@ export const micromilspecCovers = [
 export const portfolioCases = [
   {
     id: 'micromilspec',
+    year: '2019–2024',
     title: 'MICROMILSPEC',
     displayTitle: 'Micromilspec',
     layout: 'split',
@@ -48,6 +49,7 @@ export const portfolioCases = [
   },
   {
     id: 'hjemla',
+    year: '2023',
     title: 'Hjemla',
     layout: 'split',
     intro:
@@ -71,6 +73,7 @@ export const portfolioCases = [
   },
   {
     id: 'hmkg',
+    year: '2014',
     title: 'HMKG',
     intro: 'Premium business cards for His Majesty The King’s Guard.',
     items: [
@@ -82,6 +85,7 @@ export const portfolioCases = [
   },
   {
     id: 'off-market',
+    year: '2017–2018',
     title: 'Off Market',
     layout: 'split',
     intro:
@@ -107,6 +111,7 @@ export const portfolioCases = [
   },
   {
     id: 'mountain-milk',
+    year: '2011',
     title: 'Mountain Milk',
     intro: 'Case study in the works — more on this project soon.',
     items: [
@@ -121,6 +126,7 @@ export const portfolioCases = [
   },
   {
     id: 'nettavisen',
+    year: '2019',
     title: 'Nettavisen',
     intro:
       'Led an embedded design team through Nettavisen’s rebrand and product redesign — working in short sprints and testing with readers to better reflect the quality of its journalism and challenge its tabloid reputation.',
@@ -139,6 +145,7 @@ export const portfolioCases = [
   },
   {
     id: 'finn',
+    year: '2016',
     title: 'FINN.no',
     intro:
       'Helped shape a new visual identity and future vision for FINN.no at Brandlab — a design language that has evolved over a decade to connect everything from digital experiences and advertising to physical office spaces.',
@@ -188,6 +195,7 @@ export const portfolioCases = [
   },
   {
     id: 'humming-people',
+    year: '2018',
     title: 'Humming People',
     intro: 'LP and booklet design for the band Humming People.',
     items: [
@@ -206,6 +214,7 @@ export const portfolioCases = [
   },
   {
     id: 'brathwait',
+    year: '2015',
     title: 'Brathwait',
     intro: 'Brand and UX design for the watch brand Brathwait.',
     items: [
@@ -238,6 +247,7 @@ export const portfolioCases = [
   },
   {
     id: 'uber',
+    year: '2015',
     title: 'Uber',
     intro:
       'Helped redesign Uber’s global website alongside Ueno and Uber’s in-house design team — creating a friendlier digital presence and a flexible design system spanning thousands of pages.',
@@ -288,6 +298,7 @@ export const portfolioCases = [
   },
   {
     id: 'boligmappa',
+    year: '2024',
     title: 'Boligmappa',
     intro:
       'Led the rebrand of Boligmappa, a home documentation platform serving 1.2 million homeowners — redesigning its marketing website and logged-in experience.',

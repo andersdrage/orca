@@ -156,7 +156,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           await page.setViewportSize({ width, height: 900 })
           const geometry = await group.evaluate(el => {
             const intro = el.querySelector('.case-lead__intro, .case-legacy-intro').getBoundingClientRect()
-            const credits = el.querySelector('.case-credits')?.getBoundingClientRect()
+            const credits = el.querySelector('.case-title-block')?.getBoundingClientRect()
             return { center: (intro.left + intro.right) / 2, below: !credits || credits.top >= intro.bottom,
               overflow: document.documentElement.scrollWidth > innerWidth }
           })
@@ -213,6 +213,43 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.waitForTimeout(100)
       assert.equal(await page.locator('.case-presentation-sticky').count(), 0)
+    })
+
+    test('project title blocks fit every team with consistent typography and readable mobile cells', async (t) => {
+      const page = await visit(t, '/micromilspec/')
+      for (const path of casePaths) {
+        await page.goto(base + path)
+        for (const width of [1440, 390]) {
+          await page.setViewportSize({ width, height: 900 })
+          await page.evaluate(() => document.fonts.ready)
+          const result = await page.locator('.case-title-block').evaluate(el => {
+            const cells = [...el.querySelectorAll('.title-block__cell')]
+            return {
+              labelFont: getComputedStyle(el.querySelector('dt')).fontFamily,
+              labelSize: getComputedStyle(el.querySelector('dt')).fontSize,
+              nameFont: getComputedStyle(el.querySelector('dd')).fontFamily,
+              nameSize: getComputedStyle(el.querySelector('dd')).fontSize,
+              tracking: getComputedStyle(el.querySelector('dd')).letterSpacing,
+              firstHeight: el.querySelector('.title-block__project').offsetHeight,
+              overflow: document.documentElement.scrollWidth > innerWidth,
+              fits: cells.every(cell => {
+                const bounds = cell.getBoundingClientRect()
+                const name = cell.querySelector('dd').getBoundingClientRect()
+                const label = cell.querySelector('dt').getBoundingClientRect()
+                return name.left >= bounds.left && name.right <= bounds.right && name.bottom <= bounds.bottom && name.top >= label.bottom
+              }),
+            }
+          })
+          assert.ok(result.labelFont.includes('PPSupplyMono'), path)
+          assert.equal(result.labelSize, '9px')
+          assert.ok(result.nameFont.includes('DragePlantin'))
+          assert.equal(result.nameSize, '14px')
+          assert.equal(result.tracking, '-0.28px')
+          assert.equal(result.firstHeight, 55)
+          assert.equal(result.overflow, false, path)
+          assert.equal(result.fits, true, path)
+        }
+      }
     })
 
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {

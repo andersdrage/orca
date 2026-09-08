@@ -67,6 +67,32 @@ function creditsHtml(singleCase) {
   return `<div class="case-credits"><p class="case-credits__label">Credits</p><dl>${rows}</dl></div>`
 }
 
+function titleBlockHtml(singleCase) {
+  const grouped = new Map()
+  for (const credit of singleCase.credits ?? []) {
+    const names = grouped.get(credit.role) ?? []
+    names.push(...credit.names.split(/,\s*|\s+and\s+/))
+    grouped.set(credit.role, names)
+  }
+  const ownCredit = singleCase.credits?.find(credit => credit.names.includes('Anders Drage'))
+  const role = ownCredit?.role.replace(/^Designers$/, 'Designer') ?? 'Designer'
+  const cell = (label, value, modifier = '') => `<div class="title-block__cell ${modifier}"><dt>${escapeHtmlText(label)}</dt><dd>${escapeHtmlText(value)}</dd></div>`
+  const contributors = [...grouped].map(([role, names], index) => `<div class="title-block__cell title-block__credit${names.length > 2 ? ' title-block__credit--wide' : ''}" style="--contributor-delay: ${320 + index * 55}ms">
+    <dt>${escapeHtmlText(role)}</dt>
+    <dd>${names.map(name => `<span>${escapeHtmlText(name)}</span>`).join('')}</dd>
+  </div>`).join('')
+  const columns = grouped.size === 4 && [...grouped.values()].every(names => names.length <= 2) ? 2 : 3
+  return `<div class="case-title-block" style="--credit-columns: ${columns}" aria-label="Project details and credits">
+    <dl class="title-block__header">
+      ${cell('Project', singleCase.title, 'title-block__project')}
+      ${singleCase.year ? cell('Year', singleCase.year, 'title-block__year') : ''}
+      ${cell('Role', role, 'title-block__role')}
+      <div class="title-block__signature" aria-hidden="true"><img src="/drage-logo.svg" alt="" width="28" height="24" /></div>
+    </dl>
+    ${contributors ? `<dl class="title-block__contributors">${contributors}</dl>` : ''}
+  </div>`
+}
+
 /** @param {typeof portfolioCases[number]['items'][number]} item */
 function wrapFigure(item, eager = false) {
   return `<div class="portfolio-item w-full">
@@ -270,6 +296,7 @@ function caseSection(singleCase) {
           <h1 id="title-${singleCase.id}" class="case-lead__title">${escapeHtmlText(singleCase.displayTitle ?? singleCase.title)}</h1>
           <p class="case-lead__intro">${escapeHtmlText(singleCase.intro)}</p>
           ${creditsHtml(singleCase)}
+          ${titleBlockHtml(singleCase)}
         </div>
         <div class="case-cover-hero">${firstBlock}</div>
       </div>
@@ -284,6 +311,7 @@ function caseSection(singleCase) {
       <h2 id="title-${singleCase.id}" class="case-legacy-title font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="case-legacy-intro mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${creditsHtml(singleCase)}
+      ${titleBlockHtml(singleCase)}
     </div>
     </div>
     <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
