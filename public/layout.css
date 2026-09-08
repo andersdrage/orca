@@ -109,7 +109,7 @@ body {
   }
 }
 
-/* Flytende header: logo oppe til venstre, meny oppe til høyre, ingen linje/bar.
+/* Flytende header: Work til venstre, logo i midten, meny til høyre.
    Full-bleed ut av 800px-kolonnen; frostet bakgrunn kun når siden er scrollet. */
 .site-header {
   box-sizing: border-box;
@@ -134,7 +134,8 @@ body {
 /* Kritisk header-layout ligger her også, så headeren er stabil før øvrig CSS/JS er klar. */
 .site-header > div {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
@@ -143,6 +144,15 @@ body {
   min-height: 48px;
   box-sizing: border-box;
   padding: 12px 30px;
+}
+
+.site-header__work { justify-self: start; }
+.site-header > div > nav:not(.site-header__work) { justify-self: end; }
+
+@media (max-width: 600px) {
+  .site-header > div { padding-inline: 16px; gap: 0.5rem; }
+  .site-header > div > nav { gap: 0.5rem; }
+  .site-header > div > nav a { padding-inline: 0.25rem; font-size: 0.625rem; }
 }
 
 /* Forsiden: headeren tar ikke plass i flyten — tidslinjen sentreres i hele viewporten.
@@ -1337,10 +1347,19 @@ a.timeline-tile:focus-visible {
   white-space: nowrap;
 }
 
-/* Case-sider: ingen topplinje/frostet bar ved scroll — kun ✕ og innholdet. */
+/* Case navigation floats above the cover, with the close control on the right. */
 .page-case .site-header {
-  display: none;
+  position: fixed;
+  left: 0;
+  margin-left: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  pointer-events: none;
 }
+.page-case .site-header > div { min-height: 100px; }
+.page-case .site-header :is(a, nav) { pointer-events: auto; }
 
 /* Lukkeknapp på case-sider — flytende, frostet, under headeren. */
 .case-close {
@@ -2120,9 +2139,11 @@ html.vt-zoom-out::view-transition-new(push-r4) {
   view-transition-name: site-brand;
 }
 
-.site-header nav {
+.site-header nav:not(.site-header__work) {
   view-transition-name: site-nav;
 }
+
+.site-header__work { view-transition-name: site-work; }
 
 html.vt-zoom-in::view-transition-old(site-brand) {
   animation: vt-brand-out 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
