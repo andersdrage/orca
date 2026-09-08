@@ -815,7 +815,8 @@ body.world-mode {
 .case-gallery {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(12px, 2vw, 28px);
+  row-gap: 28px;
+  column-gap: clamp(36px, 6vw, 84px);
   align-items: start;
 }
 
@@ -886,7 +887,7 @@ body.world-mode {
 .case-image-viewer__scroll > img { display: block; width: 100%; max-width: 1260px; height: auto; margin-inline: auto; }
 
 @media (max-width: 767px) {
-  .case-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .case-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
   .case-image-viewer__scroll { padding: 12px; }
 }
 
