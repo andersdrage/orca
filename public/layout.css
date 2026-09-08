@@ -805,7 +805,7 @@ body.world-mode {
 .case-tabs {
   --tabs-dur: 250ms;
   --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  width: min(100%, calc(82svh * 1290 / 762));
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -877,17 +877,15 @@ body.world-mode {
   .t-tabs-pill, .t-tab { transition: none !important; }
 }
 
-/* Fullbredde-bilder i case-visning er aldri høyere enn 90 % av viewporten —
-   hvert bilde skal kunne ses i sin helhet uten å scrolle. Figuren krymper til
-   bildets bredde og sentreres, så det ikke blir grå letterbox-striper. */
-#work .work-media > .portfolio-item .portfolio-asset {
+/* Covers fit the viewport; case content keeps one width and its natural height. */
+#work .case-cover-hero.work-media > .portfolio-item .portfolio-asset {
   width: fit-content;
   max-width: 100%;
   margin-inline: auto;
 }
 
-#work .work-media > .portfolio-item .portfolio-asset img,
-#work .work-media > .portfolio-item .portfolio-asset video {
+#work .case-cover-hero.work-media > .portfolio-item .portfolio-asset img,
+#work .case-cover-hero.work-media > .portfolio-item .portfolio-asset video {
   max-height: 90svh;
   width: auto;
   max-width: 100%;

@@ -244,6 +244,7 @@ export const portfolioCases = [
     credits: [
       { role: 'Creative Director', names: 'Haraldur Thorleifsson' },
       { role: 'Designers', names: 'Ben Mingo, Robin Noguier, Jenny Johannesson and Anders Drage' },
+      { role: 'Illustrations and icons', names: 'Stout Design' },
       { role: 'Uber', names: 'Shalin Amin and Strahan McMullen' },
     ],
     items: [
@@ -256,7 +257,6 @@ export const portfolioCases = [
       { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-hero-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-home-top-full.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-carousel-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-homepage-full.jpg', span: 'full', alt: 'Uber' },
       {
         type: 'tabs', span: 'full', id: 'uber-countries', label: 'Uber around the world',
