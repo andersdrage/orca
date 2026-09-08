@@ -1,6 +1,5 @@
 import { initAnimationInspector } from './debug-panel.js'
 import { initDesignAudit } from './design-audit.js'
-import { initFpsMeter } from './fps-meter.js'
 import { portfolioCases } from './portfolio-data.js'
 import { initWorld } from './world.js'
 import { syncVisibleMedia } from './visible-media.js'
@@ -64,7 +63,6 @@ export function initHeader() {
   initCaseWarmup()
   initAnimationInspector()
   initDesignAudit()
-  initFpsMeter()
 
 
   const header = document.querySelector('.site-header')

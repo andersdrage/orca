@@ -9,7 +9,7 @@ export function initCreditsLayout(root) {
   const layouts = ['original', 'columns', 'below']
   const saved = sessionState.getItem('credits:layout')
   let selected = layouts.includes(saved) ? saved : 'original'
-  let presentation = sessionState.getItem('case:presentation') === 'true'
+  let presentation = sessionState.getItem('case:presentation') !== 'false'
 
   const count = root.querySelectorAll('.case-credits__row').length
   credits?.style.setProperty('--credits-rows', Math.ceil(count / 3))

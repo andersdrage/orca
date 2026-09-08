@@ -1548,17 +1548,12 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
   }
 }
 
-/* FPS-måler nede til venstre — over Arkiv-lenken. */
+/* Frame statistics live inside the animation inspector. */
 .fps-meter {
-  position: fixed;
-  left: 30px;
-  bottom: 56px;
-  z-index: 90;
+  margin-top: 10px;
   color: var(--text-secondary);
-  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.625rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font: inherit;
+  font-weight: 400;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
 }
@@ -1567,10 +1562,10 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
   color: #e5484d;
 }
 
-/* Animasjon-inspektør (dev): åpnes/lukkes med S — over FPS-måleren. */
+/* Animation inspector: S shows or hides the panel and frame statistics. */
 .debug-panel {
   position: fixed;
-  bottom: 88px;
+  bottom: 56px;
   left: 30px;
   z-index: 100;
   padding: 14px 16px;
@@ -1580,16 +1575,18 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   color: #3f3f46;
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  max-width: calc(100vw - 60px);
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .debug-panel__title {
   margin: 0 0 10px;
   color: #18181b;
+  font-weight: 700;
 }
 
 .debug-panel__row {
@@ -1607,7 +1604,7 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
   margin: 10px 0 0;
   color: var(--text-secondary);
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0;
 }
 
 /* ---- View transitions: cover ↔ case-side (morph) ---- */

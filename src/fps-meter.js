@@ -2,11 +2,11 @@
    (ms — 16,7 ms er 60 fps-budsjettet; én treg frame synes her selv om snittet
    ser fint ut). Rødner når det droppes frames. */
 
-export function initFpsMeter() {
+export function initFpsMeter(panel) {
   const el = document.createElement('div')
   el.className = 'fps-meter'
   el.setAttribute('aria-hidden', 'true')
-  document.body.append(el)
+  panel.append(el)
 
   let frames = 0
   let windowStart = performance.now()

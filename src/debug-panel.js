@@ -3,6 +3,7 @@
    uten skjermopptak. Valget lagres i sessionStorage og overlever sidebytter. */
 
 import { sessionState } from './session-state.js'
+import { initFpsMeter } from './fps-meter.js'
 
 const RATE = 0.3
 const STORAGE_KEY = 'debug:slow-animations'
@@ -29,6 +30,7 @@ export function initAnimationInspector() {
       </label>
       <p class="debug-panel__hint">Press S to hide</p>`
     document.body.append(panel)
+    initFpsMeter(panel)
     panel.querySelector('[data-debug-slow]').addEventListener('change', (event) => {
       sessionState.setItem(STORAGE_KEY, event.target.checked ? '1' : '0')
       setAllPlaybackRates(event.target.checked ? RATE : 1)

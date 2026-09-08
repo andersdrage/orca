@@ -99,6 +99,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('case layout shortcut cycles three variants and keeps the image before the new text layout', async (t) => {
       const page = await visit(t, '/hjemla/')
       const lead = page.locator('.case-lead')
+      assert.equal(await lead.getAttribute('data-layout'), 'presentation')
+      await page.keyboard.press('p')
       assert.equal(await lead.getAttribute('data-layout'), 'original')
       await page.keyboard.press('c')
       assert.equal(await lead.getAttribute('data-layout'), 'columns')
@@ -137,6 +139,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('P presentation preserves the chosen C layout, contributors and responsive content', async (t) => {
       const page = await visit(t, '/hjemla/')
+      await page.keyboard.press('p')
       await page.keyboard.press('c')
       await page.keyboard.press('c')
       const names = await page.locator('.case-credits__names').allTextContents()
