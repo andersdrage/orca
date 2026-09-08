@@ -12,14 +12,14 @@ const showreelSlides = (first, last = first) =>
 
 const ARCHIVED = [
   { id: 'agens', title: 'AGENS', year: 2025, files: ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg'] },
-  { id: 'aprila', title: 'Aprila Bank', year: 2018, files: ['misc-aprila.jpg'] },
+  { id: 'aprila', title: 'Aprila Bank', year: 2018, files: ['misc-aprila.jpg', 'aprilabank-website.jpg', 'aprilabank-website-2.jpg', 'aprilabank-website-3.jpg', 'aprilabank-website-4.jpg'] },
   { id: 'brevio', title: 'Brevio', service: 'Brand + UX design', year: 2017, files: [
     'misc-brevio.jpg', 'brevio-logo-animation.mp4',
     ...Array.from({ length: 12 }, (_, i) => `Presentasjon_Brevio-${String(i + 1).padStart(2, '0')}.jpg`),
     'brevio-dashboard.1.jpg', 'brevio-interaction.mp4', 'brevio-animation-film.mp4',
   ] },
   { id: 'klp', title: 'KLP', service: 'UX design', year: 2017, files: ['klp-web-1.jpg', 'klp-web-2.jpg', 'klp-site-demo.mp4', 'klp-case-film.mp4'] },
-  { id: 'just', title: 'GoJust', service: 'Brand + UX design', year: 2017, files: ['just-logo-letters-2-610.mp4', 'just-logo-loader-103.mp4'] },
+  { id: 'just', title: 'GoJust', service: 'Brand + UX design', year: 2017, files: ['just-logo-letters-2-610.mp4', 'just-logo-loader-103.mp4', 'just-1.jpg', 'just-2.jpg'] },
   { id: 'kindly', title: 'Kindly', service: 'Brand + UX design', year: 2016, files: ['kindly-logo-1_1.mp4', 'kindly-emotions.mp4', 'all-emojis-kindly.mp4'] },
   { id: 'changemaker', title: 'Changemaker', service: 'Brand + UX design', year: 2016, files: Array.from({ length: 8 }, (_, i) => `changemaker-${i + 1}.jpg`) },
   { id: 'abelee', title: 'Abelee', service: 'Brand + marketing', year: 2017, files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
