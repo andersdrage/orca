@@ -304,6 +304,12 @@ export const portfolioCases = [
     title: 'Boligmappa',
     intro:
       'Led the rebrand of Boligmappa, a home documentation platform serving 1.2 million homeowners — redesigning its marketing website and logged-in experience.',
+    credits: [
+      { role: 'Creative director', names: 'Anders Drage' },
+      { role: 'Marketing', names: 'Eirik Vigeland' },
+      { role: 'Product owner', names: 'Martin Lampe' },
+      { role: 'Development', names: 'Christopher Einarsrud' },
+    ],
     items: [
       /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
