@@ -96,6 +96,45 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .site-footer video').paused)
     })
 
+    test('case layout shortcut cycles three variants and keeps the image before the new text layout', async (t) => {
+      const page = await visit(t, '/hjemla/')
+      const lead = page.locator('.case-lead')
+      assert.equal(await lead.getAttribute('data-layout'), 'original')
+      await page.keyboard.press('c')
+      assert.equal(await lead.getAttribute('data-layout'), 'columns')
+      await page.keyboard.press('c')
+      assert.equal(await lead.getAttribute('data-layout'), 'below')
+      for (const path of ['/hjemla/', '/uber/', '/boligmappa/']) {
+        await page.goto(base + path)
+        const group = page.locator('.case-lead, .case-legacy-lead')
+        assert.equal(await group.getAttribute('data-layout'), 'below', 'layout survives navigation')
+        for (const width of [1440, 390]) {
+          await page.setViewportSize({ width, height: 900 })
+          const geometry = await group.evaluate((el) => {
+            const rect = (selector) => el.querySelector(selector)?.getBoundingClientRect().toJSON()
+            return {
+              hero: rect('.case-cover-hero'), title: rect('.case-lead__title, .case-legacy-title'),
+              intro: rect('.case-lead__intro, .case-legacy-intro'), credits: rect('.case-credits'),
+              overflow: document.documentElement.scrollWidth > innerWidth,
+              first: el.firstElementChild.classList.contains('case-cover-hero'),
+            }
+          })
+          assert.equal(geometry.overflow, false, path)
+          assert.equal(geometry.first, true)
+          assert.ok(geometry.title.top > geometry.hero.bottom)
+          if (geometry.credits) {
+            if (width > 1023) assert.ok(geometry.credits.left >= geometry.intro.right)
+            else assert.ok(geometry.credits.top >= geometry.intro.bottom)
+          }
+        }
+      }
+      await page.keyboard.press('c')
+      assert.equal(await page.locator('.case-legacy-lead').getAttribute('data-layout'), 'original')
+      await page.goto(base + '/hjemla/')
+      assert.equal(await lead.getAttribute('data-layout'), 'original')
+      assert.equal(await lead.evaluate((el) => el.lastElementChild.classList.contains('case-cover-hero')), true)
+    })
+
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')

@@ -278,11 +278,13 @@ function caseSection(singleCase) {
   }
 
   return `<section id="${singleCase.id}" class="scroll-mt-24 pt-8" aria-labelledby="title-${singleCase.id}">
+    <div class="case-legacy-lead">
     <div class="work-media case-cover-hero flex flex-col gap-3 sm:gap-4 md:gap-6">${firstBlock}</div>
-    <div class="case-below work-narrow mt-10 mb-8 w-full md:mt-14">
-      <h2 id="title-${singleCase.id}" class="font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
-      <p class="mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
+    <div class="case-legacy-copy case-below work-narrow mt-10 mb-8 w-full md:mt-14">
+      <h2 id="title-${singleCase.id}" class="case-legacy-title font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
+      <p class="case-legacy-intro mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${creditsHtml(singleCase)}
+    </div>
     </div>
     <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
   </section>`
