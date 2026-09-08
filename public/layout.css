@@ -804,8 +804,8 @@ body.world-mode {
 /* Country variants share one image frame and a sliding, measured tab marker. */
 .case-story {
   padding-block: clamp(1.5rem, 4vw, 3.5rem);
-  font-size: 17px;
-  line-height: 1.625;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.35;
   text-align: left;
   color: var(--color-zinc-600, #52525b);
 }
