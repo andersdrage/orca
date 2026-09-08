@@ -625,13 +625,6 @@ body.world-mode {
   transition: color 180ms ease;
 }
 .praise-invitation__copy { display: block; }
-.praise-invitation__action {
-  display: block;
-  margin-top: 0.75rem;
-  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 0.875rem;
-  color: #18181b;
-}
 .praise-invitation__chevron {
   flex-shrink: 0;
   color: #18181b;
