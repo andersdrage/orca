@@ -1282,7 +1282,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   top: 100%;
   left: 50%;
   z-index: 0;
-  padding-top: 9px;
+  padding-top: 24px;
   color: #52525b;
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.6875rem;
@@ -1291,7 +1291,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
-  transform: translate(-50%, calc(-100% - 9px));
+  transform: translate(-50%, calc(-100% - 24px));
   transition: transform 620ms linear(
     0, 0.301 7.4%, 0.609 15.4%, 0.865 23.4%, 1.053 31.7%, 1.145 39.8%,
     1.132 47.7%, 1.085 56%, 1.021 68.3%, 0.998 80.5%, 1
@@ -2761,6 +2761,11 @@ body.world-map-intro .archived-card {
   opacity: 1;
   transform: none;
   animation: none;
+}
+/* Override the legacy work-narrow container without changing its scroll fade. */
+#site-layout #work [data-layout="presentation"] > .case-legacy-copy {
+  width: min(100%, 1080px);
+  max-width: none;
 }
 [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title) {
   margin: 0 0 clamp(2rem, 3.4vw, 3.25rem);
