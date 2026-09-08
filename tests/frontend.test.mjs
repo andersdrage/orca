@@ -265,7 +265,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('world links, footer entry and Back/Forward move focus with the camera', async (t) => {
       const page = await visit(t, '/about/')
       await ready(page, '/praise/')
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await activeWorld(page, '/praise/')
       await page.locator('.corner-links a[href="/people/"]').click()
       await activeWorld(page, '/people/')
@@ -355,7 +355,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('interrupted camera trips preserve world and card transforms through pan and landing', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await ready(page, '/praise/')
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       for (const [path, elapsed] of [['/history/', 300], ['/people/', 850], ['/about/', 80]]) {
         await page.waitForTimeout(elapsed)
         const jump = await page.evaluate(async (path) => {
@@ -379,7 +379,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/about/')
       await ready(page, '/archived-work/')
       const results = await page.evaluate(() => {
-        const links = [document.querySelector('.site-header a[href="/praise/"]'), document.querySelector('.site-header a[href="/about/"]'), document.querySelector('.corner-links a'), document.querySelector('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]')]
+        const links = [document.querySelector('.world-page[data-path="/about/"] .praise-invitation'), document.querySelector('.site-header a[href="/about/"]'), document.querySelector('.corner-links a'), document.querySelector('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]')]
         return links.flatMap((link) => ['metaKey', 'ctrlKey', 'shiftKey', 'altKey', 'middle', 'target', 'download', 'prevented'].map((kind) => {
           if (kind === 'target') link.target = '_blank'
           if (kind === 'download') link.setAttribute('download', '')
@@ -396,7 +396,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       })
       assert.ok(results.every(({ kind, prevented }) => prevented === (kind === 'prevented')))
       assert.equal(new URL(page.url()).pathname, '/about/')
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await activeWorld(page, '/praise/')
     })
 
@@ -657,7 +657,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('rapid travel retains only the final destination in the tab order', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await ready(page, '/praise/')
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await page.locator('.corner-links a[href="/history/"]').click()
       await page.locator('.site-header a[href="/about/"]').click()
       await activeWorld(page, '/about/')
@@ -678,7 +678,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           await route.fulfill({ status: failure === '503' ? 503 : 200, contentType: 'text/html', body: '<html><title>Unavailable</title><body>No page here</body></html>' })
         })
         await page.reload({ waitUntil: 'domcontentloaded' })
-        await page.locator('.site-header a[href="/praise/"]').click()
+        await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
         await page.getByRole('button', { name: 'Try again' }).waitFor()
         await activeWorld(page, '/praise/')
         failing = false
@@ -704,7 +704,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await route.fulfill({ response, body: (await response.text()).replace(/<title>.*?<\/title>/, '<title>Delayed Praise result</title>') })
       })
       await page.reload({ waitUntil: 'domcontentloaded' })
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       assert.equal(await page.getByRole('status').filter({ hasText: 'Loading…' }).count(), 1)
       await activeWorld(page, '/praise/')
       await page.locator('.site-header a[href="/about/"]').click()
@@ -712,7 +712,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await ready(page, '/praise/')
       await activeWorld(page, '/about/')
       assert.equal(await page.title(), aboutTitle)
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       assert.equal(await page.title(), 'Delayed Praise result')
     })
 
@@ -840,7 +840,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/about/', { viewport: { width: 390, height: 844 } })
       await page.route('**/praise/', (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
       await page.reload({ waitUntil: 'domcontentloaded' })
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await page.getByRole('button', { name: 'Try again' }).waitFor()
       const main = page.getByRole('main')
       assert.equal(await main.locator('h1').count(), 0)
@@ -874,7 +874,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await page.route('**/praise/', (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
       await page.reload({ waitUntil: 'domcontentloaded' })
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await activeWorld(page, '/praise/')
       const retry = page.getByRole('button', { name: 'Try again' })
       await retry.waitFor()
@@ -916,7 +916,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.waitForFunction(() => document.querySelector('.world-page[data-path="/praise/"]')?.dataset.loadState === 'error')
       assert.equal(await page.locator('.world-page[data-path="/praise/"] video').getAttribute('src'), null)
-      await page.locator('.site-header a[href="/praise/"]').click()
+      await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .page-state__mark video')?.currentTime > 0)
       await page.locator('.site-header a[href="/about/"]').click()
       assert.equal(await page.locator('.world-page[data-path="/praise/"] video').evaluate((video) => video.paused), true)

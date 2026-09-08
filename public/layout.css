@@ -613,6 +613,42 @@ body.world-mode {
 
 .people-thanks { white-space: nowrap; }
 
+.praise-invitation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding-block: 2rem;
+  border-bottom: 1px solid #e4e4e7;
+  color: #52525b;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.praise-invitation__copy { display: block; }
+.praise-invitation__action {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
+  color: #18181b;
+}
+.praise-invitation__chevron {
+  flex-shrink: 0;
+  color: #18181b;
+  transition: transform 180ms ease;
+}
+.praise-invitation:focus-visible {
+  outline: 2px solid #c9363e;
+  outline-offset: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .praise-invitation:hover { color: #18181b; }
+  .praise-invitation:hover .praise-invitation__chevron { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .praise-invitation__chevron { transition: none; }
+}
+
 /* Tekst, titler, bildetekster, seksjonsskille — 800px (header/intro/footer + #work). */
 #site-layout:has(#work) .work-narrow {
   box-sizing: border-box;
