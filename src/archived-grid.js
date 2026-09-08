@@ -13,12 +13,23 @@ const showreelSlides = (first, last = first) =>
 const ARCHIVED = [
   { id: 'agens', title: 'AGENS', year: 2025, files: ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg'] },
   { id: 'aprila', title: 'Aprila Bank', year: 2018, files: ['misc-aprila.jpg'] },
-  { id: 'brevio', title: 'Brevio', year: 2019, files: ['misc-brevio.jpg'] },
+  { id: 'brevio', title: 'Brevio', service: 'Brand + UX design', year: 2017, files: [
+    'misc-brevio.jpg', 'brevio-logo-animation.mp4',
+    ...Array.from({ length: 12 }, (_, i) => `Presentasjon_Brevio-${String(i + 1).padStart(2, '0')}.jpg`),
+    'brevio-dashboard.1.jpg', 'brevio-interaction.mp4', 'brevio-animation-film.mp4',
+  ] },
+  { id: 'klp', title: 'KLP', service: 'UX design', year: 2017, files: ['klp-web-1.jpg', 'klp-web-2.jpg', 'klp-site-demo.mp4', 'klp-case-film.mp4'] },
+  { id: 'just', title: 'GoJust', service: 'Brand + UX design', year: 2017, files: ['just-logo-letters-2-610.mp4', 'just-logo-loader-103.mp4'] },
+  { id: 'kindly', title: 'Kindly', service: 'Brand + UX design', year: 2016, files: ['kindly-logo-1_1.mp4', 'kindly-emotions.mp4', 'all-emojis-kindly.mp4'] },
+  { id: 'changemaker', title: 'Changemaker', service: 'Brand + UX design', year: 2016, files: Array.from({ length: 8 }, (_, i) => `changemaker-${i + 1}.jpg`) },
+  { id: 'abelee', title: 'Abelee', files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
   { id: 'nike', title: 'Nike app', year: 2016, files: ['misc-nike.jpg'] },
   { id: 'pressworks', title: 'Pressworks', year: 2017, files: ['misc-pressworks.jpg', 'pressworks-mobile-v1.jpg'] },
   { id: 'hmkg', service: 'Print design', year: 2024 },
   { id: 'humming-people', service: 'LP & booklet design', year: 2016 },
   { id: 'brathwait', service: 'Brand + UX design', year: 2015 },
+  { id: 'tone', title: 'Tone Damli', service: 'Webdesign', year: 2015, files: ['tone-1.png', 'tone-2.png', 'tone-3.png', 'tone-4.png'] },
+  { id: 'lego', title: 'Lego', service: 'UX design', year: 2012, files: ['lego-1.jpg', 'lego-2.jpg', 'lego-3.jpg'] },
   { id: 'mountain-milk', service: 'Packaging design', year: 2011 },
   {
     /* Har ingen case — filene listes direkte. */
@@ -59,11 +70,12 @@ function collectMedia() {
     const title = project.title ?? singleCase?.title
     const files = project.files ?? singleCase?.items.map((item) => item.file) ?? []
     files
-      .filter((file) => !/\.(mp4|webm|mov)$/i.test(file))
+      .filter((file) => project.files || !/\.(mp4|webm|mov)$/i.test(file))
       .forEach((file) => {
         media.push({
-          type: 'image',
+          type: /\.(mp4|webm|mov)$/i.test(file) ? 'video' : 'image',
           src: `/images/${file}`,
+          poster: /\.(mp4|webm|mov)$/i.test(file) ? `/images/${file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}` : undefined,
           alt: title,
           title,
           projectId: project.id,

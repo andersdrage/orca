@@ -287,6 +287,7 @@ export function initWorld(header) {
       })
       updateAriaCurrent(index)
       syncHeaderScrollState()
+      syncVisibleMedia(world)
       return
     }
 
@@ -322,6 +323,7 @@ export function initWorld(header) {
         world.style.transformOrigin = ''
         header.classList.remove('nav-travelling')
         updateAriaCurrent(cameraIndex)
+        syncVisibleMedia(world)
       }
       zoom.finished.then(clearTravel, clearTravel)
     }

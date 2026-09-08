@@ -26,7 +26,7 @@ History checks cover the current route, camera navigation, Back/Forward and the 
 English NSB entry. Retired /archive and /misc routes return 404 without redirects,
 as requested before launch. Uber country tabs cover all ten panels, arrow/Home/End
 keys, focus, reduced motion, marker geometry on resize and mobile overflow.
-Project-block checks (DRA-48) verify all 116 media items across 19 blocks (20 projects; Capa and Logos share the introduction),
+Project-block checks (DRA-48) verify all 158 media items across 26 blocks (27 projects; Capa and Logos share the introduction),
 desktop/mobile separation and lightbox indices. Error-page checks also cover the
 shared footer hover treatment and keyboard focus without a frame around the page.
 Safari/WebKit uses Option+Tab for the button-focus check because ordinary Tab can

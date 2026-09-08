@@ -58,8 +58,11 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       })
       assert.ok(Math.abs(await step() - 320) < 2)
       await page.emulateMedia({ reducedMotion: 'no-preference' })
+      // WebKit delivers the media-query change on the next rendering frame.
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
       assert.ok(Math.abs(await step()) < 10, 'normal preference retains smooth travel')
       await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
       assert.ok(Math.abs(await step() - 320) < 2)
     })
 
@@ -96,7 +99,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')
-      const tile = page.locator('.archived-grid__item').filter({ has: page.locator('video') })
+      const tile = page.getByRole('button', { name: 'Show Capa vignette large', exact: true })
       await tile.click()
       const dialog = page.getByRole('dialog')
       assert.equal(await dialog.locator('video').evaluate((el) => el.paused), true)
@@ -396,7 +399,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(!requests.some((path) => /\.(mp4|webm)$/.test(path)))
       assert.ok(!requests.some((path) => casePaths.includes(path)))
       await page.locator('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]').click()
-      const video = page.locator('.archived-grid__item video')
+      const video = page.locator('.archived-grid__item video').first()
       await page.waitForFunction(() => document.querySelector('.archived-grid__item video').currentTime > 0)
       assert.ok(await page.locator('.archived-grid__item img[src]').count() < await page.locator('.archived-grid__item img').count())
       await page.locator('.site-header a[href="/about/"]').click()
@@ -449,7 +452,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const grid = page.locator('[data-archived-grid]')
       assert.equal(await grid.locator('[data-project="kaos"] .archived-grid__name').textContent(), 'Shopift theme')
       assert.equal(await grid.locator('.archived-card__meta').textContent(), 'Miscellaneous work (2012–Present)')
-      for (const [id, year] of [['agens', '2025'], ['aprila', '2018'], ['brevio', '2019'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
+      for (const [id, year] of [['agens', '2025'], ['aprila', '2018'], ['brevio', '2017'], ['klp', '2017'], ['just', '2017'], ['kindly', '2016'], ['changemaker', '2016'], ['tone', '2015'], ['lego', '2012'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
         assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
       }
       for (const file of ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg', 'misc-aprila.jpg', 'misc-brevio.jpg', 'misc-logos.jpg', 'misc-nike.jpg', 'misc-pressworks.jpg', 'pressworks-mobile-v1.jpg']) {
@@ -638,7 +641,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/archived-work/')
-      assert.equal(await page.locator('.archived-grid__item').count(), 116)
+      assert.equal(await page.locator('.archived-grid__item').count(), 158)
       await page.locator('.world-page:not([inert]) [data-project="hmkg"] button').first().click()
       assert.equal(await page.getByRole('dialog').count(), 1)
     })
@@ -673,14 +676,43 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.evaluate(() => document.activeElement.dataset.index), triggerIndex)
     })
 
+    test('new archive films have posters and open as playable videos', async (t) => {
+      const page = await visit(t, '/archived-work/')
+      await ready(page, '/archived-work/')
+      for (const [id, count] of [['klp', 2], ['kindly', 3], ['abelee', 2], ['brevio', 3], ['just', 2]]) {
+        const block = page.locator(`[data-project="${id}"]`)
+        const previews = block.locator('video')
+        assert.equal(await previews.count(), count)
+        for (const preview of await previews.all()) {
+          const poster = await preview.getAttribute('poster') || await preview.getAttribute('data-media-poster')
+          const response = await page.request.get(base + poster)
+          assert.equal(response.status(), 200, poster)
+          assert.match(response.headers()['content-type'], /image/)
+        }
+        const trigger = block.locator('button').filter({ has: page.locator('video') }).first()
+        await trigger.click()
+        const dialog = page.getByRole('dialog')
+        const video = dialog.locator('video')
+        assert.equal(await video.count(), 1)
+        await dialog.getByRole('button', { name: 'Play video', exact: true }).click()
+        await page.waitForFunction(() => {
+          const video = document.querySelector('dialog[open] video')
+          return video && !video.paused && video.readyState >= 2
+        })
+        await page.keyboard.press('Escape')
+        assert.equal(await page.getByRole('dialog').count(), 0)
+        assert.equal(await trigger.evaluate((el) => el === document.activeElement), true)
+      }
+    })
+
     test('archived projects have separate blocks and retain every image and lightbox position', async (t) => {
       const page = await visit(t, '/archived-work/')
-      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['brevio', 1], ['nike', 1], ['pressworks', 2], ['hmkg', 4], ['humming-people', 11], ['brathwait', 23], ['mountain-milk', 6], ['houelandek', 16], ['pelp', 10], ['godt-levert', 6], ['kaos', 14], ['daccord', 9], ['hellstrom', 2], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
+      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['brevio', 17], ['klp', 4], ['just', 2], ['kindly', 3], ['changemaker', 8], ['abelee', 2], ['nike', 1], ['pressworks', 2], ['hmkg', 4], ['humming-people', 11], ['brathwait', 23], ['tone', 4], ['lego', 3], ['mountain-milk', 6], ['houelandek', 16], ['pelp', 10], ['godt-levert', 6], ['kaos', 14], ['daccord', 9], ['hellstrom', 2], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
       const blocks = page.locator('.archived-project')
       assert.deepEqual(await blocks.evaluateAll((blocks) => blocks.map((block) => [block.dataset.project, block.querySelectorAll('button').length])), expected)
       assert.equal(await page.locator('.archived-card').count(), 1)
       const indices = await blocks.locator('button').evaluateAll((buttons) => buttons.map((button) => Number(button.dataset.index)).sort((a, b) => a - b))
-      assert.deepEqual(indices, Array.from({ length: 116 }, (_, i) => i))
+      assert.deepEqual(indices, Array.from({ length: 158 }, (_, i) => i))
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
         await page.waitForFunction((count) => document.querySelector('.archived-project__grid')?.children.length === count, width > 900 ? 4 : 2)
