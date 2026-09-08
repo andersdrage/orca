@@ -45,9 +45,9 @@ const ARCHIVED = [
      and 73 are omitted; typography specimens and UI layouts remain work. */
   { id: 'pelp', title: 'Pelp', year: 2014, files: showreelSlides(26, 35) },
   { id: 'godt-levert', title: 'Godt Levert iOS apps', year: 2015, files: showreelSlides(37, 42) },
-  { id: 'kaos', title: 'Shopify theme', files: showreelSlides(43, 56) },
+  { id: 'kaos', title: 'Shopify theme', year: 2016, files: showreelSlides(43, 56) },
   { id: 'daccord', title: 'D’accord', files: showreelSlides(58, 66) },
-  { id: 'hellstrom', title: 'Hellstrøm', files: showreelSlides(68, 69) },
+  { id: 'hellstrom', title: 'Hellstrøm', year: 2015, files: showreelSlides(68, 69) },
   { id: 'poster', title: 'Poster', files: showreelSlides(71) },
   { id: 'yearly-report', title: 'Yearly report', files: showreelSlides(72) },
   { id: 'lettering', title: 'Lettering', files: showreelSlides(74) },

@@ -452,7 +452,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const grid = page.locator('[data-archived-grid]')
       assert.equal(await grid.locator('[data-project="kaos"] .archived-grid__name').textContent(), 'Shopify theme')
       assert.equal(await grid.locator('.archived-card__meta').textContent(), 'Miscellaneous work (2012–Present)')
-      for (const [id, year] of [['agens', '2025'], ['aprila', '2018'], ['brevio', '2017'], ['abelee', '2017'], ['humming-people', '2018'], ['hmkg', '2014'], ['pelp', '2014'], ['godt-levert', '2015'], ['klp', '2017'], ['just', '2017'], ['kindly', '2016'], ['changemaker', '2016'], ['tone', '2015'], ['lego', '2012'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
+      for (const [id, year] of [['agens', '2025'], ['kaos', '2016'], ['hellstrom', '2015'], ['aprila', '2018'], ['brevio', '2017'], ['abelee', '2017'], ['humming-people', '2018'], ['hmkg', '2014'], ['pelp', '2014'], ['godt-levert', '2015'], ['klp', '2017'], ['just', '2017'], ['kindly', '2016'], ['changemaker', '2016'], ['tone', '2015'], ['lego', '2012'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
         assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
       }
       for (const file of ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg', 'misc-aprila.jpg', 'misc-brevio.jpg', 'misc-logos.jpg', 'misc-nike.jpg', 'misc-pressworks.jpg', 'pressworks-mobile-v1.jpg']) {
@@ -707,7 +707,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('archived projects have separate blocks and retain every image and lightbox position', async (t) => {
       const page = await visit(t, '/archived-work/')
-      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 2], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['kaos', 14], ['daccord', 9], ['hellstrom', 2], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
+      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 2], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['kaos', 14], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hellstrom', 2], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['daccord', 9], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
       const blocks = page.locator('.archived-project')
       assert.deepEqual(await blocks.evaluateAll((blocks) => blocks.map((block) => [block.dataset.project, block.querySelectorAll('button').length])), expected)
       assert.equal(await page.locator('.archived-card').count(), 1)
