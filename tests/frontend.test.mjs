@@ -267,6 +267,24 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('every project opening shows its first media above the fold without covering the intro', async (t) => {
+      const page = await visit(t, '/hjemla/')
+      for (const path of casePaths) {
+        await page.goto(base + path)
+        for (const [width, height] of [[1440, 900], [1440, 600], [390, 844], [390, 667], [320, 568], [844, 390]]) {
+          await page.setViewportSize({ width, height })
+          await page.evaluate(() => document.fonts.ready)
+          const geometry = await page.locator('.case-lead, .case-legacy-lead').evaluate(el => {
+            const copy = el.querySelector('.case-lead__copy, .case-legacy-copy').getBoundingClientRect()
+            const media = el.nextElementSibling.querySelector('img, video').getBoundingClientRect()
+            return { peek: innerHeight - media.top, gap: media.top - copy.bottom }
+          })
+          assert.ok(geometry.peek >= 48, `${path} ${width}×${height}: ${geometry.peek}px of media visible`)
+          assert.ok(geometry.gap >= 10, `${path}: intro remains uncovered`)
+        }
+      }
+    })
+
     test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')

@@ -2,14 +2,14 @@
 export function initCaseIntroScroll(lead) {
   const copy = lead.querySelector('.case-lead__copy, .case-legacy-copy')
   const content = lead.nextElementSibling
-  if (!copy || !content?.children.length) return () => {}
+  if (!copy || !content) return () => {}
   const section = lead.parentElement
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
   let frame = 0
 
   function update() {
     frame = 0
-    const enabled = lead.dataset.layout === 'presentation' && !reduced.matches
+    const enabled = lead.dataset.layout === 'presentation' && content.children.length > 0 && !reduced.matches
     section.classList.toggle('case-presentation-sticky', enabled)
     if (!enabled) {
       lead.style.removeProperty('--intro-opacity')
