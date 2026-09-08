@@ -265,6 +265,7 @@ export function initTimeline(scrollerEl) {
   const INTRO_EDGE_GAP = 84
   let initialScroll = introPlaced ? introContentLeft - INTRO_EDGE_GAP : copyWidth - edgeInset
   let useIntroEntry = introPlaced
+  let returningToCase = false
 
   /* Lukker man et prosjekt og forsiden lastes på nytt (uten bfcache), skal
      tidslinjen stå ved prosjektet man kom fra — ikke kastes tilbake til start.
@@ -276,13 +277,17 @@ export function initTimeline(scrollerEl) {
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
         /* offsetLeft: layout-koordinater — upåvirket av transforms (se placeIntro). */
-        initialScroll = tile.offsetLeft - edgeInset
+        const saved = JSON.parse(sessionState.getItem('timeline:return-position') || 'null')
+        const center = saved?.id === id && Number.isFinite(saved.center)
+          ? saved.center * innerWidth : edgeInset + tile.offsetWidth / 2
+        initialScroll = tile.offsetLeft + tile.offsetWidth / 2 - center
         /* Normaliser inn i wrap-sonen [0.6w, 1.4w] — siste tile (Mountain Milk)
            kunne ellers lande forbi wrap-terskelen, som teleporterte scrollen
            MIDT i tilbake-morphen og fikk zoomen til å fly mot feil sted. */
         while (initialScroll > copyWidth * 1.4) initialScroll -= copyWidth
         while (initialScroll < copyWidth * 0.6) initialScroll += copyWidth
         useIntroEntry = false
+        returningToCase = true
       }
     }
   } catch {
@@ -292,7 +297,9 @@ export function initTimeline(scrollerEl) {
   scroller.scrollLeft = initialScroll
   elasticCurrent = scroller.scrollLeft
   /* Kant-snappingen skal ikke overstyre den designede intro-entréen. */
-  if (!useIntroEntry) settleEdge('instant')
+  // A wide mobile thumbnail may cross both edges. Snapping it on return would
+  // replace the clicked project with its neighbour before the first frame.
+  if (!useIntroEntry && !returningToCase) settleEdge('instant')
 
   /* Entré-koreografi (à la benji.org): introteksten stiger inn linje for linje,
      så tilene i stigende rekkefølge, til slutt chromen (logo → nav → hjørner).
@@ -636,6 +643,10 @@ export function initTimeline(scrollerEl) {
     tile.style.viewTransitionName = 'case-cover'
     sessionState.setItem('timeline:last-case', tile.dataset.tileId)
     const rect = tile.getBoundingClientRect()
+    sessionState.setItem('timeline:return-position', JSON.stringify({
+      id: tile.dataset.tileId,
+      center: (rect.left + rect.width / 2) / innerWidth,
+    }))
     sessionState.setItem(
       'timeline:zoom-origin',
       `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`,
@@ -671,17 +682,25 @@ export function initTimeline(scrollerEl) {
 
     /* Naboene får push-navnene sine igjen, så de glir tilbake på plass fra sidene
        (reversen av at de flyttet seg ut av veien ved åpning). */
-    assignNeighborNames(tile)
+    const presentationReturn = sessionState.getItem('case:presentation') !== 'false'
+      && !matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Keep the returning world in one snapshot. Safari otherwise drops some
+    // independently named new layers until the transition has finished.
+    if (presentationReturn) clearAllNames()
+    else assignNeighborNames(tile)
     tile.style.viewTransitionName = 'case-cover'
     const rect = tile.getBoundingClientRect()
     const root = document.documentElement
     root.style.setProperty('--vt-origin', `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`)
     root.classList.add('vt-zoom-out')
+    if (presentationReturn) {
+      root.classList.add('vt-presentation-out')
+    }
 
     /* finished rejecter når overgangen skippes (helt normalt) — rydd opp i begge utfall. */
     const cleanup = () => {
       clearAllNames()
-      root.classList.remove('vt-zoom-out')
+      root.classList.remove('vt-zoom-out', 'vt-presentation-out')
     }
     event.viewTransition.finished.then(cleanup, cleanup)
   })

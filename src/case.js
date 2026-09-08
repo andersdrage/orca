@@ -138,9 +138,16 @@ window.addEventListener('pagereveal', (event) => {
     document.body.classList.add('case-entering', 'case-transition-entrance')
     const origin = sessionState.getItem('timeline:zoom-origin')
     if (origin) html.style.setProperty('--vt-origin', origin)
+    // A small drift links an off-centre click to the centred intro, without
+    // spending time moving the thumbnail across the screen first.
+    const originX = Number.parseFloat(origin)
+    const entryX = Number.isFinite(originX)
+      ? Math.max(-72, Math.min(72, (originX - innerWidth / 2) * 0.16)) : 0
+    html.style.setProperty('--project-entry-x', `${entryX}px`)
     root.querySelectorAll('video').forEach(video => video.pause())
     const finish = () => {
       html.classList.remove('vt-zoom-in', 'vt-presentation-in')
+      html.style.removeProperty('--project-entry-x')
       document.body.classList.remove('case-entering')
       syncVisibleMedia()
     }

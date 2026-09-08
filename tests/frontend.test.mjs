@@ -668,7 +668,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('project transition gives immediate press feedback and reveals text behind the departing thumbnail', async (t) => {
       const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
         addEventListener('pagereveal', event => {
-          if (!event.viewTransition || location.pathname !== '/hjemla/') return
+          if (!event.viewTransition || !['/', '/hjemla/'].includes(location.pathname)) return
           event.viewTransition.ready.then(() => {
             window.transitionProbe = document.getAnimations()
             window.transitionProbe.forEach(animation => animation.pause())
@@ -677,7 +677,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       })
       await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
       const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
-      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - 60, behavior: 'instant' }))
       await page.waitForTimeout(500)
       await tile.hover()
       await page.waitForTimeout(300)
@@ -688,25 +689,68 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForURL('**/hjemla/', { waitUntil: 'domcontentloaded' })
       await page.waitForFunction(() => window.transitionProbe?.length > 0)
       const frame = await page.evaluate(() => {
-        window.transitionProbe.forEach(animation => { animation.currentTime = 280 })
+        window.transitionProbe.forEach(animation => { animation.currentTime = 100 })
         const style = name => getComputedStyle(document.documentElement, name)
         const thumbnail = style('::view-transition-old(case-cover)')
         const intro = style('::view-transition-new(root)')
         return { imageDisplay: thumbnail.display, imageOpacity: Number(thumbnail.opacity),
           imageY: new DOMMatrixReadOnly(thumbnail.transform).m42, introOpacity: Number(intro.opacity),
+          entryX: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--project-entry-x')),
+          origin: sessionStorage.getItem('timeline:zoom-origin'),
+          duration: parseFloat(thumbnail.animationDuration),
           names: window.transitionProbe.map(animation => animation.animationName) }
       })
       assert.equal(frame.imageDisplay, 'block')
       assert.ok(frame.imageOpacity > 0 && frame.imageOpacity < 1)
       assert.ok(frame.imageY > 3)
+      // Native scroll-into-view can reposition the tile before a synthetic click.
+      // The reveal must follow the actual clicked position on either side.
+      assert.equal(Math.sign(frame.entryX), Math.sign(parseFloat(frame.origin) - 720))
+      assert.ok(Math.abs(frame.entryX) > 0 && Math.abs(frame.entryX) <= 72, 'intro offset stays subtle')
+      assert.ok(frame.duration <= 0.22, 'thumbnail departs in at most 220 ms')
       assert.ok(frame.introOpacity > 0, 'text is visible while the thumbnail departs')
       assert.ok(frame.names.some(name => name === 'project-neighbor-left' || name === 'project-neighbor-right'))
       await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
       await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-in'))
       assert.equal(await page.locator('.case-lead__intro').evaluate(el => getComputedStyle(el).opacity), '1')
       await page.goBack({ waitUntil: 'domcontentloaded' })
+      await page.waitForFunction(() => window.transitionProbe?.some(animation => animation.animationName === 'project-thumbnail-return'))
+      const returnFrame = await page.evaluate(() => {
+        window.transitionProbe.forEach(animation => { animation.currentTime = 110 })
+        const style = name => getComputedStyle(document.documentElement, name)
+        const tile = style('::view-transition-new(case-cover)')
+        return { caseOpacity: Number(style('::view-transition-old(root)').opacity),
+          tileOpacity: Number(tile.opacity), tileY: new DOMMatrixReadOnly(tile.transform).m42 }
+      })
+      assert.equal(returnFrame.caseOpacity, 0, 'case disappears almost immediately')
+      assert.ok(returnFrame.tileOpacity > 0 && returnFrame.tileOpacity < 1)
+      assert.ok(returnFrame.tileY > 0 && returnFrame.tileY < 110, 'thumbnail rises back into its saved position')
+      await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
+      await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-out'))
       await ready(page, '/')
       assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
+    })
+
+    test('mobile case return preserves the clicked wide thumbnail position', async (t) => {
+      const page = await visit(t, '/', { viewport: { width: 390, height: 844 } })
+      await ready(page, '/')
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
+      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+      const originalCenter = await tile.evaluate(el => {
+        const r = el.getBoundingClientRect()
+        return r.left + r.width / 2
+      })
+      await tile.click()
+      await page.waitForURL('**/hjemla/')
+      await page.locator('.case-close').click()
+      await ready(page, '/')
+      const restoredCenter = await page.locator('[data-tile-id="hjemla"]').evaluateAll(tiles => {
+        const r = tiles.map(el => el.getBoundingClientRect()).find(r => r.right > 0 && r.left < innerWidth)
+        return r ? r.left + r.width / 2 : null
+      })
+      assert.notEqual(restoredCenter, null, 'the same project remains visible on mobile')
+      assert.ok(Math.abs(restoredCenter - originalCenter) < 3, `return keeps its original screen position: ${originalCenter} → ${restoredCenter}`)
     })
 
     if (engine === 'chromium') test('cold homepage to case transition captures a decoded hero without prerendering', async (t) => {
