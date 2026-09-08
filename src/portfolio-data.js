@@ -273,7 +273,6 @@ export const portfolioCases = [
       },
       /* Fra Ueno sin case-studie av uber.com (web.archive.org, 2021-01-14). */
       { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-menu-full.mp4', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-headers-full.mp4', span: 'full', alt: 'Uber' },
       {
         type: 'gallery', span: 'full', label: 'Uber website pages',
