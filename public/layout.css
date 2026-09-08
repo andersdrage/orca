@@ -633,6 +633,12 @@ body.world-mode {
   min-height: 100svh;
 }
 
+.content-page {
+  width: 100%;
+  max-width: 526.4px;
+  margin-inline: auto;
+}
+
 /* Tekst, titler, bildetekster, seksjonsskille — 800px (header/intro/footer + #work). */
 #site-layout:has(#work) .work-narrow {
   box-sizing: border-box;
