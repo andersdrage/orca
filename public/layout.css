@@ -1,6 +1,12 @@
 /* Lastes direkte fra /layout.css (ikke gjennom Tailwind).
    #site-layout er 800px; Work-media bryter ut til opptil 1500px. */
 
+:root {
+  --text-secondary: #666670;
+}
+
+.text-secondary { color: var(--text-secondary); }
+
 /* Unngå default body-margin før Tailwind base laster — kan gi «hopp» i bredde/layout. */
 body {
   margin: 0;
@@ -386,207 +392,148 @@ body.world-mode {
   }
 }
 
-.site-header__project-title {
-  position: absolute;
-  left: 50%;
-  max-width: min(50vw, 24rem);
-  overflow: hidden;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  color: #18181b;
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  opacity: 0;
-  pointer-events: none;
-  text-align: center;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  transition: opacity 160ms ease;
-  white-space: nowrap;
-}
-
-.site-header__project-title.is-visible {
-  opacity: 1;
-}
-
-.work-intro {
-  box-sizing: border-box;
-  padding: 5rem 1rem;
-  text-align: center;
-  color: #52525b;
-  font-size: 1rem;
-  line-height: 1.625;
-}
-
-@media (min-width: 768px) {
-  .work-intro {
-    padding: 7rem 1.5rem;
-    font-size: 1.125rem;
-  }
-}
-
 .project-audio {
-  align-items: center;
+  position: fixed;
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
+  align-items: center;
+  width: min(360px, calc(100vw - 32px));
 }
 
-.project-audio__sentinel {
-  display: block;
-  height: 1px;
+.project-audio__title {
+  margin: 0 0 -1px;
+  padding: 6px 22px 7px;
+  border-radius: 24px 24px 0 0;
+  background: #dedee2;
+  color: #18181b;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Leave room for footer links above the always-visible story controls. */
+.page-case:has(> .project-audio) .site-footer {
+  padding-bottom: max(7rem, calc(112px + env(safe-area-inset-bottom)));
+}
+
+.project-audio__actions {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   width: 100%;
+  max-width: 100%;
+  border: 1px solid #dedee2;
+  border-radius: 999px;
+  background: #f4f4f5;
 }
 
-.project-audio.is-docked {
-  animation: project-audio-dock-in 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  left: 50%;
-  position: fixed;
-  transform: translateX(-50%);
-  width: min(800px, calc(100vw - 2rem));
-  z-index: 60;
-}
-
-.project-audio.is-docked .project-audio__player {
-  background-color: rgba(250, 250, 250, 0.92);
-  box-shadow:
-    inset 0 0 0 1px rgba(212, 212, 216, 0.35),
-    0 16px 42px rgba(24, 24, 27, 0.14);
-}
-
-.project-audio.is-docked .project-audio__transcript-trigger {
-  display: none;
+.project-audio__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #18181b;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
 }
 
 .project-audio__player {
-  align-items: center;
-  background-color: rgba(244, 244, 245, 0.92);
-  border: 1px solid rgba(228, 228, 231, 0.95);
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgba(212, 212, 216, 0.35);
-  box-sizing: border-box;
-  color: #18181b;
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  gap: 0.75rem;
-  max-width: 100%;
-  min-height: 2.25rem;
-  padding: 0.375rem 0.625rem;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease;
-}
-
-.project-audio__player:hover,
-.project-audio__player:focus-visible {
-  background-color: #ececef;
-  border-color: #d4d4d8;
-}
-
-.project-audio__player:active {
-  transform: translateY(1px);
-}
-
-.project-audio__headphones {
-  flex: 0 0 auto;
-  height: 1.375rem;
-  width: auto;
-}
-
-.project-audio__label {
-  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
-  font-size: clamp(0.875rem, 1.5vw, 0.9375rem);
-  line-height: 1;
-  transform: translateY(2px);
-  white-space: nowrap;
-}
-
-.project-audio__duration {
-  border: 1px solid rgba(212, 212, 216, 0.95);
-  border-radius: 0.3125rem;
-  color: #18181b;
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(0.45rem, 0.75vw, 0.5rem);
-  line-height: 1;
-  padding: 0.125rem 0.25rem 0.09rem;
-  transform: translateY(1px);
-}
-
-.project-audio__toggle {
-  align-items: center;
-  display: inline-flex;
-  flex: 0 0 auto;
-  height: 1.5rem;
-  justify-content: center;
-  line-height: 0;
   position: relative;
-  width: 1.5rem;
+  border-radius: 999px 0 0 999px;
 }
 
-.project-audio__toggle-icon {
-  display: block;
-  height: 1.5rem;
-  left: 0;
+.project-audio__player::after {
+  content: '';
   position: absolute;
-  top: 0;
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease;
-  width: 1.5rem;
-}
-
-.project-audio__toggle-icon--play {
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
-}
-
-.project-audio__toggle-icon--pause {
-  opacity: 0;
-  transform: scale(0.75) rotate(-10deg);
-}
-
-.project-audio__player.is-playing .project-audio__toggle-icon--play {
-  opacity: 0;
-  transform: scale(0.75) rotate(10deg);
-}
-
-.project-audio__player.is-playing .project-audio__toggle-icon--pause {
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
+  right: 0;
+  top: 25%;
+  height: 50%;
+  border-right: 1px solid #d4d4d8;
 }
 
 .project-audio__transcript-trigger {
-  background: transparent;
-  border: 0;
-  color: #71717a;
-  cursor: pointer;
-  font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.4375rem;
-  font-weight: 700;
+  border-radius: 0 999px 999px 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-audio__action:hover { background: #e8e8eb; }
+}
+
+.project-audio__action:focus-visible {
+  outline: 2px solid #18181b;
+  outline-offset: 3px;
+}
+
+.project-audio__action:active { transform: scale(0.97); }
+
+.project-audio__label {
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.project-audio__duration {
+  color: var(--text-secondary);
+  font-family: PPSupplyMono, ui-monospace, monospace;
+  font-size: 10px;
   line-height: 1;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
 }
 
-@keyframes project-audio-dock-in {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(8px) scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
+.project-audio__toggle,
+.project-audio__icon {
+  display: block;
+  position: relative;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
 }
+
+.project-audio__toggle-icon {
+  position: absolute;
+  inset: 0;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.project-audio__toggle-icon--pause { display: none; }
+.project-audio__player.is-playing .project-audio__toggle-icon--play { display: none; }
+.project-audio__player.is-playing .project-audio__toggle-icon--pause { display: block; }
+
+.project-audio__status {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #dedee2;
+  border-radius: 12px;
+  background: #fafafa;
+  margin: 0;
+  color: #52525b;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.8125rem;
+  letter-spacing: normal;
+  text-align: center;
+}
+.project-audio__status:empty { display: none; }
+.project-audio__player:disabled { cursor: wait; }
 
 .project-transcript-modal {
   background: #fafafa;
@@ -601,25 +548,24 @@ body.world-mode {
   padding: 2rem;
 }
 
-.project-transcript-modal[open] {
-  animation: transcript-modal-in 160ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  transform-origin: 50% 46%;
-}
-
-.project-transcript-modal[open].is-closing {
-  animation: transcript-modal-out 120ms ease-in both;
-}
-
 .project-transcript-modal::backdrop {
   background: rgba(24, 24, 27, 0.35);
+  transition: background-color 220ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
-.project-transcript-modal[open]::backdrop {
-  animation: transcript-backdrop-in 140ms ease-out both;
+@starting-style {
+  .project-transcript-modal[open]::backdrop { background: transparent; }
 }
 
-.project-transcript-modal[open].is-closing::backdrop {
-  animation: transcript-backdrop-out 120ms ease-in both;
+.project-transcript-modal.is-closing::backdrop {
+  background: transparent;
+  transition-duration: 160ms;
+}
+
+.project-transcript-modal.is-instant::backdrop { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .project-transcript-modal::backdrop { transition: none; }
 }
 
 .project-transcript-modal__close {
@@ -647,57 +593,6 @@ body.world-mode {
   width: 1.25rem;
 }
 
-@keyframes transcript-modal-in {
-  from {
-    opacity: 0;
-    transform: scale(0.975) translateY(4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes transcript-modal-out {
-  from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: scale(0.985) translateY(2px);
-  }
-}
-
-@keyframes transcript-backdrop-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes transcript-backdrop-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .project-transcript-modal[open],
-  .project-transcript-modal[open]::backdrop {
-    animation: none;
-  }
-}
-
 .project-transcript-modal__eyebrow {
   color: #71717a;
   font-family: DrageEurostile, ui-sans-serif, system-ui, sans-serif;
@@ -720,27 +615,6 @@ body.world-mode {
 }
 
 @media (max-width: 767px) {
-  .project-audio__player {
-    gap: 0.5rem;
-    min-height: 2.5rem;
-    padding: 0.5rem 0.625rem;
-  }
-
-  .project-audio__headphones {
-    height: 1.25rem;
-  }
-
-  .project-audio__label {
-    font-size: 0.875rem;
-    white-space: normal;
-  }
-
-  .project-audio__toggle,
-  .project-audio__toggle-icon {
-    height: 1.375rem;
-    width: 1.375rem;
-  }
-
   .project-transcript-modal {
     padding: 1.25rem;
   }
@@ -781,11 +655,6 @@ body.world-mode {
 /* Ekstra luft etter siste bilde/video før neste seksjon (MICROMILSPEC → Off Market → Selected work). */
 #work section:not(:last-child) .work-media {
   margin-bottom: clamp(2.5rem, 6vw, 5rem);
-}
-
-#work .work-section-rule {
-  border-top: 1px solid rgba(228, 228, 231, 0.9);
-  padding-top: 3.5rem;
 }
 
 #site-layout > header,
@@ -838,6 +707,8 @@ body.world-mode {
 
 /* Spinnende drage-emblem (video, svart bakgrunn = usynlige kanter). */
 .site-footer__logo-video {
+  aspect-ratio: 448 / 320;
+  object-fit: contain;
   display: block;
   width: clamp(110px, 11vw, 160px);
   height: auto;
@@ -910,26 +781,6 @@ body.world-mode {
   }
 }
 
-/* Lenke til arkivert arbeid — dempet mono-linje rett under dracones-teksten
-   (~20px gap). */
-.site-footer__archived {
-  margin: 0.4rem 0 0;
-}
-
-.site-footer__archived a {
-  color: #a1a1aa;
-  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: color 160ms ease;
-}
-
-.site-footer__archived a:hover {
-  color: #18181b;
-}
-
 @media (max-width: 767px) {
   #site-layout > main::before {
     border-bottom-right-radius: 1.5rem;
@@ -941,13 +792,8 @@ body.world-mode {
   }
 }
 
-/* Ytelse: innhold under folden rendres først når det nærmer seg viewporten —
-   case-siden slipper å style/paint'e hele den lange siden mens zoomen spilles.
-   Hero-en (første rad) er unntatt; den er selve morph-målet. */
-#work .work-media:not(.case-cover-hero) .portfolio-item {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
-}
+/* Media dimensions reserve each image's real responsive height; lazy loading
+   defers its bytes without substituting a generic 500px layout placeholder. */
 
 .portfolio-asset {
   border-radius: 24px;
@@ -1083,12 +929,9 @@ body.world-mode {
   min-height: 0;
 }
 
-.timeline-main .work-intro {
-  flex: none;
-}
-
 /* Full-bleed scroller: bryter ut av 800px-kolonnen til hele viewport-bredden. */
 .timeline-scroller {
+  --intro-width: min(320px, 62vw);
   position: relative; /* ankerpunkt for .timeline-intro (absolutt i innholdet) */
   flex: 1;
   min-height: 0;
@@ -1148,7 +991,7 @@ body.world-mode {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: min(320px, 62vw);
+  width: var(--intro-width);
   margin: 0;
   color: #3f3f46;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
@@ -1275,7 +1118,9 @@ body.world-mode {
   display: flex;
   align-items: center;
   gap: calc(clamp(2.5rem, 5.5vw, 5.5rem) + 100px);
-  padding-right: clamp(240px, 45vw, 600px);
+  /* Text width + 56px to first tile + 84px entrance inset. Reserve this
+     geometry at every loop seam so the preceding tile stays off screen. */
+  padding-right: max(clamp(240px, 45vw, 600px), calc(var(--intro-width) + 140px));
 }
 
 .timeline-tile {
@@ -1333,8 +1178,6 @@ a.timeline-tile.is-navigating .timeline-tile__image {
     transition: none;
   }
 }
-
-
 
 /* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
    med fjær-easing (overshoot ~8 % som setter seg) — bevegelse, ikke fade. */
@@ -1400,7 +1243,6 @@ a.timeline-tile:focus-visible {
   text-transform: uppercase;
   white-space: nowrap;
 }
-
 
 /* Case-sider: ingen topplinje/frostet bar ved scroll — kun ✕ og innholdet. */
 .page-case .site-header {
@@ -1550,19 +1392,14 @@ body.footer-in-view .corner-links a[aria-current='page'] {
   left: 9.5rem;
 }
 
-/* Samme dim-hover som credits/employments: alt dempes, raden man står på
-   beholder full styrke. */
+/* Keep inactive rows readable; the hovered or focused row keeps its hierarchy. */
 .archive-list li > span {
-  transition: opacity 140ms ease;
+  transition: color 140ms ease;
 }
 
 @media (hover: hover) {
-  .archive-list:hover li > span {
-    opacity: 0.3;
-  }
-
-  .archive-list li:hover > span {
-    opacity: 1;
+  .archive-list:hover li:not(:hover):not(:focus-within) > span {
+    color: var(--text-secondary);
   }
 }
 
@@ -1586,7 +1423,7 @@ body.footer-in-view .corner-links a[aria-current='page'] {
   display: inline-block;
   margin-left: 0.35em;
   font-size: 0.8em;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   text-decoration: none;
 }
 
@@ -1596,7 +1433,7 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 
 /* Venstre kolonne (årstall/gruppe) i Maison — meta-stemmen ved siden av serif-navnene. */
 .archive-year {
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.875rem;
   letter-spacing: normal;
@@ -1607,14 +1444,14 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 }
 
 .archive-type {
-  color: #a1a1aa;
+  color: var(--text-secondary);
 }
 
 /* People-lista: gjennomstreket = møtt. */
 .archive-name.is-met {
-  color: #a1a1aa;
+  color: var(--text-secondary);
   text-decoration: line-through;
-  text-decoration-color: #a1a1aa;
+  text-decoration-color: var(--text-secondary);
 }
 
 @media (max-width: 640px) {
@@ -1640,7 +1477,7 @@ body.footer-in-view .corner-links a[aria-current='page'] {
   left: 30px;
   bottom: 56px;
   z-index: 90;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.625rem;
   letter-spacing: 0.05em;
@@ -1691,7 +1528,7 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 
 .debug-panel__hint {
   margin: 10px 0 0;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-weight: 400;
   letter-spacing: 0.06em;
 }
@@ -1708,15 +1545,97 @@ body.footer-in-view .corner-links a[aria-current='page'] {
   view-transition-name: case-cover;
 }
 
+/* Case layout iteration: copy to the left of the cover, stacked on phones. */
+.case-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 6vw, 7rem);
+  align-items: center;
+  padding-top: 2rem;
+}
+
+/* Keep the notes player's fixed dock relative to the viewport. */
+#work .work-media.case-lead {
+  margin-left: calc((100% - min(1500px, calc(100vw - 3rem))) / 2);
+  transform: none;
+}
+
+.case-entered .case-lead__copy.case-below {
+  animation-name: case-copy-in;
+}
+
+@keyframes case-copy-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.case-lead__copy {
+  min-width: 0;
+  text-align: left;
+  color: #18181b;
+}
+
+.case-lead__title {
+  margin: 0 0 1.25rem;
+  font-family: DragePlantin, Georgia, serif;
+  font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+.case-lead__intro {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.case-lead__intro {
+  font-size: 17px;
+  line-height: 1.625;
+  color: var(--color-zinc-600, #52525b);
+}
+
+.case-lead .case-cover-hero {
+  min-width: 0;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: center;
+}
+
+.case-lead .case-cover-hero img {
+  width: auto;
+  max-width: 100%;
+  max-height: 82svh;
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  .case-lead {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .case-lead .case-cover-hero img { max-height: 75svh; }
+}
+
 /* Credits på case-sider — à la Writing-lista på benji.org: grå etikett øverst,
    rolle i venstre gutter, navn som hovedtekst, hairlines mellom radene som
    starter ETTER gutteren. Hover dimmer alle rader unntatt den man står på. */
 .case-credits {
+  position: relative;
+  container-type: inline-size;
+  --credit-role-width: clamp(5.5rem, 20vw, 7.5rem);
   display: flex;
   flex-direction: column;
-  margin: 2.5rem 0 0;
+  width: 100%;
+  max-width: 480px;
+  margin: 2rem auto 0;
   text-align: left;
 }
+
+.case-lead .case-credits { margin-inline: 0; }
 
 .case-credits dl {
   margin: 0;
@@ -1724,9 +1643,9 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 
 .case-credits__label {
   margin: 0;
-  padding-bottom: 0.65rem;
+  padding-bottom: 0.45rem;
   border-bottom: 1px solid #ececee;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.625rem;
   letter-spacing: 0.06em;
@@ -1736,17 +1655,17 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 .case-credits__row {
   position: relative;
   display: grid;
-  grid-template-columns: 10.5rem 1fr;
-  gap: 0 1.5rem;
+  grid-template-columns: var(--credit-role-width) minmax(0, 1fr);
+  gap: 0 1rem;
   align-items: baseline;
-  padding: 0.7rem 0;
+  padding: 0.45rem 0;
 }
 
 /* Hairline mellom radene — indentert forbi rolle-gutteren, som hos Benji. */
 .case-credits__row::after {
   content: '';
   position: absolute;
-  left: 12rem;
+  left: calc(var(--credit-role-width) + 1rem);
   right: 0;
   bottom: 0;
   border-bottom: 1px solid #ececee;
@@ -1757,43 +1676,95 @@ body.footer-in-view .corner-links a[aria-current='page'] {
 }
 
 .case-credits__role {
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.625rem;
+  line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  transition: opacity 140ms ease;
+  transition: color 140ms ease;
 }
 
 .case-credits__names {
   margin: 0;
   color: #18181b;
-  font-size: 0.875rem;
-  transition: opacity 140ms ease;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+  transition: color 140ms ease;
 }
 
-/* Hover-effekten fra benji.org: alt dimmes når pekeren er over lista —
-   raden man står på beholder full styrke. Spotlight ved å dempe resten. */
+/* Mute other rows with a readable color instead of lowering text opacity. */
 @media (hover: hover) {
-  .case-credits:hover .case-credits__role,
-  .case-credits:hover .case-credits__names {
-    opacity: 0.3;
-  }
-
-  .case-credits__row:hover .case-credits__role,
-  .case-credits__row:hover .case-credits__names {
-    opacity: 1;
+  .case-credits:not([data-layout="columns"]):hover .case-credits__row:not(:hover):not(:focus-within) > * {
+    color: var(--text-secondary);
   }
 }
 
-@media (max-width: 640px) {
-  .case-credits__row {
-    grid-template-columns: 1fr;
-    gap: 0.15rem;
-  }
+.case-credits[data-layout="columns"] { max-width: none; }
 
-  .case-credits__row::after {
-    left: 0;
+.case-credits[data-layout="columns"] .case-credits__label {
+  padding-bottom: 1.25rem;
+  border: 0;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.case-credits[data-layout="columns"] dl {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--credits-rows), auto);
+  gap: 1rem 1.25rem;
+}
+
+.case-credits[data-layout="columns"] .case-credits__row {
+  display: block;
+  padding: 0;
+}
+
+.case-credits[data-layout="columns"] .case-credits__row::after {
+  display: none;
+}
+
+/* A continuous, quiet divider between columns, including the row gap. */
+.case-credits[data-layout="columns"] .case-credits__row::before {
+  content: '';
+  position: absolute;
+  left: -0.625rem;
+  top: 0;
+  bottom: -1rem;
+  border-left: 1px solid #e4e4e7;
+}
+
+.case-credits[data-layout="columns"] dl { overflow: hidden; }
+
+.case-credits[data-layout="columns"] .case-credits__role,
+.case-credits[data-layout="columns"] .case-credits__names {
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.case-credits[data-layout="columns"] .case-credits__names { font-weight: 700; }
+
+@container (max-width: 430px) {
+  .case-credits[data-layout="columns"] dl {
+    grid-template-rows: repeat(var(--credits-mobile-rows), auto);
+  }
+}
+
+@container (max-width: 280px) {
+  .case-credits[data-layout="columns"] dl {
+    grid-auto-flow: row;
+    grid-template-rows: none;
   }
 }
 
@@ -2023,9 +1994,6 @@ html.vt-zoom-out::view-transition-old(case-close) {
     opacity: 0;
   }
 }
-
-
-
 
 /* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).
    Med ulikt innhold + skalering lysner komposittet synlig midtveis — oppleves som
@@ -2268,16 +2236,12 @@ body.world-map-intro .archived-card {
 /* Employments-lista (About): samme dim-hover som credits — alt dempes når
    pekeren er over lista, raden man står på beholder full styrke. */
 .employments-table td {
-  transition: opacity 140ms ease;
+  transition: color 140ms ease;
 }
 
 @media (hover: hover) {
-  .employments-table:hover td {
-    opacity: 0.3;
-  }
-
-  .employments-table tr:hover td {
-    opacity: 1;
+  .employments-table:hover tr:not(:hover):not(:focus-within) td {
+    color: var(--text-secondary);
   }
 }
 
@@ -2362,6 +2326,7 @@ body.world-map-intro .archived-card {
 }
 
 .archived-card__meta {
+  color: #18181b;
   margin: 0;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: clamp(0.72rem, 1vw, 0.95rem);
@@ -2524,7 +2489,7 @@ body.world-map-intro .archived-card {
   bottom: 26px;
   transform: translateX(-50%);
   margin: 0;
-  color: #a1a1aa;
+  color: var(--text-secondary);
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -2537,10 +2502,8 @@ body.world-map-intro .archived-card {
   color: #18181b;
 }
 
-/* Prev/neste på arkiverte case-sider: runde piler midt på sidene, samme
-   utseende som lukkeknappen. Hero-til-hero-morphen (case-cover) binder
-   sidebyttene sammen. */
-.case-nav {
+/* Image navigation belongs to the archive lightbox, not the project pages. */
+.archived-lightbox .case-nav {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
@@ -2548,29 +2511,48 @@ body.world-map-intro .archived-card {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: 1px solid rgba(228, 228, 231, 0.9);
   border-radius: 9999px;
   background: rgba(250, 250, 250, 0.92);
   color: #18181b;
   font-size: 1.25rem;
   line-height: 1;
-  text-decoration: none;
-  transition:
-    transform 200ms cubic-bezier(0.32, 0.08, 0.24, 1),
-    background-color 160ms ease;
+  cursor: pointer;
 }
 
-.case-nav--prev {
-  left: 30px;
+.archived-lightbox .case-nav--prev { left: 30px; }
+.archived-lightbox .case-nav--next { right: 30px; }
+.archived-lightbox .case-nav:focus-visible { outline: 2px solid #18181b; outline-offset: 3px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .archived-lightbox .case-nav:hover { background: #ececef; }
 }
 
-.case-nav--next {
-  right: 30px;
+@media (max-width: 767px) {
+  .archived-lightbox .case-nav--prev { left: 8px; }
+  .archived-lightbox .case-nav--next { right: 8px; }
 }
 
-.case-nav:hover {
-  background: #ececef;
-  transform: translateY(-50%) scale(1.08);
+/* Keep a small, keyboard-accessible playback control clear of the image. */
+.portfolio-asset:has([data-media-controls]),
+.archived-lightbox__media:has([data-media-controls]) { position: relative; }
+.media-playback {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #666670;
+  border-radius: 999px;
+  background: #fafafa;
+  color: #18181b;
+  font: 12px/1.4 MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
 }
+.media-playback:hover { background: #e4e4e7; }
+.media-playback:focus-visible { outline: 2px solid #18181b; outline-offset: 3px; }
+
+#work .work-media > .portfolio-item .portfolio-asset video { width: 100%; }

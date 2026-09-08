@@ -4,6 +4,8 @@
    videocelle. Klikk åpner en lightbox med ‹ ›-navigasjon (og ← → / Esc). */
 
 import { portfolioCases } from './portfolio-data.js'
+import { mediaSize } from './media-dimensions.js'
+import { syncVisibleMedia } from './visible-media.js'
 
 const showreelSlides = (first, last = first) =>
   Array.from({ length: last - first + 1 }, (_, index) => `showreel/${first + index}.jpg`)
@@ -96,8 +98,8 @@ export function initArchivedGrid(rootEl) {
       <button type="button" class="archived-grid__item" data-index="${index}" aria-label="Show ${item.alt} large">
         ${
           item.type === 'video'
-            ? `<video autoplay loop muted playsinline preload="metadata" poster="${item.poster}" disablepictureinpicture disableremoteplayback tabindex="-1"><source src="${item.src}" type="video/mp4" /></video>`
-            : `<img src="${item.src}" alt="${item.alt}" loading="lazy" decoding="async" />`
+            ? `<video ${mediaSize(item.src)} data-media-src="${item.src}" loop muted playsinline preload="none" data-media-poster="${item.poster}" disablepictureinpicture disableremoteplayback tabindex="-1"></video>`
+            : `<img ${mediaSize(item.src)} data-media-src="${item.src}" alt="${item.alt}" decoding="async" />`
         }
       </button>
     </div>`
@@ -127,6 +129,7 @@ export function initArchivedGrid(rootEl) {
         ${columnsHtml(cells)}
       </li>`
     }).join('')
+    syncVisibleMedia(grid)
   }
   render()
   narrow.addEventListener('change', render)
@@ -142,16 +145,18 @@ export function initArchivedGrid(rootEl) {
     const frame = box.querySelector('.archived-lightbox__media')
     frame.innerHTML =
       item.type === 'video'
-        ? `<video autoplay loop muted playsinline poster="${item.poster}"><source src="${item.src}" type="video/mp4" /></video>`
+        ? `<video data-media-controls data-media-src="${item.src}" loop muted playsinline preload="none" poster="${item.poster}" aria-label="${item.alt}"></video>`
         : `<img src="${item.src}" alt="${item.alt}" />`
     /* Telleren er prosjekt-intern: «Brathwait — 5/23», ikke posisjon i hele grid-en. */
     const group = media.filter((entry) => entry.projectId === item.projectId)
     box.querySelector('.archived-lightbox__caption').textContent =
       `${item.title} — ${group.indexOf(item) + 1}/${group.length}`
+    syncVisibleMedia(frame)
   }
 
   const close = () => {
     if (!box) return
+    box.querySelector('video')?.pause()
     box.close()
     box.remove()
     box = null
@@ -215,6 +220,7 @@ export function initArchivedGrid(rootEl) {
     document.body.append(box)
     show(index)
     box.showModal()
+    syncVisibleMedia(box)
     box.querySelector('.archived-lightbox__close').focus()
   }
 

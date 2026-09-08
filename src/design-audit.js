@@ -1,4 +1,4 @@
-/* Design-revisjon (D): overlay som skanner det RENDREDE designspråket på tvers
+/* Design-revisjon (Shift+D): overlay som skanner det RENDREDE designspråket på tvers
    av dokumentet — typografi (familie → størrelse/vekt/sporing/case), tekst-
    farger, bakgrunnsfarger, hjørneradier og skygger — med antall forekomster og
    eksempler. Verktøy for å luke inkonsistens: få kombinasjoner = stramt språk.
@@ -118,7 +118,7 @@ function render(data) {
     <div class="da-inner">
       <header class="da-header">
         <strong>DESIGN AUDIT</strong>
-        <span class="da-dim">rendret språk på denne siden — D/Esc lukker</span>
+        <span class="da-dim">rendret språk på denne siden — Shift+D/Esc lukker</span>
       </header>
       <h2 class="da-section">Typografi</h2>
       ${fontSections}
@@ -160,8 +160,8 @@ export function initDesignAudit() {
     'keydown',
     (event) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return
-      if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName ?? '')) return
-      if (event.key === 'd' || event.key === 'D') {
+      if (event.repeat || document.activeElement?.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return
+      if (event.shiftKey && event.key.toLowerCase() === 'd') {
         event.preventDefault()
         if (panel) close()
         else open()

@@ -1,8 +1,9 @@
 /* Iterasjons-skjermbilder: `npm run screenshots -- <label>`
-   Krever at dev-serveren kjører (npm run dev). Lagrer til screenshots/<dato>_<tid>_<label>/. */
+   Krever en kjørende dev- eller preview-server. Lagrer til screenshots/<dato>_<tid>_<label>/. */
 
 import { mkdir } from 'node:fs/promises'
 import { chromium } from 'playwright'
+import { loadLazyMedia } from './screenshot-media.mjs'
 
 const BASE = process.env.SCREENSHOT_BASE ?? 'http://localhost:5173'
 const label = process.argv[2] ?? 'iteration'
@@ -12,10 +13,10 @@ const pad = (n) => String(n).padStart(2, '0')
 const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`
 const dir = `screenshots/${stamp}_${label}`
 
-/* fullPage: false for forsiden — den er en horisontal viewport uten vertikal scroll.
-   About/Praise ligger i kamera-verdenen (body scroller ikke) — der skytes hele
-   innholdskolonnen som element i stedet. */
-const targets = [
+/* The world is sized in viewport units. Element screenshots of a long column
+   enlarge the viewport and can reveal neighbouring cells. Capture world routes
+   as overlapping viewport frames; ordinary case documents can use fullPage. */
+let targets = [
   { path: '/', name: 'home', fullPage: false },
   { path: '/micromilspec/', name: 'micromilspec', fullPage: true },
   { path: '/hjemla/', name: 'hjemla', fullPage: true },
@@ -28,54 +29,72 @@ const targets = [
   { path: '/uber/', name: 'uber', fullPage: true },
   { path: '/boligmappa/', name: 'boligmappa', fullPage: true },
   { path: '/brathwait/', name: 'brathwait', fullPage: true },
-  { path: '/about/', name: 'about', element: '.world-page[data-path="/about/"] .world-column' },
-  { path: '/praise/', name: 'praise', element: '.world-page[data-path="/praise/"] .world-column' },
-  { path: '/history/', name: 'history', element: '.world-page[data-path="/history/"] .world-column' },
-  { path: '/people/', name: 'people', element: '.world-page[data-path="/people/"] .world-column' },
-  { path: '/archived-work/', name: 'archived-work', element: '.world-page[data-path="/archived-work/"] .world-column' },
+  { path: '/about/', name: 'about', world: true },
+  { path: '/praise/', name: 'praise', world: true },
+  { path: '/history/', name: 'history', world: true },
+  { path: '/people/', name: 'people', world: true },
+  { path: '/archived-work/', name: 'archived-work', world: true },
 ]
 
-const viewports = [
+let viewports = [
   { name: 'desktop', viewport: { width: 1440, height: 900 } },
   { name: 'mobile', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
 ]
 
-/* Scroll gjennom siden så lazy-bilder rekker å laste før fullPage-skjermbildet. */
-async function loadLazyMedia(page) {
-  await page.evaluate(async () => {
-    const step = window.innerHeight
-    for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y)
-      await new Promise((resolve) => setTimeout(resolve, 120))
-    }
-    window.scrollTo(0, 0)
-  })
-  /* Ikke networkidle — videoer på flere MB streamer lenge og holder nettverket opptatt. */
-  await page.waitForTimeout(800)
+// Optional exact filters keep focused visual checks quick and reproducible.
+function select(items, requested, key) {
+  if (!requested) return items
+  const values = requested.split(',')
+  for (const value of values) {
+    if (!items.some((item) => item[key] === value)) throw new Error(`Unknown screenshot ${key}: ${value}`)
+  }
+  return items.filter((item) => values.includes(item[key]))
 }
+targets = select(targets, process.env.SCREENSHOT_ROUTES, 'path')
+viewports = select(viewports, process.env.SCREENSHOT_VIEWPORTS, 'name')
 
 await mkdir(dir, { recursive: true })
 const browser = await chromium.launch()
 
-for (const { name: vpName, ...contextOptions } of viewports) {
-  const context = await browser.newContext(contextOptions)
-  const page = await context.newPage()
+try {
+  for (const { name: vpName, ...contextOptions } of viewports) {
+    const context = await browser.newContext({ ...contextOptions, reducedMotion: 'reduce' })
+    const page = await context.newPage()
 
-  for (const target of targets) {
-    await page.goto(`${BASE}${target.path}`, { waitUntil: 'load' })
-    await page.waitForTimeout(600)
-    if (target.fullPage) await loadLazyMedia(page)
-    const file = `${dir}/${target.name}-${vpName}.png`
-    if (target.element) {
-      await page.locator(target.element).screenshot({ path: file })
-    } else {
-      await page.screenshot({ path: file, fullPage: target.fullPage })
+    for (const target of targets) {
+      await page.goto(`${BASE}${target.path}`, { waitUntil: 'load' })
+      await page.waitForTimeout(600)
+      if (target.fullPage || target.world) await loadLazyMedia(page)
+      const stem = `${dir}/${target.name}-${vpName}`
+      if (target.world) {
+        const scroller = page.locator('.world-page:not([inert])')
+        let y = 0
+        let frame = 1
+        try {
+          while (true) {
+            await scroller.evaluate((el, top) => el.scrollTo({ top, behavior: 'instant' }), y)
+            await page.waitForTimeout(120)
+            const file = `${stem}${frame === 1 ? '' : `-${String(frame).padStart(2, '0')}`}.png`
+            await page.screenshot({ path: file, fullPage: false })
+            console.log(`✓ ${file}`)
+            const { height, end } = await scroller.evaluate((el) => ({ height: el.clientHeight, end: el.scrollHeight - el.clientHeight }))
+            if (y >= end) break
+            y = Math.min(y + height * 0.8, end)
+            frame++
+          }
+        } finally {
+          await scroller.evaluate((el) => { el.scrollTop = 0 })
+        }
+      } else {
+        const file = `${stem}.png`
+        await page.screenshot({ path: file, fullPage: target.fullPage })
+        console.log(`✓ ${file}`)
+      }
     }
-    console.log(`✓ ${file}`)
+
+    await context.close()
   }
-
-  await context.close()
+} finally {
+  await browser.close()
 }
-
-await browser.close()
 console.log(`\nLagret i ${dir}/`)

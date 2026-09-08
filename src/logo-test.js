@@ -328,6 +328,14 @@ mountDials(frame, setFrame)
 const REV_SECONDS = 90
 const HOVER_SCALE = 1.2
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const logoVideo = document.querySelector('.stage__logo')
+const syncLogoVideo = () => {
+  if (reduceMotion.matches || document.hidden) logoVideo.pause()
+  else logoVideo.play().catch(() => {})
+}
+reduceMotion.addEventListener('change', syncLogoVideo)
+document.addEventListener('visibilitychange', syncLogoVideo)
+syncLogoVideo()
 
 const pointer = new THREE.Vector2(-10, -10) // utenfor scenen til musa flytter seg
 const raycaster = new THREE.Raycaster()
@@ -338,8 +346,15 @@ window.addEventListener('pointermove', (e) => {
 
 let angle = staticOffset()
 let lastT = performance.now()
+let previousMotionPreference = reduceMotion.matches
 
 function tick(now) {
+  // Keep the video and halo on the same preference even if its change event
+  // arrives later than the animation frame.
+  if (reduceMotion.matches !== previousMotionPreference) {
+    previousMotionPreference = reduceMotion.matches
+    syncLogoVideo()
+  }
   const dt = Math.min((now - lastT) / 1000, 0.1)
   lastT = now
   if (!reduceMotion.matches) angle += (dt / REV_SECONDS) * Math.PI * 2

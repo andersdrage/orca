@@ -29,3 +29,6 @@ screenshots/
 
 # Kildebilder i full oppløsning (komprimerte web-versjoner ligger i public/images)
 originals/
+
+# Automated regression output
+test-results/

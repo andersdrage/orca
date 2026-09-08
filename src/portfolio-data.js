@@ -20,13 +20,16 @@ export const portfolioCases = [
   {
     id: 'micromilspec',
     title: 'MICROMILSPEC',
+    displayTitle: 'Micromilspec',
+    layout: 'split',
     intro:
       'Co-built the brand, product, and operations — scaling to ~40 MNOK in sales across bespoke and military projects in three years.',
     credits: [
-      { role: 'Creative Director', names: 'Anders Drage' },
-      { role: 'Development', names: 'Kim Ellefsen and Mark Larratt' },
-      { role: '3D', names: 'Alexander Kadim' },
       { role: 'Co-founder', names: 'Henrik Rye' },
+      { role: 'Development', names: 'Kim Ellefsen' },
+      { role: 'Development', names: 'Mark Larratt' },
+      { role: '3D', names: 'Alexander Kadim' },
+      { role: 'Creative Director', names: 'Anders Drage' },
     ],
     items: [
       /* Hero = samme bilde som tidslinje-tilen — morphen lander sømløst i seg selv. */
@@ -46,8 +49,17 @@ export const portfolioCases = [
   {
     id: 'hjemla',
     title: 'Hjemla',
+    layout: 'split',
     intro:
       'Redesigned the identity and product for Hjemla, an internal startup at Boligmappa — turning cold property data into a warm, welcoming home for every home.',
+    credits: [
+      { role: 'Product owner', names: 'Michael Slettjord Wik' },
+      { role: 'Business', names: 'Håvard Heggem von Krogh' },
+      { role: 'Marketing', names: 'Eirik Vigeland' },
+      { role: 'Design', names: 'Gjermund Gustavsen' },
+      { role: 'Creative director', names: 'Anders Drage' },
+      { role: 'Developer', names: 'Nikita' },
+    ],
     items: [
       { file: 'hjemla-1-full.jpg', span: 'full', alt: 'Hjemla' },
       { file: 'hjemla-2-full.jpg', span: 'full', alt: 'Hjemla' },
@@ -71,8 +83,15 @@ export const portfolioCases = [
   {
     id: 'off-market',
     title: 'Off Market',
+    layout: 'split',
     intro:
       'Co-founded Off Market, a real-estate marketplace matching buyers and sellers before homes reached the open market — leading product, design, and marketing.',
+    credits: [
+      { role: 'Co-founder', names: 'Hans Houeland' },
+      { role: 'CTO', names: 'Kim Ellefsen' },
+      { role: 'Design', names: 'Simon Bognø' },
+      { role: 'Illustrations', names: 'Andrew Nye' },
+    ],
     items: [
       /* Hero = samme cover som tidslinje-tilen. */
       { file: 'offmarket-cover-1.jpg', span: 'full', alt: 'Off Market' },

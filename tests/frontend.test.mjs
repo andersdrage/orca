@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { after, before, describe, test } from 'node:test'
 import { preview } from 'vite'
 import { chromium, webkit } from 'playwright'
+import { loadLazyMedia } from '../scripts/screenshot-media.mjs'
 
 const worldPaths = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
 const casePaths = ['/micromilspec/', '/hjemla/', '/off-market/', '/boligmappa/', '/finn/', '/nettavisen/', '/uber/', '/hmkg/', '/humming-people/', '/brathwait/', '/mountain-milk/']
@@ -46,6 +47,144 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }, path)
       assert.equal(await page.locator('.world-page:not([inert])').count(), 1)
     }
+
+    test('reduced motion makes timeline keys immediate and responds to preference changes', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      const step = () => page.locator('.timeline-scroller').evaluate((el) => {
+        const before = el.scrollLeft
+        el.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+        return el.scrollLeft - before
+      })
+      assert.ok(Math.abs(await step() - 320) < 2)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      assert.ok(Math.abs(await step()) < 10, 'normal preference retains smooth travel')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      assert.ok(Math.abs(await step() - 320) < 2)
+    })
+
+    test('case video controls allow deliberate reduced-motion playback and retain pause on scroll', async (t) => {
+      const page = await visit(t, '/finn/')
+      const video = page.locator('video[data-media-controls]').first()
+      await video.scrollIntoViewIfNeeded()
+      assert.equal(await video.evaluate((el) => el.paused), true)
+      assert.equal(await video.getAttribute('src'), null)
+      const control = video.locator('..').getByRole('button', { name: 'Play video', exact: true })
+      await control.focus()
+      await page.keyboard.press('Enter')
+      await page.waitForFunction(() => document.querySelector('video[data-media-controls]').currentTime > 0)
+      await page.getByRole('button', { name: 'Pause video', exact: true }).click()
+      await page.mouse.wheel(0, 30)
+      await page.waitForTimeout(150)
+      assert.equal(await video.evaluate((el) => el.paused), true)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      assert.equal(await video.evaluate((el) => el.paused), true, 'manual pause survives preference change')
+      await control.click()
+      await page.waitForFunction(() => !document.querySelector('video[data-media-controls]').paused)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.waitForFunction(() => document.querySelector('video[data-media-controls]').paused)
+      await page.goto(base + '/about/', { waitUntil: 'domcontentloaded' })
+      await ready(page, '/about/')
+      await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTo(0, el.scrollHeight))
+      assert.equal(await page.locator('.world-page:not([inert]) .site-footer video').evaluate((el) => el.paused), true)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .site-footer video').currentTime > 0)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .site-footer video').paused)
+    })
+
+    test('archive lightbox respects reduced motion and exposes keyboard playback', async (t) => {
+      const page = await visit(t, '/archived-work/')
+      await ready(page, '/archived-work/')
+      const tile = page.locator('.archived-grid__item').filter({ has: page.locator('video') })
+      await tile.click()
+      const dialog = page.getByRole('dialog')
+      assert.equal(await dialog.locator('video').evaluate((el) => el.paused), true)
+      await dialog.getByRole('button', { name: 'Play video', exact: true }).focus()
+      await page.keyboard.press('Enter')
+      await page.waitForFunction(() => document.querySelector('dialog video').currentTime > 0)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      // Media-query change events are frame-delivered; model two real preference changes.
+      await page.waitForTimeout(100)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.waitForFunction(() => document.querySelector('dialog video').paused)
+      await page.keyboard.press('Escape')
+      assert.equal(await dialog.count(), 0)
+      assert.equal(await tile.evaluate((el) => el === document.activeElement), true)
+    })
+
+    test('shared secondary text keeps readable contrast at rest and during hover', async (t) => {
+      const page = await visit(t, '/history/')
+      const ratio = async (selector) => page.locator(selector).evaluateAll((nodes) => nodes.map((el) => {
+        const rgb = (s) => s.match(/[\d.]+/g).slice(0, 3).map(Number)
+        const luminance = (color) => color.map((v) => v / 255).map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0)
+        let background = [250, 250, 250]
+        let opacity = 1
+        for (let node = el; node; node = node.parentElement) {
+          const css = getComputedStyle(node)
+          opacity *= Number(css.opacity)
+          if (css.backgroundColor !== 'rgba(0, 0, 0, 0)' && css.backgroundColor !== 'transparent') {
+            background = rgb(css.backgroundColor)
+            break
+          }
+        }
+        const foreground = rgb(getComputedStyle(el).color).map((v, i) => v * opacity + background[i] * (1 - opacity))
+        const a = luminance(foreground), b = luminance(background)
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+      }))
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        for (const [path, selector, hover] of [
+          ['/history/', '.archive-year, .archive-type', '.archive-list li'],
+          ['/finn/', '.case-credits__label, .case-credits__role, .case-credits__names', '.case-credits__row'],
+          ['/about/', '.employments-table td', '.employments-table tr'],
+          ['/praise/', '.text-secondary', null],
+          ['/people/', '.text-secondary, .archive-name.is-met', null],
+          ['/archived-work/', '.archived-card__meta', null],
+        ]) {
+          await page.goto(base + path, { waitUntil: 'domcontentloaded' })
+          const scoped = path === '/finn/' ? selector : selector.split(', ').map((s) => '.world-page:not([inert]) ' + s).join(', ')
+          await page.locator(scoped).first().waitFor()
+          assert.ok((await ratio(scoped)).every((value) => value >= 4.5), `${path} resting contrast at ${width}`)
+          if (hover) {
+            const target = path === '/finn/' ? hover : '.world-page:not([inert]) ' + hover
+            await page.locator(target).first().hover()
+            await page.waitForTimeout(180)
+            assert.ok((await ratio(scoped)).every((value) => value >= 4.5), `${path} hover contrast at ${width}`)
+          }
+        }
+        await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTo(0, el.scrollHeight))
+        const footerLinks = '.world-page:not([inert]) .site-footer__contact a'
+        assert.ok((await ratio(footerLinks)).every((value) => value >= 4.5))
+        await page.locator(footerLinks).first().hover()
+        await page.locator(footerLinks).first().focus()
+        await page.waitForTimeout(180)
+        assert.ok((await ratio(footerLinks)).every((value) => value >= 4.5))
+      }
+    })
+
+    test('screenshot preparation loads the active world gallery and returns to the top', async (t) => {
+      const page = await visit(t, '/archived-work/', { viewport: { width: 390, height: 844 } })
+      await ready(page, '/archived-work/')
+      const images = page.locator('.world-page:not([inert]) .archived-grid img')
+      assert.ok(await images.evaluateAll((nodes) => nodes.some((el) => !el.hasAttribute('src'))), 'fixture starts with deferred images')
+      const result = await loadLazyMedia(page)
+      assert.equal(result.scroller, 'world')
+      assert.ok(result.loadedImages >= await images.count())
+      assert.equal(await images.evaluateAll((nodes) => nodes.every((el) => el.complete && el.naturalWidth > 0)), true)
+      assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
+      assert.equal(await page.evaluate(() => window.scrollY), 0)
+      assert.equal(await page.locator('.world-page[inert] [data-media-src][src]').count(), 0, 'inactive pages are not traversed')
+    })
+
+    test('screenshot preparation reports failed images instead of silently capturing gaps', async (t) => {
+      const page = await visit(t, '/about/')
+      await page.route('**/images/**', (route) => route.abort())
+      await page.goto(base + '/archived-work/', { waitUntil: 'domcontentloaded' })
+      await ready(page, '/archived-work/')
+      await assert.rejects(loadLazyMedia(page), /Screenshot image failed:/)
+      assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
+    })
 
     test('selected projects are named once and keyboard activation opens a case', async (t) => {
       const page = await visit(t, '/')
@@ -116,6 +255,187 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await activeWorld(page, '/history/')
     })
 
+    test('interrupted camera trips preserve world and card transforms through pan and landing', async (t) => {
+      const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
+      await ready(page, '/praise/')
+      await page.locator('.site-header a[href="/praise/"]').click()
+      for (const [path, elapsed] of [['/history/', 300], ['/people/', 850], ['/about/', 80]]) {
+        await page.waitForTimeout(elapsed)
+        const jump = await page.evaluate(async (path) => {
+          const nodes = [document.querySelector('.world'), ...document.querySelectorAll('.world-page')]
+          const animations = nodes.flatMap((node) => node.getAnimations())
+          animations.forEach((animation) => animation.pause())
+          await Promise.all(animations.map((animation) => animation.ready))
+          const transforms = () => nodes.map((node) => [...new DOMMatrix(getComputedStyle(node).transform).toFloat64Array()])
+          const before = transforms()
+          document.querySelector(`.site-header a[href="${path}"], .corner-links a[href="${path}"]`).click()
+          return Math.max(...transforms().flatMap((values, i) => values.map((v, j) => Math.abs(v - before[i][j]))))
+        }, path)
+        assert.ok(jump < 1, `synchronous transform jump: ${jump}`)
+      }
+      await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling'))
+      assert.equal(await page.locator('.world-page:not([inert])').getAttribute('data-path'), '/about/')
+      assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).a), 1)
+    })
+
+    test('world links preserve native modified, targeted and download clicks', async (t) => {
+      const page = await visit(t, '/about/')
+      await ready(page, '/archived-work/')
+      const results = await page.evaluate(() => {
+        const links = [document.querySelector('.site-header a[href="/praise/"]'), document.querySelector('.site-header a[href="/about/"]'), document.querySelector('.corner-links a'), document.querySelector('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]')]
+        return links.flatMap((link) => ['metaKey', 'ctrlKey', 'shiftKey', 'altKey', 'middle', 'target', 'download', 'prevented'].map((kind) => {
+          if (kind === 'target') link.target = '_blank'
+          if (kind === 'download') link.setAttribute('download', '')
+          const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: kind === 'middle' ? 1 : 0, [kind]: true })
+          if (kind === 'prevented') event.preventDefault()
+          let prevented
+          // Capture the app's decision, then prevent native navigation in this probe.
+          const stop = (e) => { prevented = e.defaultPrevented; e.preventDefault() }
+          window.addEventListener('click', stop, { once: true })
+          link.dispatchEvent(event)
+          link.removeAttribute('target'); link.removeAttribute('download')
+          return { kind, prevented }
+        }))
+      })
+      assert.ok(results.every(({ kind, prevented }) => prevented === (kind === 'prevented')))
+      assert.equal(new URL(page.url()).pathname, '/about/')
+      await page.locator('.site-header a[href="/praise/"]').click()
+      await activeWorld(page, '/praise/')
+    })
+
+    test('mobile intro has clear space before the looping timeline at every narrow width', async (t) => {
+      for (const width of [320, 390, 430]) {
+        const page = await visit(t, '/', { viewport: { width, height: 844 } })
+        await page.evaluate(() => document.fonts.ready)
+        const scroller = page.locator('[data-timeline]')
+        await page.waitForTimeout(150)
+        const geometry = await scroller.evaluate((el) => {
+          const intro = el.querySelector('.timeline-intro').getBoundingClientRect()
+          const preceding = el.querySelector('.timeline-copy[data-copy="0"] .timeline-tile:last-child').getBoundingClientRect()
+          const first = el.querySelector('.timeline-copy[data-copy="1"] .timeline-tile').getBoundingClientRect()
+          return { intro: intro.left, preceding: preceding.right, first: first.left, end: intro.right }
+        })
+        assert.ok(geometry.preceding <= geometry.intro - 34, JSON.stringify({ width, ...geometry }))
+        assert.ok(geometry.first >= geometry.end + 55)
+        const start = await scroller.evaluate((el) => el.scrollLeft)
+        await scroller.hover()
+        await page.mouse.wheel(0, 400)
+        await page.waitForFunction((start) => document.querySelector('[data-timeline]').scrollLeft !== start, start)
+      }
+    })
+
+    test('archive reserves image geometry before downloads finish', async (t) => {
+      let release
+      const gate = new Promise((resolve) => { release = resolve })
+      t.after(() => release())
+      const page = await visit(t, '/about/')
+      await page.evaluate(() => document.fonts.ready)
+      await page.route('**/images/**/*.{jpg,png,webp}', async (route) => { await gate; await route.continue().catch(() => {}) })
+      await page.goto(base + '/archived-work/', { waitUntil: 'domcontentloaded' })
+      await ready(page, '/archived-work/')
+      const images = page.locator('.archived-grid__item img')
+      assert.ok(await images.count() > 100)
+      assert.equal(await images.evaluateAll((images) => images.every((img) => img.width > 0 && img.height > 0 && img.hasAttribute('width') && img.hasAttribute('height'))), true)
+      const first = images.first()
+      const before = await first.boundingBox()
+      release()
+      await page.waitForFunction(() => document.querySelector('.archived-grid__item img').naturalWidth > 0)
+      const after = await first.boundingBox()
+      assert.ok(Math.abs(before.height - after.height) < 1)
+      assert.ok(Math.abs(before.y - after.y) < 1)
+    })
+
+    test('personal notes reports audio failure, retains the transcript and retries successfully', async (t) => {
+      const page = await visit(t, '/micromilspec/')
+      await page.route('**/*.mp3', (route) => route.abort())
+      const play = page.locator('[data-project-audio-button]')
+      await play.click()
+      await page.waitForFunction(() => document.querySelector('[data-audio-status]').textContent.includes('couldn’t load'))
+      assert.match(await play.getAttribute('aria-label'), /Retry/)
+      const read = page.locator('[data-transcript-open]')
+      assert.ok((await read.boundingBox()).height >= 44)
+      await read.click()
+      await page.keyboard.press('Escape')
+      assert.equal(await read.evaluate((el) => el === document.activeElement), true)
+      await page.unroute('**/*.mp3')
+      await play.click()
+      await page.waitForFunction(() => document.querySelector('[data-project-audio]').currentTime > 0)
+      assert.equal(await page.locator('[data-audio-status]').textContent(), '')
+      assert.equal(await play.getAttribute('aria-pressed'), 'true')
+    })
+
+    test('transcript animation survives close during entry and immediate reopening', async (t) => {
+      const page = await visit(t, '/off-market/', { reducedMotion: 'no-preference', viewport: { width: 390, height: 844 } })
+      await page.locator('[data-transcript-open]').scrollIntoViewIfNeeded()
+      await page.evaluate(async () => {
+        const open = document.querySelector('[data-transcript-open]')
+        const close = document.querySelector('[data-transcript-close]')
+        const click = (el) => el.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }))
+        click(open)
+        await new Promise((r) => setTimeout(r, 50))
+        click(close)
+        await new Promise((r) => setTimeout(r, 40))
+        click(open)
+      })
+      await page.waitForTimeout(300)
+      assert.equal(await page.locator('dialog[open]').count(), 1)
+      assert.equal(await page.locator('dialog').evaluate((el) => getComputedStyle(el).opacity), '1')
+      await page.keyboard.press('Escape')
+      assert.equal(await page.locator('dialog[open]').count(), 0)
+      assert.equal(await page.locator('[data-transcript-open]').evaluate((el) => el === document.activeElement), true)
+    })
+
+    test('inactive archive media waits for navigation and videos pause after leaving view', async (t) => {
+      const requests = []
+      const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
+      page.on('request', (request) => requests.push(new URL(request.url()).pathname))
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await ready(page, '/archived-work/')
+      await page.waitForTimeout(3500)
+      assert.equal(await page.locator('.world-page[data-path="/archived-work/"] .archived-grid__item img[src]').count(), 0)
+      assert.ok(!requests.some((path) => /\.(mp4|webm)$/.test(path)))
+      assert.ok(!requests.some((path) => casePaths.includes(path)))
+      await page.locator('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]').click()
+      const video = page.locator('.archived-grid__item video')
+      await page.waitForFunction(() => document.querySelector('.archived-grid__item video').currentTime > 0)
+      assert.ok(await page.locator('.archived-grid__item img[src]').count() < await page.locator('.archived-grid__item img').count())
+      await page.locator('.site-header a[href="/about/"]').click()
+      assert.equal(await video.evaluate((el) => el.paused), true)
+    })
+
+    test('case preparation is bounded, deduplicated and disabled for data saving', async (t) => {
+      for (const saveData of [false, true]) {
+        const page = await visit(t, '/', {}, () => {})
+        await page.evaluate((saveData) => Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData } }), saveData)
+        const documents = []
+        page.on('request', (request) => { if (casePaths.includes(new URL(request.url()).pathname)) documents.push(new URL(request.url()).pathname) })
+        await page.locator('.timeline-copy[data-copy="1"]').evaluate((el) => {
+          for (let repeat = 0; repeat < 2; repeat++) el.querySelectorAll('a').forEach((link) => link.dispatchEvent(new PointerEvent('pointerover', { bubbles: true })))
+        })
+        await page.waitForTimeout(300)
+        assert.equal(documents.length, saveData ? 0 : 3)
+        assert.equal(documents.length, new Set(documents).size)
+      }
+    })
+
+    if (engine === 'chromium') test('cold homepage to case transition captures a decoded hero without prerendering', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
+        window.addEventListener('pagereveal', (event) => {
+          if (!event.viewTransition) return
+          event.viewTransition.ready.then(() => {
+            if (location.pathname === '/micromilspec/') sessionStorage.setItem('test:hero-ready', String(!!document.querySelector('.case-cover-hero img')?.naturalWidth))
+          }, () => {})
+        })
+      })
+      await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
+      const tile = page.locator('.timeline-copy[data-copy="1"] a').first()
+      await tile.hover()
+      await page.waitForTimeout(300)
+      await tile.click()
+      await page.waitForURL('**/micromilspec/')
+      await page.waitForFunction(() => sessionStorage.getItem('test:hero-ready') === 'true')
+    })
+
     test('retired URLs are not redirected and all moved work has one destination', async (t) => {
       const page = await visit(t, '/')
       assert.equal(await page.getByRole('link', { name: 'Miscellaneous work', exact: true }).count(), 0)
@@ -133,7 +453,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
       }
       for (const file of ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg', 'misc-aprila.jpg', 'misc-brevio.jpg', 'misc-logos.jpg', 'misc-nike.jpg', 'misc-pressworks.jpg', 'pressworks-mobile-v1.jpg']) {
-        assert.equal(await grid.locator(`img[src="/images/${file}"]`).count(), 1)
+        assert.equal(await grid.locator(`img[data-media-src="/images/${file}"]`).count(), 1)
       }
       assert.equal(await grid.locator('img[src="/images/misc-nettavisen.jpg"]').count(), 0)
       await page.goto(base + '/nettavisen/')
@@ -144,7 +464,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
-      assert.equal(await page.locator('.site-footer__logo-video source').getAttribute('src'), '/images/dragon-footer-mark-v1.mp4')
+      assert.equal(await page.locator('.site-footer__logo-video').getAttribute('data-media-src'), '/images/drage-black-bg-preview-001.mp4')
     })
 
     test('Uber country tabs keep one panel visible and support keyboard navigation', async (t) => {
@@ -335,8 +655,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         for (let i = 0; i < expected.length; i++) {
           const block = blocks.nth(i)
           await block.scrollIntoViewIfNeeded()
-          // Decode every image in this block so the separation is checked at final height.
-          await block.locator('img').evaluateAll((images) => Promise.all(images.map((img) => img.decode())))
+          // Geometry is reserved even for images still outside the viewport.
+          await block.locator('img[src]').evaluateAll((images) => Promise.all(images.map((img) => img.decode())))
           assert.equal(await block.locator('.archived-grid__col').count(), width > 900 ? 4 : 2)
           assert.equal(await block.locator('button').evaluateAll((buttons) => new Set(buttons.map((button) => button.getAttribute('aria-label'))).size), i === 0 ? 2 : 1)
           const bounds = await block.evaluate((block) => {
@@ -416,7 +736,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.notEqual(hovered.border, before.border)
       await page.mouse.move(10, 10)
       // Safari uses Option+Tab to include buttons when full keyboard access is off.
-      await page.keyboard.press(engine === 'webkit' ? 'Alt+Tab' : 'Tab')
+      await page.keyboard.press(engine === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab')
       assert.equal(await retry.evaluate((button) => button === document.activeElement && button.matches(':focus-visible')), true)
       assert.equal(await retry.evaluate((button) => getComputedStyle(button).outlineWidth), '2px')
     })
@@ -453,7 +773,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('archived arrows preserve a direct-entry fallback and browser Back stays native', async (t) => {
       const page = await visit(t, '/hmkg/')
-      await page.getByRole('link', { name: 'Next archived project' }).click()
+      await page.keyboard.press('ArrowRight')
       await page.waitForURL('**/humming-people/')
       await page.keyboard.press('ArrowRight')
       await page.waitForURL('**/brathwait/')
@@ -475,7 +795,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       })
       await page.getByRole('link', { name: 'Open test case' }).click()
       await page.waitForURL('**/hmkg/')
-      await page.getByRole('link', { name: 'Next archived project' }).click()
+      await page.keyboard.press('ArrowRight')
       await page.waitForURL('**/humming-people/')
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.keyboard.press('Escape')

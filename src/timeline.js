@@ -18,17 +18,6 @@ const TILES = [
     h: '56svh',
   },
   {
-    id: 'hmkg',
-    title: 'HMKG',
-    href: '/hmkg/',
-    image: '/images/hmkg-1-full.jpg',
-    color: '#b65c3f',
-    /* Samme aspekt som bildet (844×740). */
-    ratio: '844 / 740',
-    h: '38svh',
-    archived: true,
-  },
-  {
     id: 'hjemla',
     title: 'Hjemla',
     href: '/hjemla/',
@@ -80,29 +69,6 @@ const TILES = [
     h: '48svh',
   },
   {
-    /* archived: vises kun på /archived-work/ (samme layout som forsiden). */
-    id: 'humming-people',
-    title: 'Humming People',
-    href: '/humming-people/',
-    image: '/images/hp-1-full.jpg',
-    color: '#6d597a',
-    /* Samme aspekt som bildet (2072×1372). */
-    ratio: '2072 / 1372',
-    h: '41svh',
-    archived: true,
-  },
-  {
-    id: 'brathwait',
-    title: 'Brathwait',
-    href: '/brathwait/',
-    image: '/images/brathwait-cover.jpg',
-    color: '#a44a5e',
-    /* Samme aspekt som coveret (580×784). */
-    ratio: '580 / 784',
-    h: '46svh',
-    archived: true,
-  },
-  {
     id: 'uber',
     title: 'Uber',
     href: '/uber/',
@@ -112,17 +78,7 @@ const TILES = [
     ratio: '1376 / 1139',
     h: '38svh',
   },
-  {
-    id: 'mountain-milk',
-    title: 'Mountain Milk',
-    href: '/mountain-milk/',
-    image: '/images/mm-1.jpg',
-    color: '#4a3b32',
-    /* Samme aspekt som bildet (2480×3508). */
-    ratio: '2480 / 3508',
-    h: '53svh',
-    archived: true,
-  },
+
 ]
 
 function tileHtml(tile) {
@@ -146,17 +102,12 @@ function tileHtml(tile) {
     : `<div class="${classes}" style="${style}" aria-hidden="true">${image}</div>`
 }
 
-/* scrollerEl: verdenen kan romme TO tidslinjer (forsiden + arkiv-kjelleren) —
-   søsken-montering sender sin egen scroller; egen side faller tilbake til query. */
+/* The world passes its mounted homepage scroller on sibling entry. */
 export function initTimeline(scrollerEl) {
   const scroller = scrollerEl ?? document.querySelector('[data-timeline]')
   if (!scroller) return
 
-  /* Arkiv-modus: /archived-work/ bruker nøyaktig samme layout og fysikk, men
-     viser kun tiles merket `archived` — forsiden viser resten. Arkivet har
-     ingen intro-tekst og ingen entré-koreografi. */
-  const showArchived = scroller.dataset.tiles === 'archived'
-  const tiles = TILES.filter((tile) => Boolean(tile.archived) === showArchived)
+  const tiles = TILES
 
   /* MICROMILSPEC-tilen følger cover-varianten valgt med B på case-siden
      (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
@@ -205,9 +156,7 @@ export function initTimeline(scrollerEl) {
     document.createElement('br'),
     document.createTextNode(INTRO_REST),
   )
-  /* Arkiv-sida har ingen intro — utenfor DOM gir offsetWidth 0, og placeIntro
-     melder da pass av seg selv. */
-  if (!showArchived) scroller.append(intro)
+  scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
   let introContentRight = 0
@@ -402,7 +351,7 @@ export function initTimeline(scrollerEl) {
      bilder, bakgrunnet fane som får dimensjoner). Re-mål intro-posisjonen en
      kort periode og korriger entré-scrollen — men aldri etter at brukeren har
      begynt å scrolle selv. */
-  if (!showArchived && (useIntroEntry || !introPlaced)) {
+  if (useIntroEntry || !introPlaced) {
     let stableFrames = 0
     const calibrate = () => {
       if (introDismissed || userInteracted || stableFrames > 30) return
@@ -437,7 +386,7 @@ export function initTimeline(scrollerEl) {
   /* B sykler MICROMILSPEC-coveret — kun her på forsiden. Bytter bilde og ratio
      på tilen i alle tre kopiene, lagrer valget (case-heroen følger etter ved
      åpning) og re-måler loop-geometrien siden tilebredden endres. Variantene
-     preloades i idle-tid så byttet er momentant. */
+     lastes ved valg. */
   let coverIndex = 0
   try {
     coverIndex = Number(sessionState.getItem('micromilspec:cover')) || 0
@@ -445,14 +394,6 @@ export function initTimeline(scrollerEl) {
   } catch {
     coverIndex = 0
   }
-  const warmCovers = () => {
-    micromilspecCovers.forEach((cover) => {
-      new Image().src = `/images/${cover.file}`
-    })
-  }
-  if ('requestIdleCallback' in window) requestIdleCallback(warmCovers, { timeout: 4000 })
-  else setTimeout(warmCovers, 2000)
-
   window.addEventListener('keydown', (event) => {
     if (event.key !== 'b' && event.key !== 'B') return
     if (event.metaKey || event.ctrlKey || event.altKey) return
@@ -507,6 +448,9 @@ export function initTimeline(scrollerEl) {
   const LAG_MAX = 0.18
   const MAX_TENSION = 600
   const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  reducedMotionQuery.addEventListener('change', () => {
+    if (reducedMotionQuery.matches) scroller.scrollTo({ left: scroller.scrollLeft, behavior: 'instant' })
+  })
   const finePointer = window.matchMedia('(pointer: fine)')
 
   let tileGeometry = []
@@ -632,7 +576,7 @@ export function initTimeline(scrollerEl) {
   scroller.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
     event.preventDefault()
-    scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: 'smooth' })
+    scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: reducedMotionQuery.matches ? 'instant' : 'smooth' })
   })
 
   /* Klikk på About/Praise midt i en bevegelse rekker ikke å få sitt scrollend — rett

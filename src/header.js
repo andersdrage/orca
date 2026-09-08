@@ -3,68 +3,43 @@ import { initDesignAudit } from './design-audit.js'
 import { initFpsMeter } from './fps-meter.js'
 import { portfolioCases } from './portfolio-data.js'
 import { initWorld } from './world.js'
+import { syncVisibleMedia } from './visible-media.js'
+import { isSameTabNavigation } from './link-navigation.js'
 
-/* Speculation Rules: prefetch alle hovedsider umiddelbart (kun HTML, noen få KB),
-   og prerender ved hover-intensjon — da er case-siden ferdig rendret (inkl. bilder)
-   før klikket, og view-transition-morphen får ekte innhold å lande i.
-   Safari/Firefox ignorerer dette; de dekkes av idle-warming under. */
-function initSpeculationRules() {
-  if (!HTMLScriptElement.supports?.('speculationrules')) return
-  if (document.querySelector('script[type="speculationrules"]')) return
-
-  const script = document.createElement('script')
-  script.type = 'speculationrules'
-  script.textContent = JSON.stringify({
-    prefetch: [{ urls: ['/', '/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/', '/about/', '/praise/', '/history/', '/people/'], eagerness: 'immediate' }],
-    /* Nettleseren tillater maks ~2 umiddelbare prerenders: bruk dem på de to
-       casene nærmest i tidslinjen ved last. Resten prerendres ved hover (LRU) —
-       og dyp-warmingen under gjør at selv uprerendrede klikk maler umiddelbart. */
-    prerender: [
-      { urls: ['/micromilspec/', '/hjemla/'], eagerness: 'immediate' },
-      { urls: ['/off-market/', '/hmkg/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/'], eagerness: 'moderate' },
-      { where: { href_matches: '/*' }, eagerness: 'moderate' },
-    ],
-  })
-  document.head.append(script)
-}
-
-/* Dyp-warming: ALT en case-side trenger for første frame hentes i idle-tid —
-   HTML, JS- og CSS-assets (parset ut av HTML-en) pluss covere/postere. Da maler
-   siden umiddelbart selv uten prerender, og view transition-en rekker fristen.
-   Videofilene (mange MB) holdes utenfor; de er pauset under selve overgangen. */
-function warmCaseAssets() {
-  portfolioCases.forEach((singleCase) => {
-    singleCase.items.slice(0, 2).forEach((item) => {
-      const src = `/images/${item.file}`
-      const url = /\.(mp4|webm|mov)$/i.test(item.file) ? src.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg') : src
-      fetch(url, { priority: 'low' }).catch(() => {})
-    })
-  })
-
-  const casePages = ['/micromilspec/', '/hjemla/', '/hmkg/', '/off-market/', '/mountain-milk/', '/humming-people/', '/finn/', '/nettavisen/', '/brathwait/', '/uber/', '/boligmappa/']
-  casePages.forEach((path) => {
-    fetch(path, { priority: 'low' })
-      .then((response) => response.text())
-      .then((html) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html')
-        const assets = [
-          ...[...doc.querySelectorAll('script[src]')].map((el) => el.getAttribute('src')),
-          ...[...doc.querySelectorAll('link[rel="stylesheet"][href]')].map((el) => el.getAttribute('href')),
-        ]
-        assets.forEach((asset) => {
-          if (asset) fetch(asset, { priority: 'low' }).catch(() => {})
-        })
-      })
-      .catch(() => {})
-  })
-}
-
-function scheduleWarmup() {
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(warmCaseAssets, { timeout: 3000 })
-  } else {
-    setTimeout(warmCaseAssets, 1500)
+// Prepare only the case the visitor points to, focuses, or touches. Keep a
+// small per-document budget and deduplicate shared scripts/styles across cases.
+function initCaseWarmup() {
+  const paths = new Map(portfolioCases.map((project) => [`/${project.id}/`, project]))
+  const cases = new Set()
+  const assets = new Set()
+  const savingData = () => navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType ?? '')
+  const fetchOnce = (url) => {
+    const absolute = new URL(url, location.href)
+    if (absolute.origin !== location.origin || assets.has(absolute.href)) return Promise.resolve(null)
+    assets.add(absolute.href)
+    return fetch(absolute.href, { priority: 'low' }).catch(() => null)
   }
+  const warm = (event) => {
+    if (savingData()) return
+    const link = event.target.closest('a[href]')
+    if (!link || link.origin !== location.origin || link.pathname === location.pathname) return
+    const project = paths.get(link.pathname)
+    if (!project || cases.has(project.id) || cases.size >= 3) return
+    cases.add(project.id)
+    const file = project.items[0]?.file
+    if (file) fetchOnce(`/images/${file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}`)
+    fetchOnce(link.href).then(async (response) => {
+      if (!response?.ok) return
+      const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+      doc.querySelectorAll('script[src], link[rel="stylesheet"][href]').forEach((el) => {
+        const asset = el.getAttribute('src') || el.getAttribute('href')
+        if (asset) fetchOnce(new URL(asset, link.href).href)
+      })
+    }).catch(() => {})
+  }
+  document.addEventListener('pointerover', warm, { passive: true })
+  document.addEventListener('focusin', warm)
+  document.addEventListener('touchstart', warm, { passive: true })
 }
 
 /* Klikk på lenken til siden man allerede står på (f.eks. logoen på forsiden)
@@ -73,6 +48,7 @@ function scheduleWarmup() {
 function initSamePageGuard(header) {
   header.querySelectorAll('.site-header__brand, nav a').forEach((link) => {
     link.addEventListener('click', (event) => {
+      if (!isSameTabNavigation(event, link)) return
       if (new URL(link.href).pathname !== location.pathname) return
       event.preventDefault()
       if (link.classList.contains('site-header__brand')) {
@@ -85,11 +61,11 @@ function initSamePageGuard(header) {
 }
 
 export function initHeader() {
-  initSpeculationRules()
+  initCaseWarmup()
   initAnimationInspector()
   initDesignAudit()
   initFpsMeter()
-  scheduleWarmup()
+
 
   const header = document.querySelector('.site-header')
   if (!header) return null
@@ -110,5 +86,6 @@ export function initHeader() {
     window.addEventListener('scroll', updateHeaderScrollState, { passive: true })
   }
 
+  syncVisibleMedia()
   return header
 }

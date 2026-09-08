@@ -1,10 +1,11 @@
 import { portfolioCases } from './portfolio-data.js'
+import { mediaSize, mediaRatio } from './media-dimensions.js'
 import micromilspecStoryUrl from './micromilspec-story.mp3?url'
 import offmarketStoryUrl from './offmarket-story.mp3?url'
 import headphonesIconUrl from './assets/icons/headphones.svg?url'
 import closeIconUrl from './assets/icons/close.svg?url'
 import pauseIconUrl from './assets/icons/pause.svg?url'
-import playIconUrl from './assets/icons/play.svg?url'
+import readIconUrl from './assets/icons/read.svg?url'
 
 function isVideo(file) {
   return /\.(mp4|webm|mov)$/i.test(file)
@@ -20,12 +21,10 @@ function mediaHtml(item, eager = false) {
     /* Poster = første frame (scripts genererer <navn>-poster.jpg) — noe synlig umiddelbart
        mens selve videofilen (opptil ~15MB) strømmer inn. */
     const poster = src.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')
-    return `<video class="${mediaClasses}" playsinline muted loop autoplay preload="${eager ? 'auto' : 'metadata'}" poster="${poster}" disablepictureinpicture disableremoteplayback tabindex="-1" aria-label="${escapeAttr(alt)}">
-      <source src="${src}" type="video/mp4" />
-    </video>`
+    return `<video ${mediaSize(item.file)} class="${mediaClasses}" data-media-controls playsinline muted loop preload="none" ${eager ? 'poster' : 'data-media-poster'}="${poster}" data-media-src="${src}" disablepictureinpicture disableremoteplayback tabindex="-1" aria-label="${escapeAttr(alt)}"></video>`
   }
   const loadingAttrs = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'
-  return `<img src="${src}" alt="${escapeAttr(alt)}" class="${mediaClasses}" ${loadingAttrs} decoding="async" />`
+  return `<img ${mediaSize(item.file)} src="${src}" alt="${escapeAttr(alt)}" class="${mediaClasses}" ${loadingAttrs} decoding="async" />`
 }
 
 function escapeAttr(s) {
@@ -51,7 +50,13 @@ function captionHtml(item) {
    rolle i venstre gutter, navn som hovedtekst, hairlines mellom radene. */
 function creditsHtml(singleCase) {
   if (!singleCase.credits?.length) return ''
-  const rows = singleCase.credits
+  const grouped = new Map()
+  for (const credit of singleCase.credits) {
+    const names = grouped.get(credit.role) ?? []
+    names.push(credit.names)
+    grouped.set(credit.role, names)
+  }
+  const rows = [...grouped].map(([role, names]) => ({ role, names: names.join(' and ') }))
     .map(
       (credit) => `<div class="case-credits__row">
         <dt class="case-credits__role">${escapeHtmlText(credit.role)}</dt>
@@ -65,7 +70,7 @@ function creditsHtml(singleCase) {
 /** @param {typeof portfolioCases[number]['items'][number]} item */
 function wrapFigure(item, eager = false) {
   return `<div class="portfolio-item w-full">
-  <figure class="portfolio-asset w-full overflow-hidden rounded-[24px] bg-zinc-100">
+  <figure ${isVideo(item.file) ? `style="width: min(100%, calc(90svh * ${mediaRatio(item.file)}))"` : ''} class="portfolio-asset w-full overflow-hidden rounded-[24px] bg-zinc-100">
     ${mediaHtml(item, eager)}
   </figure>${captionHtml(item)}
   </div>`
@@ -78,7 +83,7 @@ function tabsHtml(item) {
   const panels = item.tabs.map((tab, index) => `<div role="tabpanel" id="${item.id}-panel-${index}"
     aria-labelledby="${item.id}-tab-${index}" tabindex="0"${index ? ' hidden' : ''}>
     <figure class="portfolio-asset"><img src="/images/${escapeAttr(tab.file)}"
-      alt="Uber website design — ${escapeAttr(tab.label)}" width="${item.width}" height="${item.height}"
+      alt="Uber website design — ${escapeAttr(tab.label)}" ${mediaSize(tab.file)}
       loading="lazy" decoding="async" /></figure>
   </div>`).join('')
   return `<div class="case-tabs" data-case-tabs>
@@ -150,27 +155,30 @@ function projectAudioHtml(singleCase) {
   const transcriptId = `${singleCase.id}-transcript-title`
   const transcriptBody = audio.body.map((paragraph) => `<p>${escapeHtmlText(paragraph)}</p>`).join('\n          ')
 
-  return `<span class="project-audio__sentinel" data-project-audio-sentinel aria-hidden="true"></span>
-  <div class="project-audio mt-5">
+  return `<div class="project-audio">
+    <p class="project-audio__title" id="${singleCase.id}-story-label">Personal notes</p>
+    <div class="project-audio__actions" role="group" aria-labelledby="${singleCase.id}-story-label">
     <button
-      class="project-audio__player"
+      class="project-audio__action project-audio__player"
       type="button"
       data-project-audio-button
-      aria-label="Play audio story about ${escapeAttr(audio.ariaName)}"
+      aria-label="Listen to the personal story about ${escapeAttr(audio.ariaName)}"
       aria-pressed="false"
     >
-      <img class="project-audio__headphones" src="${headphonesIconUrl}" alt="" width="20" height="22" aria-hidden="true" />
-      <span class="project-audio__label" data-audio-label>Personal notes on the project</span>
-      <span class="project-audio__duration" data-audio-time>${audio.durationLabel}</span>
       <span class="project-audio__toggle" aria-hidden="true">
-        <img class="project-audio__toggle-icon project-audio__toggle-icon--play" src="${playIconUrl}" alt="" width="20" height="20" />
+        <img class="project-audio__toggle-icon project-audio__toggle-icon--play" src="${headphonesIconUrl}" alt="" width="20" height="22" />
         <img class="project-audio__toggle-icon project-audio__toggle-icon--pause" src="${pauseIconUrl}" alt="" width="20" height="20" />
       </span>
+      <span class="project-audio__label" data-audio-label>Listen</span>
+      <span class="project-audio__duration" data-audio-time aria-hidden="true">${audio.durationLabel}</span>
     </button>
-    <button class="project-audio__transcript-trigger" type="button" data-transcript-open>
-      Read notes
+    <button class="project-audio__action project-audio__transcript-trigger" type="button" data-transcript-open aria-haspopup="dialog" aria-label="Read the personal story about ${escapeAttr(audio.ariaName)}">
+      <img class="project-audio__icon" src="${readIconUrl}" alt="" width="20" height="20" aria-hidden="true" />
+      <span class="project-audio__label">Read</span>
     </button>
-    <audio data-project-audio data-audio-title="${escapeAttr(audio.ariaName)}" data-audio-fallback-duration="${audio.fallbackDuration}" src="${audio.src}" preload="metadata"></audio>
+    </div>
+    <p class="project-audio__status" data-audio-status role="status" aria-live="polite" aria-atomic="true"></p>
+    <audio data-project-audio data-audio-title="${escapeAttr(audio.ariaName)}" data-audio-fallback-duration="${audio.fallbackDuration}" src="${audio.src}" preload="none"></audio>
     <dialog class="project-transcript-modal" data-transcript-modal aria-labelledby="${transcriptId}">
       <button class="project-transcript-modal__close" type="button" data-transcript-close aria-label="Close transcript">
         <img class="project-transcript-modal__close-icon" src="${closeIconUrl}" alt="" width="20" height="20" aria-hidden="true" />
@@ -214,8 +222,7 @@ function layoutRows(items) {
   return rows
 }
 
-function caseSection(singleCase, index) {
-  const isFirst = index === 0
+function caseSection(singleCase) {
   const rows = layoutRows(singleCase.items)
   const blocks = rows.map((row, rowIndex) => {
     /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
@@ -245,26 +252,33 @@ function caseSection(singleCase, index) {
      (Case uten media ennå → tom hero-wrapper, kun tittel/intro.) */
   const [firstBlock = '', ...restBlocks] = blocks
 
-  return `<section id="${singleCase.id}" class="scroll-mt-24 ${isFirst ? 'pt-8' : ''}" aria-labelledby="title-${singleCase.id}">
-    ${isFirst ? '' : '<div class="work-narrow work-section-rule" aria-hidden="true"></div>'}
+  if (singleCase.layout === 'split') {
+    return `<section id="${singleCase.id}" class="case-layout-split scroll-mt-24 pt-8" aria-labelledby="title-${singleCase.id}">
+      <div class="work-media case-lead">
+        <div class="case-lead__copy case-below">
+          <h1 id="title-${singleCase.id}" class="case-lead__title">${escapeHtmlText(singleCase.displayTitle ?? singleCase.title)}</h1>
+          <p class="case-lead__intro">${escapeHtmlText(singleCase.intro)}</p>
+          ${creditsHtml(singleCase)}
+        </div>
+        <div class="case-cover-hero">${firstBlock}</div>
+      </div>
+      <div class="case-below work-media mt-10 flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
+    </section>`
+  }
+
+  return `<section id="${singleCase.id}" class="scroll-mt-24 pt-8" aria-labelledby="title-${singleCase.id}">
     <div class="work-media case-cover-hero flex flex-col gap-3 sm:gap-4 md:gap-6">${firstBlock}</div>
     <div class="case-below work-narrow mt-10 mb-8 w-full md:mt-14">
       <h2 id="title-${singleCase.id}" class="font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${creditsHtml(singleCase)}
-      ${projectAudioHtml(singleCase)}
     </div>
     <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
   </section>`
 }
 
-export function buildPortfolioHtml() {
-  return portfolioCases.map((c, i) => caseSection(c, i)).join('\n')
-}
-
-/** Én enkelt case som egen side (index 0 → toppluft, ingen seksjonsskille). */
 export function buildCaseHtml(caseId) {
   const singleCase = portfolioCases.find((c) => c.id === caseId)
   if (!singleCase) return ''
-  return caseSection(singleCase, 0)
+  return caseSection(singleCase) + projectAudioHtml(singleCase)
 }

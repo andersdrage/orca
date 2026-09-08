@@ -4,10 +4,12 @@ import { sessionState } from './session-state.js'
 import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import { initCaseTabs } from './case-tabs.js'
+import { initCreditsLayout } from './credits-layout.js'
+import { ARCHIVED_ORDER, caseNeighbors, caseArrowDirection } from './case-navigation.js'
+import { syncVisibleMedia } from './visible-media.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
-const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
 const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
 const returnOverview = getReturnOverview()
 
@@ -59,46 +61,34 @@ document.addEventListener('click', (event) => {
 
 if (root) {
   root.innerHTML = buildCaseHtml(root.dataset.caseId)
+  initCreditsLayout(root)
+  // Keep the fixed story controls outside the animated/translated case layout.
+  const storyControls = root.querySelector('.project-audio')
+  if (storyControls) document.body.append(storyControls)
   initCaseTabs(root)
   /* Husk hvilken case vi står på — så «lukk» (og back) alltid kan morphe til riktig tile,
      også etter direktebesøk på case-URL-en. */
   sessionState.setItem('timeline:last-case', root.dataset.caseId)
   initCoverCycle(root.dataset.caseId)
-  initArchivedCaseNav(root.dataset.caseId)
+  initCaseNav(root.dataset.caseId)
 }
 
-/* Arkiverte caser (kjelleren): ‹ › blar til forrige/neste arkiverte prosjekt
-   (også ← →). Hero-til-hero view transition-morphen binder byttene sammen. */
-function initArchivedCaseNav(caseId) {
-  const index = ARCHIVED_ORDER.indexOf(caseId)
-  if (index === -1) return
-  const total = ARCHIVED_ORDER.length
-  const prevHref = `/${ARCHIVED_ORDER[(index - 1 + total) % total]}/`
-  const nextHref = `/${ARCHIVED_ORDER[(index + 1) % total]}/`
-
-  const arrow = (href, direction, label, glyph) => {
-    const link = document.createElement('a')
-    link.href = href
-    link.className = `case-nav case-nav--${direction}`
-    link.setAttribute('aria-label', label)
-    link.textContent = glyph
-    document.body.append(link)
-  }
-  arrow(prevHref, 'prev', 'Previous archived project', '‹')
-  arrow(nextHref, 'next', 'Next archived project', '›')
-
+/* All cases use the same hero-to-hero transition and preserve their entry overview. */
+function initCaseNav(caseId) {
+  const neighbors = caseNeighbors(caseId)
+  if (!neighbors) return
+  const prevHref = `/${neighbors.previous}/`
+  const nextHref = `/${neighbors.next}/`
+  let navigating = false
+  window.addEventListener('pageshow', () => { navigating = false })
   window.addEventListener('keydown', (event) => {
-    if (event.metaKey || event.ctrlKey || event.altKey) return
-    if (document.querySelector('dialog[open]')) return
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault()
-      rememberCaseReturn(prevHref)
-      location.href = prevHref
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault()
-      rememberCaseReturn(nextHref)
-      location.href = nextHref
-    }
+    const direction = caseArrowDirection(event, Boolean(document.querySelector('dialog[open]')))
+    if (!direction || navigating) return
+    const href = direction === 'previous' ? prevHref : nextHref
+    event.preventDefault()
+    navigating = true
+    rememberCaseReturn(href)
+    location.href = href
   })
 }
 
@@ -114,6 +104,10 @@ function initCoverCycle(caseId) {
     const index = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (index > 0 && micromilspecCovers[index]) {
       hero.src = `/images/${micromilspecCovers[index].file}`
+      const [width, height] = micromilspecCovers[index].ratio.split('/').map(Number)
+      hero.width = width
+      hero.height = height
+      hero.style.aspectRatio = micromilspecCovers[index].ratio
     }
   } catch {
     /* sessionStorage utilgjengelig → standard-cover */
@@ -135,6 +129,7 @@ window.addEventListener('pagereveal', (event) => {
   const revealBelow = () => {
     document.body.classList.add('case-entered')
     document.body.classList.remove('case-entering')
+    syncVisibleMedia()
   }
   event.viewTransition.finished.then(revealBelow, revealBelow)
 
@@ -142,11 +137,7 @@ window.addEventListener('pagereveal', (event) => {
      frames. Pauses mens animasjonen kjører, gjenopptas når den er ferdig. */
   const videos = [...document.querySelectorAll('#work video')]
   videos.forEach((video) => video.pause())
-  const resumeVideos = () => {
-    videos.forEach((video) => {
-      video.play().catch(() => {})
-    })
-  }
+  const resumeVideos = () => syncVisibleMedia()
   event.viewTransition.finished.then(resumeVideos, resumeVideos)
 
   const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
@@ -185,7 +176,7 @@ function initCaseClose() {
 
   /* Esc lukker prosjektet — men ikke mens transkript-modalen er åpen (der lukker Esc modalen). */
   window.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return
+    if (event.key !== 'Escape' || event.defaultPrevented) return
     if (document.querySelector('dialog[open]')) return
     event.preventDefault()
     closeCase()
@@ -194,33 +185,4 @@ function initCaseClose() {
 
 initCaseClose()
 
-const header = initHeader()
-const stickyTitle = document.querySelector('[data-sticky-work-title]')
-const portfolioSections = [...document.querySelectorAll('#work section[aria-labelledby]')]
-
-function updateStickyWorkTitle() {
-  if (!header || !stickyTitle || portfolioSections.length === 0) return
-
-  const headerBottom = header.getBoundingClientRect().bottom
-  const activeSection = portfolioSections.find((section) => {
-    const title = document.getElementById(section.getAttribute('aria-labelledby') ?? '')
-    if (!title) return false
-
-    const titleTop = title.getBoundingClientRect().top
-    const sectionBottom = section.getBoundingClientRect().bottom
-    return titleTop <= headerBottom && sectionBottom > headerBottom
-  })
-
-  if (activeSection) {
-    const title = document.getElementById(activeSection.getAttribute('aria-labelledby') ?? '')
-    stickyTitle.textContent = title?.textContent?.trim() ?? ''
-  }
-
-  stickyTitle.classList.toggle('is-visible', Boolean(activeSection))
-}
-
-if (header && stickyTitle) {
-  updateStickyWorkTitle()
-  window.addEventListener('scroll', updateStickyWorkTitle, { passive: true })
-  window.addEventListener('resize', updateStickyWorkTitle)
-}
+initHeader()

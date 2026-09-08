@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+import { mediaDimensions } from './scripts/media-dimensions.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -36,7 +37,19 @@ function notFoundPage() {
 
 export default defineConfig({
   appType: 'mpa',
-  plugins: [tailwindcss(), notFoundPage()],
+  plugins: [tailwindcss(), notFoundPage(), mediaDimensions(), {
+    name: 'transition-render-readiness',
+    // Vite rebuilds module script tags; preserve render blocking in the output.
+    // The timeline/hero must exist before pagereveal takes its first snapshot.
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        if (!html.includes('data-case-root') && !html.includes('data-timeline')) return html
+        return html.replace(/<script\b(?=[^>]*type="module")([^>]*)>/g, (tag, attrs) =>
+          attrs.includes('blocking=') ? tag : `<script blocking="render"${attrs}>`)
+      },
+    },
+  }],
   /* Dev: forhåndskompiler alle entry-moduler ved serverstart — første klikk på
      en case skal ikke vente på Vite-transform (det er det som får view
      transition-en til å times ut og hoppe over animasjonen lokalt). */

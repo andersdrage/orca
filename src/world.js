@@ -10,6 +10,8 @@
 
 import { initArchivedGrid } from './archived-grid.js'
 import { initTimeline } from './timeline.js'
+import { isSameTabNavigation } from './link-navigation.js'
+import { syncVisibleMedia } from './visible-media.js'
 import { createPageStateContent, syncPageStateMedia } from './page-state.js'
 
 /* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
@@ -89,6 +91,7 @@ export function initWorld(header) {
     const main = slots[index].querySelector('main')
     if (skipLink && main) skipLink.href = `#${main.id}`
     syncPageStateMedia(world)
+    syncVisibleMedia(world)
   }
 
   prepareMain(ownMain, selfIndex)
@@ -124,6 +127,7 @@ export function initWorld(header) {
   /* Hjørnelenkene (Archive/People) er også kamerabevegelser. */
   cornerLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
+      if (!isSameTabNavigation(event, link)) return
       event.preventDefault()
       const index = PAGES.findIndex((page) => page.path === new URL(link.href).pathname)
       if (index !== -1 && index !== cameraIndex) navigateTo(index)
@@ -187,6 +191,7 @@ export function initWorld(header) {
       /* ugyldig referrer → kjør introen */
     }
 
+    const introJourney = travelId
     document.body.classList.add('world-map-intro')
     world.classList.add('is-travelling', 'is-map')
     sections.forEach((section) => {
@@ -201,6 +206,7 @@ export function initWorld(header) {
     const HOLD_MS = 1000
     const ZOOM_MS = 1400
     setTimeout(() => {
+      if (introJourney !== travelId) return
       const from = getComputedStyle(world).transform
       world.classList.remove('is-map')
       const zoom = world.animate(
@@ -216,6 +222,7 @@ export function initWorld(header) {
         { duration: ZOOM_MS, easing: EASING },
       )
       const land = () => {
+        if (introJourney !== travelId) return
         world.style.transformOrigin = ''
         setTransform(cameraIndex)
         world.classList.remove('is-travelling')
@@ -252,13 +259,19 @@ export function initWorld(header) {
     const scaleMs = reduced ? 0 : SCALE_MS
     const panDelay = Math.round(scaleMs * 0.55)
 
-    /* Retarget-vennlig: kanseller pågående animasjoner, les nåværende posisjon. */
+    // Sample every visible transform before canceling; cancel restores the CSS
+    // destination, which is not necessarily where the camera/card is on screen.
+    const from = getComputedStyle(world).transform
+    const sectionTransforms = sections.map((section) => getComputedStyle(section).transform)
+    if (document.body.classList.contains('world-map-intro')) {
+      world.classList.remove('is-map')
+      document.body.classList.remove('world-map-intro')
+      document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+    }
     world.getAnimations().forEach((animation) => animation.cancel())
     sections.forEach((section) => section.getAnimations().forEach((animation) => animation.cancel()))
-    const from = getComputedStyle(world).transform
     setTransform(index)
 
-    const departing = sections[cameraIndex]
     const arriving = sections[index]
     cameraIndex = index
     if (titles[index]) document.title = titles[index]
@@ -266,6 +279,9 @@ export function initWorld(header) {
     syncAccessibility(index, { focus: true })
 
     if (panMs === 0) {
+      world.classList.remove('is-travelling')
+      header.classList.remove('nav-travelling')
+      world.style.transformOrigin = ''
       sections.forEach((section) => {
         section.style.transform = ''
       })
@@ -278,13 +294,13 @@ export function initWorld(header) {
     header.classList.add('nav-travelling')
 
     /* Alle sider står som 90 %-kort under reisen; avreisesiden animeres dit. */
-    sections.forEach((section) => {
+    sections.forEach((section, slotIndex) => {
       section.style.transform = `scale(${TRAVEL_SCALE})`
+      section.animate(
+        [{ transform: sectionTransforms[slotIndex] }, { transform: `scale(${TRAVEL_SCALE})` }],
+        { duration: scaleMs, easing: EASING },
+      )
     })
-    departing.animate(
-      [{ transform: 'scale(1)' }, { transform: `scale(${TRAVEL_SCALE})` }],
-      { duration: scaleMs, easing: EASING },
-    )
 
     const pan = world.animate(
       [{ transform: from }, { transform: `translate3d(${-PAGES[index].x * 100}vw, ${-PAGES[index].y * 100}svh, 0)` }],
@@ -303,6 +319,7 @@ export function initWorld(header) {
       const clearTravel = () => {
         if (journey !== travelId) return
         world.classList.remove('is-travelling')
+        world.style.transformOrigin = ''
         header.classList.remove('nav-travelling')
         updateAriaCurrent(cameraIndex)
       }
@@ -316,7 +333,7 @@ export function initWorld(header) {
   /* Nav-klikk = kamerabevegelse (samme side håndteres av jiggle-guarden i header.js). */
   header.addEventListener('click', (event) => {
     const link = event.target.closest('a')
-    if (!link) return
+    if (!isSameTabNavigation(event, link)) return
     const index = PAGES.findIndex((page) => page.path === new URL(link.href).pathname)
     if (index === -1 || index === cameraIndex) return
     event.preventDefault()
@@ -332,7 +349,7 @@ export function initWorld(header) {
      work» i footerne) er kamerabevegelser — ikke harde navigasjoner. */
   world.addEventListener('click', (event) => {
     const link = event.target.closest('a')
-    if (!link || link.origin !== location.origin) return
+    if (!isSameTabNavigation(event, link)) return
     const index = PAGES.findIndex((page) => page.path === link.pathname)
     if (index === -1) return
     event.preventDefault()
