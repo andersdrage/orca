@@ -12,11 +12,13 @@ export const sessionState = {
     }
   },
   setItem(key, value) {
-    memory.set(key, String(value))
     try {
       window.sessionStorage.setItem(key, String(value))
+      // Successful writes must not shadow updates made by another document
+      // while this one is sitting in the browser's back/forward cache.
+      memory.delete(key)
     } catch {
-      /* The in-memory value remains available until the next document loads. */
+      memory.set(key, String(value))
     }
   },
 }

@@ -8,6 +8,7 @@ import { initCreditsLayout } from './credits-layout.js'
 import { initCaseGallery } from './case-gallery.js'
 import { ARCHIVED_ORDER, caseNeighbors, caseArrowDirection } from './case-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
+import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
@@ -122,8 +123,6 @@ initProjectTranscript()
 /* Zoom-inn: forsiden (old root-snapshot) skaleres opp mot coverets posisjon,
    lagret i sessionStorage ved klikk på tilen. */
 window.addEventListener('pagereveal', (event) => {
-  if (!event.viewTransition) return
-
   const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
   let fromHome = false
   try {
@@ -134,26 +133,36 @@ window.addEventListener('pagereveal', (event) => {
   const presentation = root?.querySelector('[data-layout="presentation"]')
   if (fromHome && presentation && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const html = document.documentElement
-    html.classList.add('vt-zoom-in', 'vt-presentation-in')
-    document.body.classList.add('case-entering', 'case-transition-entrance')
     const origin = sessionState.getItem('timeline:zoom-origin')
-    if (origin) html.style.setProperty('--vt-origin', origin)
     // A small drift links an off-centre click to the centred intro, without
     // spending time moving the thumbnail across the screen first.
     const originX = Number.parseFloat(origin)
     const entryX = Number.isFinite(originX)
       ? Math.max(-72, Math.min(72, (originX - innerWidth / 2) * 0.16)) : 0
-    html.style.setProperty('--project-entry-x', `${entryX}px`)
-    root.querySelectorAll('video').forEach(video => video.pause())
     const finish = () => {
       html.classList.remove('vt-zoom-in', 'vt-presentation-in')
       html.style.removeProperty('--project-entry-x')
       document.body.classList.remove('case-entering')
       syncVisibleMedia()
     }
-    event.viewTransition.finished.then(finish, finish)
+    playProjectTransition(event.viewTransition, {
+      start: () => {
+        html.classList.add('vt-zoom-in', 'vt-presentation-in')
+        document.body.classList.add('case-entering', 'case-transition-entrance')
+        if (origin) html.style.setProperty('--vt-origin', origin)
+        html.style.setProperty('--project-entry-x', `${entryX}px`)
+        root.querySelectorAll('video').forEach(video => video.pause())
+      },
+      cleanup: finish,
+      fallback: () => [root.animate([
+        { opacity: 0, transform: `translate(${entryX}px, 12px) scale(.97)` },
+        { opacity: 1, transform: 'translate(0, 0) scale(1)' },
+      ], { duration: 380, delay: 40, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' })],
+    })
     return
   }
+
+  if (!event.viewTransition) return
 
   /* Innholdet under heroen holdes skjult under morphen og stiger inn nedenfra
      (opacity + translateY) først når overgangen er ferdig. Klassene settes kun
@@ -187,6 +196,7 @@ window.addEventListener('pagereveal', (event) => {
 /* Back preserves the timeline when it really is the preceding entry. After
    case-to-case arrows, close exits to the saved overview; browser Back is untouched. */
 function closeCase() {
+  cancelProjectTransition()
   if (previousUrl()?.pathname === returnOverview && history.length > 1) history.back()
   else location.href = returnOverview
 }

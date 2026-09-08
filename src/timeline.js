@@ -5,6 +5,7 @@
 import { micromilspecCovers } from './portfolio-data.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
+import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
 
 const TILES = [
   {
@@ -500,6 +501,7 @@ export function initTimeline(scrollerEl) {
   }
 
   let elasticActive = false
+  let tilePressed = false
   let lastFrameTime = performance.now()
 
   /* Idet en case-navigasjon tar snapshot: slipp fjæren helt til ro, så
@@ -526,6 +528,9 @@ export function initTimeline(scrollerEl) {
     requestAnimationFrame(elasticFrame)
     const dt = Math.min((now - lastFrameTime) / 16.667, 3)
     lastFrameTime = now
+    // Keep the hit target still between pointerdown and click. Otherwise the
+    // scroll spring can move a tile out from under a quick press.
+    if (tilePressed) return
 
     if (reducedMotionQuery.matches || !finePointer.matches) {
       elasticCurrent = scroller.scrollLeft
@@ -620,13 +625,20 @@ export function initTimeline(scrollerEl) {
   }
 
   window.addEventListener('pageshow', () => {
+    tilePressed = false
     scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => tile.classList.remove('is-navigating', 'is-pressed'))
   })
 
-  const releasePress = () => scroller.querySelectorAll('.is-pressed').forEach(tile => tile.classList.remove('is-pressed'))
+  const releasePress = () => {
+    tilePressed = false
+    scroller.querySelectorAll('.is-pressed').forEach(tile => tile.classList.remove('is-pressed'))
+  }
   scroller.addEventListener('pointerdown', event => {
     const tile = event.target.closest('a.timeline-tile')
-    if (isSameTabNavigation(event, tile)) tile.classList.add('is-pressed')
+    if (isSameTabNavigation(event, tile)) {
+      tilePressed = true
+      tile.classList.add('is-pressed')
+    }
   }, { passive: true })
   window.addEventListener('pointerup', releasePress, { passive: true })
   window.addEventListener('pointercancel', releasePress, { passive: true })
@@ -637,6 +649,7 @@ export function initTimeline(scrollerEl) {
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
     if (!isSameTabNavigation(event, tile)) return
+    cancelProjectTransition()
     /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
     tile.classList.add('is-navigating')
     assignNeighborNames(tile)
@@ -656,8 +669,6 @@ export function initTimeline(scrollerEl) {
   /* Tilbake-navigasjon fra en case-side: gi navnet til riktig tile i midt-kopien før
      første frame (case-siden morpher inn i tilen), og ankre zoom-ut i tilens posisjon. */
   window.addEventListener('pagereveal', (event) => {
-    if (!event.viewTransition) return
-
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
@@ -666,6 +677,7 @@ export function initTimeline(scrollerEl) {
       fromCase = false
     }
     if (!fromCase) return
+    cancelProjectTransition()
 
     const id = sessionState.getItem('timeline:last-case')
     if (!id) return
@@ -702,6 +714,13 @@ export function initTimeline(scrollerEl) {
       clearAllNames()
       root.classList.remove('vt-zoom-out', 'vt-presentation-out')
     }
-    event.viewTransition.finished.then(cleanup, cleanup)
+    playProjectTransition(event.viewTransition, {
+      start: () => {},
+      cleanup,
+      fallback: () => presentationReturn ? [tile.animate([
+        { opacity: 0, transform: 'translateY(110px) scale(.96)' },
+        { opacity: 1, transform: 'translateY(0) scale(1)' },
+      ], { duration: 300, delay: 60, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' })] : [],
+    })
   })
 }

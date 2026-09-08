@@ -731,6 +731,35 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
     })
 
+    test('project entrance and thumbnail return replay when the browser skips its transition', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
+        window.fallbackAnimations = []
+        const animate = Element.prototype.animate
+        Element.prototype.animate = function (frames, options) {
+          if (this.matches('[data-case-root], a.timeline-tile')) window.fallbackAnimations.push({ caseId: this.dataset.caseId, tileId: this.dataset.tileId, duration: options.duration })
+          return animate.call(this, frames, options)
+        }
+        addEventListener('pagereveal', event => event.viewTransition?.skipTransition())
+      })
+      await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
+      for (const id of ['boligmappa', 'hjemla', 'boligmappa']) {
+        const tile = page.locator(`.timeline-copy[data-copy="1"] [data-tile-id="${id}"]`)
+        await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
+        await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+        await page.waitForTimeout(300)
+        await tile.click()
+        await page.waitForURL(`**/${id}/`, { waitUntil: 'domcontentloaded' })
+        await page.waitForFunction(id => window.fallbackAnimations.some(animation => animation.caseId === id && animation.duration === 380), id)
+        await page.waitForFunction(() => document.querySelector('[data-case-root]').getAnimations().length === 0)
+        assert.equal(await page.locator('[data-case-root]').evaluate(el => getComputedStyle(el).opacity), '1')
+        await page.locator('.case-close').click()
+        await ready(page, '/')
+        await page.waitForFunction(id => window.fallbackAnimations.some(animation => animation.tileId === id && animation.duration === 300), id)
+        await page.waitForFunction(() => ![...document.querySelectorAll('.timeline-tile')].some(tile => tile.getAnimations().length))
+        assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
+      }
+    })
+
     test('mobile case return preserves the clicked wide thumbnail position', async (t) => {
       const page = await visit(t, '/', { viewport: { width: 390, height: 844 } })
       await ready(page, '/')
