@@ -6,6 +6,7 @@ import { micromilspecCovers } from './portfolio-data.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
 import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
+import { thumbnailAppearance, sameSizeThumbnails, THUMBNAIL_CHANGE } from './thumbnail-settings.js'
 
 const TILES = [
   {
@@ -84,6 +85,7 @@ const TILES = [
 ]
 
 function tileHtml(tile) {
+  tile = thumbnailAppearance(tile)
   const style = `--tile-bg: ${tile.color}; --tile-ratio: ${tile.ratio}; --tile-h: ${tile.h}`
   /* Tiles med cover-bilde får verken tekstetikett eller bakgrunnsfarge — bildet ER
      tilen. (Bakgrunnen lå bak bildet og dukket opp som svart flate i transition-
@@ -109,7 +111,7 @@ export function initTimeline(scrollerEl) {
   const scroller = scrollerEl ?? document.querySelector('[data-timeline]')
   if (!scroller) return
 
-  const tiles = TILES
+  const tiles = TILES.map(tile => ({ ...tile }))
 
   /* MICROMILSPEC-tilen følger cover-varianten valgt med B på case-siden
      (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
@@ -117,7 +119,7 @@ export function initTimeline(scrollerEl) {
   try {
     let coverIndex = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (!micromilspecCovers[coverIndex]) coverIndex = 0
-    const micromilspecTile = TILES.find((tile) => tile.id === 'micromilspec')
+    const micromilspecTile = tiles.find((tile) => tile.id === 'micromilspec')
     micromilspecTile.image = `/images/${micromilspecCovers[coverIndex].file}`
     micromilspecTile.ratio = micromilspecCovers[coverIndex].ratio
   } catch {
@@ -409,6 +411,7 @@ export function initTimeline(scrollerEl) {
     /* Kun når forsiden faktisk vises (ikke fra About/Praise i verdenen),
        og kun der micromilspec-tilen finnes (ikke på arkiv-sida). */
     if (!document.body.classList.contains('page-home')) return
+    if (sameSizeThumbnails()) return
     if (!scroller.querySelector('[data-tile-id="micromilspec"]')) return
     coverIndex = (coverIndex + 1) % micromilspecCovers.length
     try {
@@ -417,6 +420,7 @@ export function initTimeline(scrollerEl) {
       /* valget gjelder da bare til neste last */
     }
     const cover = micromilspecCovers[coverIndex]
+    Object.assign(tiles.find(tile => tile.id === 'micromilspec'), { image: `/images/${cover.file}`, ratio: cover.ratio })
     scroller.querySelectorAll('[data-tile-id="micromilspec"]').forEach((tile) => {
       tile.style.setProperty('--tile-ratio', cover.ratio)
       const image = tile.querySelector('.timeline-tile__image')
@@ -586,6 +590,36 @@ export function initTimeline(scrollerEl) {
   }
   requestAnimationFrame(elasticFrame)
 
+  let uniformApplied = sameSizeThumbnails()
+  const updateThumbnails = () => {
+    if (uniformApplied === sameSizeThumbnails()) return
+    uniformApplied = sameSizeThumbnails()
+    cancelProjectTransition()
+    clearElasticTransforms()
+    const anchors = [...scroller.querySelectorAll('.timeline-tile')].map(tile => ({
+      tile, center: tile.offsetLeft + tile.offsetWidth / 2 - scroller.scrollLeft,
+    }))
+    const anchor = anchors.sort((a, b) => Math.abs(a.center - innerWidth / 2) - Math.abs(b.center - innerWidth / 2))[0]
+    // Keep the original covers available when the experiment is switched off.
+    const cover = micromilspecCovers[Number(sessionState.getItem('micromilspec:cover')) || 0] ?? micromilspecCovers[0]
+    Object.assign(tiles.find(tile => tile.id === 'micromilspec'), { image: `/images/${cover.file}`, ratio: cover.ratio })
+    for (const tile of scroller.querySelectorAll('.timeline-tile')) {
+      const appearance = thumbnailAppearance(tiles.find(item => item.id === tile.dataset.tileId))
+      tile.style.setProperty('--tile-h', appearance.h)
+      tile.style.setProperty('--tile-ratio', appearance.ratio)
+      tile.querySelector('img').src = appearance.image
+    }
+    copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
+    if (!introDismissed) placeIntro()
+    scroller.scrollLeft = useIntroEntry && !userInteracted && !introDismissed
+      ? introContentLeft - INTRO_EDGE_GAP
+      : anchor.tile.offsetLeft + anchor.tile.offsetWidth / 2 - anchor.center
+    elasticCurrent = scroller.scrollLeft
+    measureTiles()
+  }
+  window.addEventListener(THUMBNAIL_CHANGE, updateThumbnails)
+  window.addEventListener('pageshow', updateThumbnails)
+
   scroller.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
     event.preventDefault()
@@ -624,10 +658,14 @@ export function initTimeline(scrollerEl) {
     })
   }
 
-  window.addEventListener('pageshow', () => {
+  const resetPressState = () => {
     tilePressed = false
-    scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => tile.classList.remove('is-navigating', 'is-pressed'))
-  })
+    scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => {
+      tile.classList.remove('is-navigating', 'is-pressed')
+      tile.style.removeProperty('scale')
+    })
+  }
+  window.addEventListener('pageshow', resetPressState)
 
   const releasePress = () => {
     tilePressed = false
@@ -650,6 +688,11 @@ export function initTimeline(scrollerEl) {
     const tile = event.target.closest('a.timeline-tile')
     if (!isSameTabNavigation(event, tile)) return
     cancelProjectTransition()
+    if (sessionState.getItem('case:presentation') !== 'false') {
+      // Transfer the hover enlargement to the snapshot's outer box. Keeping it
+      // on the image clips its rounded corners to the smaller tile bounds.
+      tile.style.scale = String(new DOMMatrixReadOnly(getComputedStyle(tile.querySelector('img')).transform).a)
+    }
     /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
     tile.classList.add('is-navigating')
     assignNeighborNames(tile)
@@ -678,6 +721,7 @@ export function initTimeline(scrollerEl) {
     }
     if (!fromCase) return
     cancelProjectTransition()
+    resetPressState()
 
     const id = sessionState.getItem('timeline:last-case')
     if (!id) return

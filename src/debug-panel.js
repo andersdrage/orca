@@ -4,6 +4,7 @@
 
 import { sessionState } from './session-state.js'
 import { initFpsMeter } from './fps-meter.js'
+import { THUMBNAIL_SETTING, THUMBNAIL_CHANGE, sameSizeThumbnails } from './thumbnail-settings.js'
 
 const RATE = 0.3
 const STORAGE_KEY = 'debug:slow-animations'
@@ -28,6 +29,10 @@ export function initAnimationInspector() {
         <input type="checkbox" data-debug-slow ${isEnabled() ? 'checked' : ''} />
         <span>Play animations at 30% speed</span>
       </label>
+      <label class="debug-panel__row">
+        <input type="checkbox" data-debug-thumbnails ${sameSizeThumbnails() ? 'checked' : ''} />
+        <span>Same size thumbnails</span>
+      </label>
       <p class="debug-panel__hint">Press S to hide</p>`
     document.body.append(panel)
     initFpsMeter(panel)
@@ -35,7 +40,15 @@ export function initAnimationInspector() {
       sessionState.setItem(STORAGE_KEY, event.target.checked ? '1' : '0')
       setAllPlaybackRates(event.target.checked ? RATE : 1)
     })
+    panel.querySelector('[data-debug-thumbnails]').addEventListener('change', event => {
+      sessionState.setItem(THUMBNAIL_SETTING, event.target.checked ? '1' : '0')
+      window.dispatchEvent(new Event(THUMBNAIL_CHANGE))
+    })
   }
+
+  window.addEventListener('pageshow', () => {
+    if (panel) panel.querySelector('[data-debug-thumbnails]').checked = sameSizeThumbnails()
+  })
 
   window.addEventListener('keydown', (event) => {
     if (event.key !== 's' && event.key !== 'S') return

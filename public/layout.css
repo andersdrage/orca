@@ -1600,6 +1600,8 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
   accent-color: #18181b;
 }
 
+.debug-panel__row + .debug-panel__row { margin-top: 8px; }
+
 .debug-panel__hint {
   margin: 10px 0 0;
   color: var(--text-secondary);
@@ -2985,7 +2987,7 @@ body.world-map-intro .archived-card {
 a.timeline-tile:active .timeline-tile__image,
 a.timeline-tile.is-pressed .timeline-tile__image,
 a.timeline-tile.is-navigating .timeline-tile__image {
-  translate: 0 3px;
+  translate: 0 1px;
   transition: none;
 }
 
