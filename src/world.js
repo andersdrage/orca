@@ -3,7 +3,7 @@
    About passere underveis. Ingen WebGL: ren DOM med transform på verdensstripen.
 
    Nav-lenkene (About/Praise) står fast oppe til høyre; aktiv side markeres med
-   den røde understrekingen, som fader inn først når reisen er ferdig.
+   rød tekst, som fader inn først når reisen er ferdig.
 
    Direktebesøk på /about/ eller /praise/ booter samme verden med kameraet
    stående på riktig side; søsknene hentes og monteres rundt. */
@@ -243,9 +243,7 @@ export function initWorld(header) {
     const dy = PAGES[index].y - PAGES[cameraIndex].y
     const distance = Math.abs(dx) + Math.abs(dy)
 
-    /* Nav-etikettene står fast oppe til høyre — ingen FLIP-flytting lenger.
-       Understrekingen fjernes FØRST: aria-current slippes ved avgang, og
-       streken trekkes ut i reiseretningen (data-travel-dir styrer origin). */
+    /* Nav-etikettene står fast. Aktiv tekstfarge slippes ved avgang. */
     if (dx !== 0) header.dataset.travelDir = dx > 0 ? 'fwd' : 'back'
     navLinks().forEach((link) => link.removeAttribute('aria-current'))
 
@@ -317,8 +315,7 @@ export function initWorld(header) {
         [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
         { duration: scaleMs, easing: EASING },
       )
-      /* Den røde understrekingen på aktiv lenke fader inn FØRST når reisen er
-         helt ferdig (CSS-transition på text-decoration-color). */
+      /* Aktiv lenke fader til rødt først når reisen er helt ferdig. */
       const clearTravel = () => {
         if (journey !== travelId) return
         world.classList.remove('is-travelling')

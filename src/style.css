@@ -52,14 +52,4 @@
   }
 }
 
-@layer components {
-  .site-header nav a {
-    @apply text-zinc-600 transition-colors hover:text-zinc-900;
-  }
-
-  .site-header nav a[aria-current='page'] {
-    @apply font-semibold text-zinc-900;
-  }
-}
-
 /* Layout-kolonne: se public/layout.css (linkes fra HTML, ikke behandlet av Tailwind). */

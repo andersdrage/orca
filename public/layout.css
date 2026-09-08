@@ -292,7 +292,7 @@ body.world-mode {
 }
 
 .site-header nav a {
-  color: #52525b;
+  color: #18181b;
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -301,7 +301,7 @@ body.world-mode {
   padding: 0.375rem 0.625rem;
   position: relative;
   text-decoration: none;
-  transition: color 150ms ease;
+  transition: color 220ms ease;
   transform: translateY(2px);
   z-index: 1;
 }
@@ -314,54 +314,9 @@ body.world-mode {
   transform: translateY(3px);
 }
 
-/* Retningsstyrt understreking: en ekte strek (::after) som wiper med
-   fartsretningen. Ved avgang fjernes aria-current umiddelbart → streken
-   trekkes ut i reiseretningen; ved landing settes ny aria-current → streken
-   tegnes inn fra motsatt side (siden man ankom fra). data-travel-dir på
-   headeren styrer origin-sidene. */
-.site-header nav a::after {
-  content: '';
-  position: absolute;
-  left: 0.625rem;
-  right: 0.625rem;
-  bottom: 0.1rem;
-  height: 1.5px;
-  background: #e5484d;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
+/* Active navigation changes text color without an underline. */
 .site-header nav a[aria-current='page'] {
-  color: #18181b;
-}
-
-.site-header nav a[aria-current='page']::after {
-  transform: scaleX(1);
-}
-
-/* Fremover (verden glir mot venstre): gammel strek trekkes ut mot venstre,
-   ny tegnes inn fra høyre. Bakover: speilvendt. */
-.site-header[data-travel-dir='fwd'] nav a::after {
-  transform-origin: left;
-}
-
-.site-header[data-travel-dir='fwd'] nav a[aria-current='page']::after {
-  transform-origin: right;
-}
-
-.site-header[data-travel-dir='back'] nav a::after {
-  transform-origin: right;
-}
-
-.site-header[data-travel-dir='back'] nav a[aria-current='page']::after {
-  transform-origin: left;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-header nav a::after {
-    transition: none;
-  }
+  color: #c9363e;
 }
 
 @supports (position-anchor: --nav-item) {
@@ -1398,8 +1353,7 @@ a.timeline-tile:focus-visible {
   }
 }
 
-/* Hjørnelenkene nede til venstre (Archive · People) — portene til raden under
-   forsiden i verdenskartet. Aktiv side = rød strek, som i toppmenyen. */
+/* Hjørnelenkene bruker samme aktive tekstfarge og hover-flate som toppmenyen. */
 /* Hjørnelenkene: fullskjerms fixed lag med absolutte barn — Archive nede til
    venstre, People nede til høyre. (Laget, ikke lenkene, er fixed: entré-fade
    på containeren ville ellers gjort den til containing block for fixed barn.) */
@@ -1425,41 +1379,44 @@ a.timeline-tile:focus-visible {
 }
 
 .corner-links a {
-  color: #52525b;
+  isolation: isolate;
+  color: #18181b;
   font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
-  transition: color 150ms ease;
+  transition: color 220ms ease;
 }
 
 .corner-links a:hover {
   color: #18181b;
 }
 
-/* Når den svarte footeren når bunn-sonen (IntersectionObserver i world.js),
-   lysner hjørnelenkene så de leses mot mørk flate. Rød understrek funker
-   på begge. */
-body.footer-in-view .corner-links a {
-  color: #d4d4d8;
+.corner-links a::before {
+  content: '';
+  position: absolute;
+  inset: -0.375rem -0.625rem;
+  z-index: -1;
+  border-radius: 4px;
+  background-color: rgba(228, 228, 231, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
 }
 
-body.footer-in-view .corner-links a:hover {
-  color: #fafafa;
+.corner-links a:focus-visible::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .corner-links a:hover::before { opacity: 1; }
 }
 
-body.footer-in-view .corner-links a[aria-current='page'] {
-  color: #fafafa;
-}
+/* Keep the corner navigation readable over the dark footer. */
+body.footer-in-view .corner-links a { color: #d4d4d8; }
+body.footer-in-view .corner-links a:hover { color: #fafafa; }
+body.footer-in-view .corner-links a::before { background-color: rgba(255, 255, 255, 0.14); }
 
-.corner-links a[aria-current='page'] {
-  color: #18181b;
-  text-decoration: underline;
-  text-decoration-color: #e5484d;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 5px;
-}
+.corner-links a[aria-current='page'] { color: #c9363e; }
+body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
 
 /* Arkivlista: år | prosjekt | type. Nytt år får ekstra luft over —
    det binder gruppen til året sitt. */
