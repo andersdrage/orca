@@ -467,6 +467,37 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.site-footer__logo-video').getAttribute('data-media-src'), '/images/drage-black-bg-preview-001.mp4')
     })
 
+    test('Uber long-page gallery opens readable images and restores the case on close', async (t) => {
+      const page = await visit(t, '/uber/')
+      const thumbs = page.locator('[data-case-image]')
+      assert.equal(await thumbs.count(), 4)
+      assert.equal(await page.locator('img[src="/images/uber-ueno-home-top-full.jpg"]').count(), 0)
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 })
+        for (let i = 0; i < 4; i++) {
+          const trigger = thumbs.nth(i)
+          await trigger.click()
+          const dialog = page.locator('.case-image-viewer[open]')
+          const image = dialog.locator('img')
+          await image.evaluate((el) => el.decode())
+          assert.equal(await image.getAttribute('src'), await trigger.getAttribute('data-case-image'))
+          assert.ok((await image.boundingBox()).width > (await trigger.boundingBox()).width * 1.8)
+          assert.equal(await dialog.locator('.case-image-viewer__scroll').evaluate((el) => {
+            el.scrollTop = 100
+            return el.scrollHeight <= el.clientHeight || el.scrollTop > 0
+          }), true)
+          await page.keyboard.press('ArrowRight')
+          assert.equal(await image.getAttribute('src'), await thumbs.nth((i + 1) % 4).getAttribute('data-case-image'))
+          await page.keyboard.press('Escape')
+          assert.equal(await page.locator('dialog[open]').count(), 0)
+          assert.equal(await trigger.evaluate((el) => el === document.activeElement), true)
+          assert.equal(new URL(page.url()).pathname, '/uber/')
+          assert.equal(await page.evaluate(() => document.documentElement.style.overflow), '')
+        }
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
+      }
+    })
+
     test('Uber country tabs keep one panel visible and support keyboard navigation', async (t) => {
       const page = await visit(t, '/uber/')
       const gallery = page.locator('[data-case-tabs]')

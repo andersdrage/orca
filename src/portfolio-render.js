@@ -94,6 +94,15 @@ function tabsHtml(item) {
   </div>`
 }
 
+function galleryHtml(item) {
+  return `<div class="case-gallery" role="group" aria-label="${escapeAttr(item.label)}">
+    ${item.images.map((image) => `<button type="button" class="case-gallery__item" data-case-image="/images/${escapeAttr(image.file)}" data-image-label="${escapeAttr(image.alt)}" aria-label="Enlarge ${escapeAttr(image.alt)}">
+      <img src="/images/${escapeAttr(image.file)}" ${mediaSize(image.file)} alt="" loading="lazy" decoding="async" />
+      <span>${escapeHtmlText(image.alt)} <span aria-hidden="true">↗</span></span>
+    </button>`).join('')}
+  </div>`
+}
+
 const projectAudio = {
   micromilspec: {
     src: micromilspecStoryUrl,
@@ -228,6 +237,7 @@ function caseSection(singleCase) {
     /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
     const eager = rowIndex === 0
     if (row.kind === 'full') {
+      if (row.items[0].type === 'gallery') return galleryHtml(row.items[0])
       if (row.items[0].type === 'text') return `<div class="case-story work-narrow"><p>${escapeHtmlText(row.items[0].text)}</p></div>`
       if (row.items[0].type === 'tabs') return tabsHtml(row.items[0])
       return wrapFigure(row.items[0], eager)

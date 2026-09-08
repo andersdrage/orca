@@ -5,6 +5,7 @@ import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import { initCaseTabs } from './case-tabs.js'
 import { initCreditsLayout } from './credits-layout.js'
+import { initCaseGallery } from './case-gallery.js'
 import { ARCHIVED_ORDER, caseNeighbors, caseArrowDirection } from './case-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
 import closeIconUrl from './assets/icons/close.svg?url'
@@ -62,6 +63,7 @@ document.addEventListener('click', (event) => {
 if (root) {
   root.innerHTML = buildCaseHtml(root.dataset.caseId)
   initCreditsLayout(root)
+  initCaseGallery(root)
   // Keep the fixed story controls outside the animated/translated case layout.
   const storyControls = root.querySelector('.project-audio')
   if (storyControls) document.body.append(storyControls)

@@ -804,13 +804,91 @@ body.world-mode {
 /* Country variants share one image frame and a sliding, measured tab marker. */
 .case-story {
   padding-block: clamp(1.5rem, 4vw, 3.5rem);
-  font-size: clamp(26px, 3vw, 40px);
+  font-size: clamp(18.2px, 2.1vw, 28px);
   line-height: 1.35;
   text-align: left;
   color: var(--color-zinc-600, #52525b);
 }
 
 .case-story p { margin: 0; }
+
+.case-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 28px);
+  align-items: start;
+}
+
+.case-gallery__item {
+  min-width: 0;
+  text-align: left;
+  cursor: zoom-in;
+}
+
+.case-gallery__item > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #18181b0d;
+}
+
+.case-gallery__item > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.case-gallery__item:focus-visible { outline: 2px solid #18181b; outline-offset: 6px; }
+.case-gallery__item:active { transform: scale(0.99); }
+
+.case-image-viewer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #fafafa;
+  color: #18181b;
+  overflow: hidden;
+}
+
+.case-image-viewer[open] { display: flex; flex-direction: column; }
+.case-image-viewer::backdrop { background: #fafafa; }
+
+.case-image-viewer__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+  border-bottom: 1px solid #e4e4e7;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+}
+
+.case-image-viewer__toolbar p { flex: 1; text-align: center; margin: 0; }
+.case-image-viewer__toolbar button { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 22px; }
+.case-image-viewer__toolbar button:focus-visible { outline: 2px solid #18181b; outline-offset: -2px; }
+.case-image-viewer__toolbar button:active { transform: scale(0.97); }
+@media (hover: hover) {
+  .case-image-viewer__toolbar button:hover { background: #e4e4e7; }
+}
+
+.case-image-viewer__scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 24px; }
+.case-image-viewer__scroll > img { display: block; width: 100%; max-width: 1260px; height: auto; margin-inline: auto; }
+
+@media (max-width: 767px) {
+  .case-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .case-image-viewer__scroll { padding: 12px; }
+}
 
 .case-tabs {
   --tabs-dur: 250ms;

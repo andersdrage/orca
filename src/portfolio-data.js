@@ -274,15 +274,19 @@ export const portfolioCases = [
       { file: 'uber-2-full.jpg', span: 'full', alt: 'Uber' },
       /* Fra Ueno sin case-studie av uber.com (web.archive.org, 2021-01-14). */
       { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-home-top-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-homepage-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-ubercity-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-menu-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-rider-full.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-wheel-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-headers-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-career-1-2x.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-career-2-full.jpg', span: 'full', alt: 'Uber' },
+      {
+        type: 'gallery', span: 'full', label: 'Uber website pages',
+        images: [
+          { file: 'uber-ueno-rider-original.jpg', alt: 'Rider' },
+          { file: 'uber-ueno-wheel-original.jpg', alt: 'Wheel' },
+          { file: 'uber-ueno-career-1-2x.jpg', alt: 'Careers' },
+          { file: 'uber-ueno-career-2-original.jpg', alt: 'Careers — job details' },
+        ],
+      },
     ],
   },
   {
