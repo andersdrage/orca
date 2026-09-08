@@ -315,6 +315,23 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await activeWorld(page, '/about/')
         await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling'))
         assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
+        await ready(page, '/')
+        const workLink = page.locator('.site-header__work a')
+        await workLink.click()
+        await activeWorld(page, '/')
+        const timeline = page.locator('.timeline-scroller')
+        await page.evaluate(() => document.fonts.ready)
+        await timeline.evaluate((el) => {
+          el.scrollTo({ left: el.scrollLeft + 320, behavior: 'instant' })
+        })
+        // Let the looping timeline normalize its scroll offset before recording it.
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+        const position = await timeline.evaluate((el) => el.scrollLeft)
+        await page.locator('.site-header a[href="/about/"]').click()
+        await activeWorld(page, '/about/')
+        await workLink.click()
+        await activeWorld(page, '/')
+        assert.ok(Math.abs(await timeline.evaluate((el) => el.scrollLeft) - position) < 2, 'Work preserves its timeline position')
       }
     })
 

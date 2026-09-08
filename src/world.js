@@ -273,8 +273,8 @@ export function initWorld(header) {
     setTransform(index)
 
     const arriving = sections[index]
-    // Reset before revealing the destination so the camera never lands on its old footer.
-    arriving.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    // Reset before revealing the destination; Work keeps the visitor's place.
+    if (PAGES[index].path !== '/') arriving.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     cameraIndex = index
     if (titles[index]) document.title = titles[index]
     if (push) history.pushState({ world: index }, '', PAGES[index].path)

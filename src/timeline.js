@@ -372,7 +372,7 @@ export function initTimeline(scrollerEl) {
 
   /* NB: ingen auto-snap på scrollend — å flytte lista på egen hånd mellom
      hjul-bursts sloss med brukerens input. Kanten rettes kun når det trengs:
-     ved last, resize og i det pan-snapshotet skal tas (nav-klikk under). */
+     ved last og resize. Navigasjon bevarer posisjonen brukeren forlot. */
 
   window.addEventListener('resize', () => {
     const progress = copyWidth ? scroller.scrollLeft / copyWidth : 1
@@ -578,16 +578,6 @@ export function initTimeline(scrollerEl) {
     event.preventDefault()
     scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: reducedMotionQuery.matches ? 'instant' : 'smooth' })
   })
-
-  /* Klikk på About/Praise midt i en bevegelse rekker ikke å få sitt scrollend — rett
-     kanten instant her, før snapshotet til pan-overgangen tas. */
-  document.addEventListener(
-    'click',
-    (event) => {
-      if (event.target.closest('.site-header nav a')) settleEdge('instant')
-    },
-    true,
-  )
 
   /* Fysisk verden: nabokortene på skjermen får egne transition-navn (push-l1…l4 /
      push-r1…r4) så de kan flytte seg UT av veien når kortet zoomer inn — i stedet
