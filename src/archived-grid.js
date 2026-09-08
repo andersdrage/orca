@@ -22,11 +22,11 @@ const ARCHIVED = [
   { id: 'just', title: 'GoJust', service: 'Brand + UX design', year: 2017, files: ['just-logo-letters-2-610.mp4', 'just-logo-loader-103.mp4'] },
   { id: 'kindly', title: 'Kindly', service: 'Brand + UX design', year: 2016, files: ['kindly-logo-1_1.mp4', 'kindly-emotions.mp4', 'all-emojis-kindly.mp4'] },
   { id: 'changemaker', title: 'Changemaker', service: 'Brand + UX design', year: 2016, files: Array.from({ length: 8 }, (_, i) => `changemaker-${i + 1}.jpg`) },
-  { id: 'abelee', title: 'Abelee', files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
+  { id: 'abelee', title: 'Abelee', service: 'Brand + marketing', year: 2017, files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
   { id: 'nike', title: 'Nike app', year: 2016, files: ['misc-nike.jpg'] },
   { id: 'pressworks', title: 'Pressworks', year: 2017, files: ['misc-pressworks.jpg', 'pressworks-mobile-v1.jpg'] },
-  { id: 'hmkg', service: 'Print design', year: 2024 },
-  { id: 'humming-people', service: 'LP & booklet design', year: 2016 },
+  { id: 'hmkg', service: 'Print design', year: 2014 },
+  { id: 'humming-people', service: 'LP & booklet design', year: 2018 },
   { id: 'brathwait', service: 'Brand + UX design', year: 2015 },
   { id: 'tone', title: 'Tone Damli', service: 'Webdesign', year: 2015, files: ['tone-1.png', 'tone-2.png', 'tone-3.png', 'tone-4.png'] },
   { id: 'lego', title: 'Lego', service: 'UX design', year: 2012, files: ['lego-1.jpg', 'lego-2.jpg', 'lego-3.jpg'] },
@@ -43,15 +43,15 @@ const ARCHIVED = [
   },
   /* Project boundaries confirmed by Anders. Divider slides 36, 57, 67, 70
      and 73 are omitted; typography specimens and UI layouts remain work. */
-  { id: 'pelp', title: 'Pelp', files: showreelSlides(26, 35) },
-  { id: 'godt-levert', title: 'Godt Levert iOS apps', files: showreelSlides(37, 42) },
-  { id: 'kaos', title: 'Shopift theme', files: showreelSlides(43, 56) },
+  { id: 'pelp', title: 'Pelp', year: 2014, files: showreelSlides(26, 35) },
+  { id: 'godt-levert', title: 'Godt Levert iOS apps', year: 2015, files: showreelSlides(37, 42) },
+  { id: 'kaos', title: 'Shopify theme', files: showreelSlides(43, 56) },
   { id: 'daccord', title: 'D’accord', files: showreelSlides(58, 66) },
   { id: 'hellstrom', title: 'Hellstrøm', files: showreelSlides(68, 69) },
   { id: 'poster', title: 'Poster', files: showreelSlides(71) },
   { id: 'yearly-report', title: 'Yearly report', files: showreelSlides(72) },
   { id: 'lettering', title: 'Lettering', files: showreelSlides(74) },
-]
+].sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
 
 function collectMedia() {
   const media = [
