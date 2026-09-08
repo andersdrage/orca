@@ -228,6 +228,7 @@ function caseSection(singleCase) {
     /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
     const eager = rowIndex === 0
     if (row.kind === 'full') {
+      if (row.items[0].type === 'text') return `<div class="case-story work-narrow"><p>${escapeHtmlText(row.items[0].text)}</p></div>`
       if (row.items[0].type === 'tabs') return tabsHtml(row.items[0])
       return wrapFigure(row.items[0], eager)
     }

@@ -802,6 +802,16 @@ body.world-mode {
 }
 
 /* Country variants share one image frame and a sliding, measured tab marker. */
+.case-story {
+  padding-block: clamp(1.5rem, 4vw, 3.5rem);
+  font-size: 17px;
+  line-height: 1.625;
+  text-align: left;
+  color: var(--color-zinc-600, #52525b);
+}
+
+.case-story p { margin: 0; }
+
 .case-tabs {
   --tabs-dur: 250ms;
   --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);

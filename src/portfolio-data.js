@@ -250,14 +250,11 @@ export const portfolioCases = [
     items: [
       /* Hero = samme cover som tidslinje-tilen; videoen under. */
       { file: 'uber-cover-1.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-2-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'misc-uber.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-3-full.mp4', span: 'full', alt: 'Uber' },
-      /* Fra Ueno sin case-studie av uber.com (web.archive.org, 2021-01-14). */
-      { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-hero-full.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-home-top-full.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-homepage-full.jpg', span: 'full', alt: 'Uber' },
+      {
+        type: 'text', span: 'full',
+        text: 'We helped move Uber from all black to a friendlier, more colorful world, with a global design system full of local character. City pages came alive through language, color, patterns and Stout’s illustrations of cities around the world. The scale of that work still amazes me. It was my first time designing for right-to-left reading—a fascinating challenge. And I loved “the bit”: a little square that gave the main call to action a home, always there to show you the way.',
+      },
       {
         type: 'tabs', span: 'full', id: 'uber-countries', label: 'Uber around the world',
         width: 1290, height: 762,
@@ -274,13 +271,17 @@ export const portfolioCases = [
           { file: 'uber-ueno-australia-full.jpg', label: 'Australia' },
         ],
       },
+      { file: 'uber-2-full.jpg', span: 'full', alt: 'Uber' },
+      /* Fra Ueno sin case-studie av uber.com (web.archive.org, 2021-01-14). */
+      { file: 'uber-ueno-hero-full.mp4', span: 'full', alt: 'Uber' },
+      { file: 'uber-ueno-home-top-full.jpg', span: 'full', alt: 'Uber' },
+      { file: 'uber-ueno-homepage-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-ubercity-full.jpg', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-menu-still-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-menu-full.mp4', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-rider-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-wheel-full.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-headers-full.mp4', span: 'full', alt: 'Uber' },
-      { file: 'uber-ueno-career-1-full.jpg', span: 'full', alt: 'Uber' },
+      { file: 'uber-ueno-career-1-2x.jpg', span: 'full', alt: 'Uber' },
       { file: 'uber-ueno-career-2-full.jpg', span: 'full', alt: 'Uber' },
     ],
   },
