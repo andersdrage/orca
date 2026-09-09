@@ -497,6 +497,7 @@ export function initTimeline(scrollerEl) {
   const finePointer = window.matchMedia('(pointer: fine)')
 
   let tileGeometry = []
+  let showFirstArrivalName = useIntroEntry
   let elasticFrameId = 0
   let lastFrameTime = performance.now()
   const scheduleElastic = () => {
@@ -535,14 +536,22 @@ export function initTimeline(scrollerEl) {
       const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
       const center = entry.contentLeft + entry.width / 2 - elasticCurrent + tension * lag
       const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
-      // Scrub the same vertical path in both directions, retracting while the
-      // name is still on screen rather than waiting until it reaches an edge.
-      const progress = reducedMotionQuery.matches
+      // The first cover sits beside the introduction, outside the centre zone.
+      // Keep its name open until scrolling carries it through the centre.
+      if (entry.tile === firstTileEl && userInteracted && center <= viewportWidth / 2) showFirstArrivalName = false
+      const firstArrival = entry.tile === firstTileEl && showFirstArrivalName
+      const progress = firstArrival ? 1 : reducedMotionQuery.matches
         ? Number(distance < .45) : Math.min(1, Math.max(0, (.6 - distance) / .45))
+      // Enter from behind the cover, then continue downward and fade after
+      // passing the centre. Reverse scrolling retraces the same continuous path.
+      const leaving = center < viewportWidth / 2
+      const travel = reducedMotionQuery.matches ? 0 : (1 - progress) * (leaving ? 1 : -1)
+      const opacity = reducedMotionQuery.matches || leaving ? progress : 1
       const revealLabel = progress > 0
-      const labelProgress = progress.toFixed(4)
+      const labelProgress = `${travel.toFixed(4)},${opacity.toFixed(4)}`
       if (entry.labelProgress !== labelProgress) {
-        entry.tile.style.setProperty('--tile-label-progress', labelProgress)
+        entry.tile.style.setProperty('--tile-label-travel', travel.toFixed(4))
+        entry.tile.style.setProperty('--tile-label-opacity', opacity.toFixed(4))
         entry.labelProgress = labelProgress
       }
       if (entry.labelRevealed !== revealLabel) {

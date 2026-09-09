@@ -1205,6 +1205,11 @@ body.world-mode {
   opacity: 0;
 }
 
+.is-entering-home [data-copy="1"] .timeline-tile:first-child .timeline-tile__hover-label {
+  animation: entrance-fade 0.4s ease both;
+  animation-delay: 900ms;
+}
+
 /* Chromen sist — kun opacity (nav-en har en statisk translateY(2px) som en
    transform-animasjon ville overskrevet). */
 .is-entering-home .site-header__brand {
@@ -1311,8 +1316,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   }
 }
 
-/* Project names follow the same centre-driven growth on every device,
-   retracing their path behind the image as it moves away. */
+/* Project names emerge with centre magnification, then continue down and fade. */
 .timeline-tile__hover-label {
   position: absolute;
   top: 100%;
@@ -1327,15 +1331,14 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
-  transform: translate(-50%, calc(-100% - 24px));
+  transform: translate(-50%, calc(var(--tile-label-travel, -1) * (100% + 24px)));
+  opacity: var(--tile-label-opacity, 0);
   transition: none;
 }
 
-a.timeline-tile.is-label-revealed .timeline-tile__hover-label {
-  transform: translate(-50%, calc((var(--tile-label-progress, 0) - 1) * (100% + 24px)));
-}
 a.timeline-tile:focus-visible .timeline-tile__hover-label {
   transform: translate(-50%, 0);
+  opacity: 1;
 }
 
 /* Ved klikk: etiketten skal ikke inn i morph-snapshotet. */
