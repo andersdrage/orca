@@ -699,6 +699,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           entryX: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--project-entry-x')),
           origin: sessionStorage.getItem('timeline:zoom-origin'),
           duration: parseFloat(thumbnail.animationDuration),
+          neighbours: window.transitionProbe.filter(animation => animation.animationName === 'project-neighbor-away').map(animation => {
+            const css = style(animation.effect.pseudoElement)
+            return { opacity: Number(css.opacity), transform: css.transform }
+          }),
           names: window.transitionProbe.map(animation => animation.animationName) }
       })
       assert.equal(frame.imageDisplay, 'block')
@@ -710,7 +714,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(Math.abs(frame.entryX) > 0 && Math.abs(frame.entryX) <= 72, 'intro offset stays subtle')
       assert.ok(frame.duration <= 0.22, 'thumbnail departs in at most 220 ms')
       assert.ok(frame.introOpacity > 0, 'text is visible while the thumbnail departs')
-      assert.ok(frame.names.some(name => name === 'project-neighbor-left' || name === 'project-neighbor-right'))
+      assert.ok(frame.neighbours.length > 0)
+      assert.ok(frame.neighbours.every(neighbour => neighbour.opacity > 0 && neighbour.opacity < 1 && neighbour.transform === 'none'), 'neighbours fade without moving')
       await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
       await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-in'))
       assert.equal(await page.locator('.case-lead__intro').evaluate(el => getComputedStyle(el).opacity), '1')
@@ -762,10 +767,13 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/')
       await ready(page, '/')
       const tiles = page.locator('.timeline-copy[data-copy="1"] .timeline-tile')
-      const originals = await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))
       await page.keyboard.press('s')
       const toggle = page.getByRole('checkbox', { name: 'Same size thumbnails', exact: true })
-      assert.equal(await toggle.isChecked(), false)
+      assert.equal(await toggle.isChecked(), true, 'same size thumbnails are the default')
+      const defaultHeight = await tiles.first().evaluate(tile => tile.offsetHeight)
+      assert.ok(Math.abs(defaultHeight - 900 * 0.43 * 1.3) < 1, 'thumbnail base size is 30% larger')
+      await toggle.uncheck()
+      const originals = await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))
       await toggle.check()
       const sizes = await tiles.evaluateAll(tiles => tiles.map(tile => ({ width: tile.offsetWidth, height: tile.offsetHeight, image: tile.querySelector('img').getAttribute('src') })))
       assert.equal(new Set(sizes.map(size => `${size.width}/${size.height}`)).size, 1)
@@ -1264,6 +1272,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/')
       await ready(page, '/')
       assert.deepEqual(await page.locator('.timeline-copy[data-copy="1"] a').evaluateAll(links => links.map(link => new URL(link.href).pathname)), casePaths)
+      assert.equal(casePaths[3], '/houeland/')
       await page.getByRole('link', { name: 'Houeland', exact: true }).click()
       await page.waitForURL('**/houeland/')
       assert.equal(await page.locator('.title-block__year dd').textContent(), '2026')
@@ -1272,11 +1281,11 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await image.evaluate(el => el.decode())
       assert.ok(await image.isVisible())
       await page.keyboard.press('ArrowLeft')
-      await page.waitForURL('**/uber/')
+      await page.waitForURL('**/off-market/')
       await page.keyboard.press('ArrowRight')
       await page.waitForURL('**/houeland/')
       await page.keyboard.press('ArrowRight')
-      await page.waitForURL('**/micromilspec/')
+      await page.waitForURL('**/boligmappa/')
       await page.goto(base + '/boligmappa/')
       await page.keyboard.press('ArrowRight')
       await page.waitForURL('**/nettavisen/')
@@ -1297,14 +1306,14 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.getByRole('link', { name: 'Open test case' }).click()
       await page.waitForURL('**/houeland/')
       await page.keyboard.press('ArrowRight')
-      await page.waitForURL('**/micromilspec/')
+      await page.waitForURL('**/boligmappa/')
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.keyboard.press('Escape')
       await page.waitForURL('**/history/')
     })
 
     test('selected case close restores the timeline and transcript Escape stays in the case', async (t) => {
-      const page = await visit(t, '/')
+      const page = await visit(t, '/', {}, () => sessionStorage.setItem('debug:same-size-thumbnails', '0'))
       const tile = page.getByRole('link', { name: 'MICROMILSPEC', exact: true })
       const originalCover = await tile.locator('img').getAttribute('src')
       await page.keyboard.press('b')

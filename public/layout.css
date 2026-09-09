@@ -2041,21 +2041,20 @@ html.vt-zoom-out::view-transition-new(root) {
   }
 }
 
-/* Fysisk verden: synlige nabokort flytter seg ut av veien når kortet zoomer inn
-   (JS setter push-l1…l4 / push-r1…r4 på dem ved klikk), og glir tilbake ved retur.
-   De beveger seg — fader ikke — så verden føles solid. */
+/* Neighbour snapshots stay in place and fade on entry. Legacy layouts retain
+   their return movement; the presentation return uses a single world snapshot. */
 html.vt-zoom-in::view-transition-old(push-l1),
 html.vt-zoom-in::view-transition-old(push-l2),
 html.vt-zoom-in::view-transition-old(push-l3),
 html.vt-zoom-in::view-transition-old(push-l4) {
-  animation: vt-push-left-out 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+  animation: project-neighbor-away 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
 }
 
 html.vt-zoom-in::view-transition-old(push-r1),
 html.vt-zoom-in::view-transition-old(push-r2),
 html.vt-zoom-in::view-transition-old(push-r3),
 html.vt-zoom-in::view-transition-old(push-r4) {
-  animation: vt-push-right-out 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
+  animation: project-neighbor-away 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
 }
 
 html.vt-zoom-out::view-transition-new(push-l1),
@@ -2070,18 +2069,6 @@ html.vt-zoom-out::view-transition-new(push-r2),
 html.vt-zoom-out::view-transition-new(push-r3),
 html.vt-zoom-out::view-transition-new(push-r4) {
   animation: vt-push-right-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-push-left-out {
-  to {
-    transform: translateX(-75vw);
-  }
-}
-
-@keyframes vt-push-right-out {
-  to {
-    transform: translateX(75vw);
-  }
 }
 
 @keyframes vt-push-left-in {
@@ -3021,13 +3008,13 @@ html.vt-presentation-in::view-transition-old(push-l1),
 html.vt-presentation-in::view-transition-old(push-l2),
 html.vt-presentation-in::view-transition-old(push-l3),
 html.vt-presentation-in::view-transition-old(push-l4) {
-  animation: project-neighbor-left 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-neighbor-away 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html.vt-presentation-in::view-transition-old(push-r1),
 html.vt-presentation-in::view-transition-old(push-r2),
 html.vt-presentation-in::view-transition-old(push-r3),
 html.vt-presentation-in::view-transition-old(push-r4) {
-  animation: project-neighbor-right 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-neighbor-away 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes project-thumbnail-away {
   0% { opacity: 1; transform: translateY(0) scale(1); }
@@ -3040,11 +3027,9 @@ html.vt-presentation-in::view-transition-old(push-r4) {
   from { opacity: 0; transform: translate(var(--project-entry-x, 0px), 12px) scale(0.97); }
   to { opacity: 1; transform: translate(0, 0) scale(1); }
 }
-@keyframes project-neighbor-left {
-  to { opacity: 0; transform: translate(-20vw, 48px) scale(1.04); }
-}
-@keyframes project-neighbor-right {
-  to { opacity: 0; transform: translate(20vw, 48px) scale(1.04); }
+@keyframes project-neighbor-away {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 html.vt-presentation-in::view-transition-group(root) { z-index: 0; }
 html.vt-presentation-in::view-transition-group(push-l1),

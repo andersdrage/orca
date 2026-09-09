@@ -120,6 +120,7 @@ export const portfolioCases = [
       { role: 'Designers', names: 'Fredrik Lien Bjørgmo, Line Rosvoll Holmen, Neno Mindjek' },
       { role: 'Strategy & client director', names: 'Jonas Feiring' },
       { role: 'Client', names: 'Pål Nisja' },
+      { role: 'Custom typeface', names: 'Frode Helland / Monokrom' },
     ],
     items: [
       /* Hero = samme cover som tidslinje-tilen. */
@@ -140,6 +141,7 @@ export const portfolioCases = [
       { role: 'Strategy', names: 'Monna Nordhagen, Kirsti Rogne, Jonas Feiring' },
       { role: 'Project management', names: 'Caroline Hanssen' },
       { role: 'Reel', names: 'Lars Hoel' },
+      { role: 'Custom typeface', names: 'Letters from Sweden' },
     ],
     items: [
       /* Hero = tile-cover; filmen som nr. 2 (autoplay, muted, loop). */

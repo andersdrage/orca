@@ -658,10 +658,8 @@ export function initTimeline(scrollerEl) {
     scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: reducedMotionQuery.matches ? 'instant' : 'smooth' })
   })
 
-  /* Fysisk verden: nabokortene på skjermen får egne transition-navn (push-l1…l4 /
-     push-r1…r4) så de kan flytte seg UT av veien når kortet zoomer inn — i stedet
-     for å bli liggende under det voksende kortet. CSS animerer navnene sidelengs.
-     Rydder alltid alle navn først så loop-duplikater aldri gir navnekollisjon. */
+  /* Give visible neighbours their own snapshots so they fade in place, separate
+     from the departing thumbnail. Clear names first to avoid loop duplicates. */
   function assignNeighborNames(targetTile) {
     const tiles = [...scroller.querySelectorAll('.timeline-tile')]
     tiles.forEach((tile) => {

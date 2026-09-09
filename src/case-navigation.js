@@ -1,5 +1,5 @@
 // Shared by thumbnail order, case arrows and return-transition detection.
-export const FEATURED_ORDER = ['houeland', 'micromilspec', 'hjemla', 'off-market', 'boligmappa', 'nettavisen', 'finn', 'uber']
+export const FEATURED_ORDER = ['micromilspec', 'hjemla', 'off-market', 'houeland', 'boligmappa', 'nettavisen', 'finn', 'uber']
 
 export const isCasePath = pathname => FEATURED_ORDER.some(id => pathname === `/${id}/` || pathname === `/${id}`)
 
