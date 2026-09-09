@@ -16,6 +16,7 @@ export function revealProject(tile, update, { animate = true } = {}) {
   }
   const html = document.documentElement
   const listeners = new AbortController()
+  let details = []
   image.style.viewTransitionName = 'project-thumbnail'
   image.dataset.projectRevealSource = ''
   const snapshotScale = rect.height / image.offsetHeight
@@ -28,12 +29,23 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const transition = document.startViewTransition(() => {
     clearSource()
     update()
+    details = [...document.querySelectorAll('[data-layout="presentation"] + .case-below, body > .project-audio')]
   })
   const cleanup = () => {
     clearSource()
     html.classList.remove('project-reveal-active')
     html.style.removeProperty('--project-reveal-distance')
     listeners.abort()
+    // Begin only when the thumbnail has finished (or the user skips it),
+    // keeping the intro readable and the notes dock out of the reveal.
+    if (!reduced.matches) {
+      details.filter(node => node.isConnected).forEach(node => {
+        const fade = node.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+        })
+        fade.id = 'project-details-enter'
+      })
+    }
   }
   const cancel = event => {
     // Let Close sample the live displacement before stopping the opening,

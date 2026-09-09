@@ -2775,6 +2775,10 @@ a.timeline-tile.is-navigating .timeline-tile__image {
    The case is mounted beneath it before the downward reveal starts. */
 @view-transition { navigation: none; }
 :root { view-transition-name: none; }
+html.project-reveal-active :is([data-layout="presentation"] + .case-below, body > .project-audio) {
+  opacity: 0;
+  visibility: hidden;
+}
 html.project-reveal-active::view-transition { pointer-events: none; }
 html.project-reveal-active::view-transition-group(project-thumbnail) {
   z-index: 1;

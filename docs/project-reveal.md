@@ -1,6 +1,6 @@
 # DRA-72 — same-document thumbnail reveal
 
-Index-to-project clicks now load the case inside the existing document. The project HTML and intro fonts are prepared before `document.startViewTransition()` captures the clicked thumbnail. The case intro and title block are mounted behind that snapshot; only the image slides down, over 900 ms after a 40 ms hold, with a gentler start. The document root is excluded from snapshots, and the case controls remain interactive.
+Index-to-project clicks now load the case inside the existing document. The project HTML and intro fonts are prepared before `document.startViewTransition()` captures the clicked thumbnail. The case intro and title block are mounted behind that snapshot; only the image slides down, over 900 ms after a 40 ms hold, with a gentler start. The document root is excluded from snapshots, and Close remains interactive. Personal Notes and the project media below the intro stay hidden during the reveal, then fade in together over 300 ms when the transition finishes. This is tied to completion rather than a separate timer; interrupted navigation cannot fade content from a removed case. Direct visits and reduced motion show the content immediately.
 
 The overview stays mounted in a hidden, inert container with its original scroll positions. Close returns through the case history entries to the originating overview. On the index, the case disappears immediately and the thumbnail rises from below the viewport into its original slot over up to 480 ms. A close during opening samples the snapshot’s current viewport position and reverses from there. The return uses a transform animation on the real image, leaving the rest of the index interactive. Browser Back/Forward restores individual case entries and their scroll positions. Project arrows also stay in the current document. URLs, titles and social/description metadata update with each case; direct URLs and reloads retain their standalone HTML entries.
 
@@ -10,7 +10,7 @@ Reduced motion skips both opening and return motion. Keyboard activation, legacy
 
 The hover enlargement was removed in the preceding iteration. Scroll-based thumbnail magnification remains.
 
-Rollback: `edbbe74` is the same-document reveal before the slower opening and animated return; `af8bc1c` keeps the hover removal and the earlier cross-document reveal; `b06bb68` is the plain-navigation starting point; `ac45dfe` is the earlier main-branch baseline. Changes remain on `codex/dra-72-project-transition` until explicitly pushed.
+Rollback: `71ecca2` is the reveal and animated return before the delayed notes/media fade; `edbbe74` is the same-document reveal before the slower opening and animated return; `af8bc1c` keeps the hover removal and the earlier cross-document reveal; `b06bb68` is the plain-navigation starting point; `ac45dfe` is the earlier main-branch baseline. Changes remain on `codex/dra-72-project-transition` until explicitly pushed.
 
 Focused checks pass in Chromium and WebKit, including actual mobile taps, mid-opening reversal, unchanged thumbnail size and position, and immediate case removal during return. Broader checks also cover the reusable controls, media, footer and storage behavior; the pre-existing archive-content assertion remains outside this change.
 
