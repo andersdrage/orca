@@ -23,14 +23,8 @@ the extracted PNG frames.
 The browser shares one decoded sequence across all mounted footers, loads it near
 the active footer, and uses a canvas to avoid changing image URLs while scrolling.
 
-## Project backgrounds
-
-Default colors are sampled from the current project thumbnails by
-`node scripts/sample-project-colors.mjs`. A click samples the actual thumbnail too,
-so alternate covers are respected. The most represented chromatic hue is mixed
-at eight percent with the original off-white. Direct links use the generated
-fallbacks. Native document transitions blend the surfaces; other browsers use a
-color interpolation. All case media gaps and the light footer share the tint.
+All pages and the footer use the same neutral off-white background. The
+thumbnail-derived color experiment and its transition have been removed.
 
 Before/after desktop, mobile, and motion captures are in the dated, Git-ignored
 `screenshots/` folders for this experiment.

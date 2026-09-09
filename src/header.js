@@ -1,5 +1,4 @@
 import { initScrollDragons } from './scroll-dragon.js'
-import { initProjectBackground } from './project-background.js'
 import { initAnimationInspector } from './debug-panel.js'
 import { initDesignAudit } from './design-audit.js'
 import { portfolioCases } from './portfolio-data.js'
@@ -78,7 +77,6 @@ function initSamePageGuard(header) {
 }
 
 export function initHeader() {
-  initProjectBackground()
   initCaseWarmup()
   initAnimationInspector()
   initDesignAudit()

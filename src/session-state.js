@@ -11,10 +11,6 @@ export const sessionState = {
       return null
     }
   },
-  removeItem(key) {
-    memory.delete(key)
-    try { window.sessionStorage.removeItem(key) } catch { /* Storage is optional. */ }
-  },
   setItem(key, value) {
     try {
       window.sessionStorage.setItem(key, String(value))

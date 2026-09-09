@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { before, after, describe, test } from 'node:test'
 import { preview } from 'vite'
 import { chromium, webkit } from 'playwright'
-import { projectColors } from '../src/project-colors.js'
+import { FEATURED_ORDER } from '../src/case-navigation.js'
 let server, base
 before(async () => {
   server = await preview({ logLevel: 'error', preview: { host: '127.0.0.1', port: 0 } })
@@ -85,20 +85,19 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForTimeout(400)
       assert.equal(await canvas.getAttribute('data-frame'), stopped)
     })
-    test('project colors survive direct visits, thumbnail entry, Back, and sibling footer mounting', async t => {
+    test('neutral backgrounds persist through direct visits, thumbnail entry, Back, and sibling footer mounting', async t => {
       const page = await visit(t, '/')
       await page.waitForFunction(() => document.querySelectorAll('.timeline-tile img').length > 0)
       await page.evaluate(() => document.querySelector('[data-tile-id="finn"]').click())
       await page.waitForURL('**/finn/')
-      const tint = await page.evaluate(() => document.documentElement.style.getPropertyValue('--page-bg').trim())
-      assert.match(tint, /^#[0-9a-f]{6}$/)
-      assert.notEqual(tint, '#fafafa')
+      assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(250, 250, 250)')
       await page.goBack()
       await page.waitForFunction(() => !!document.querySelector('.world-page:not([inert])'))
-      assert.equal(await page.evaluate(() => document.documentElement.style.getPropertyValue('--page-bg').trim()), '#fafafa')
-      for (const [id, color] of Object.entries(projectColors)) {
+      assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(250, 250, 250)')
+      for (const id of FEATURED_ORDER) {
         await page.goto(base + `/${id}/`)
-        assert.equal(await page.evaluate(() => document.documentElement.style.getPropertyValue('--page-bg').trim()), color)
+        assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(250, 250, 250)')
+        assert.equal(await page.locator('.site-footer').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(250, 250, 250)')
       }
       await page.goto(base + '/about/')
       await page.waitForFunction(() => document.querySelector('.world-page[data-path="/praise/"] .site-footer__dragon'))
