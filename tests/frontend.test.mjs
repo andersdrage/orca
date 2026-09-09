@@ -573,6 +573,40 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('phone thumbnails fit portrait frames and keep the intro clear after opening and rotation', async (t) => {
+      const page = await visit(t, '/', { viewport: { width: 390, height: 700 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' })
+      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+      const checkSpacing = async () => {
+        assert.equal(await page.evaluate(() => innerWidth), page.viewportSize().width, 'off-screen world pages must not enlarge the phone viewport')
+        const geometry = await page.locator('[data-timeline]').evaluate(el => {
+          const intro = el.querySelector('.timeline-intro').getBoundingClientRect()
+          const first = el.querySelector('[data-copy="1"] .timeline-tile').getBoundingClientRect()
+          const previous = el.querySelector('[data-copy="0"] .timeline-tile:last-child').getBoundingClientRect()
+          return { left: intro.left, end: intro.right, first: first.left, previous: previous.right }
+        })
+        assert.ok(geometry.first >= geometry.end + 55, JSON.stringify(geometry))
+        assert.ok(geometry.previous <= geometry.left - 34, JSON.stringify(geometry))
+      }
+      await checkSpacing()
+      for (const viewport of [{ width: 844, height: 390 }, { width: 390, height: 844 }, { width: 390, height: 700 }]) {
+        await page.setViewportSize(viewport)
+        await page.waitForTimeout(150)
+        await checkSpacing()
+      }
+      const tile = page.locator('[data-copy="1"] [data-tile-id="hjemla"]')
+      await page.locator('[data-timeline]').dispatchEvent('pointerdown', { pointerType: 'touch' })
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2)
+      await page.waitForTimeout(200)
+      for (const height of [844, 700]) {
+        await page.setViewportSize({ width: 390, height })
+        await page.waitForTimeout(150)
+        const box = await tile.boundingBox()
+        assert.ok(Math.abs(box.width / box.height - .75) < .01, 'portrait 3:4 frame')
+        assert.ok(box.width <= 390 - 48 + 1, 'enlarged thumbnail fits the phone')
+        assert.ok(Math.abs(box.x + box.width / 2 - 195) < 3, 'resize preserves the selected project centre')
+      }
+    })
+
     test('archive reserves image geometry before downloads finish', async (t) => {
       let release
       const gate = new Promise((resolve) => { release = resolve })

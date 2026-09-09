@@ -5,7 +5,7 @@ const dir = `screenshots/2026-09-09_performance-${stage}`
 await fs.mkdir(dir, { recursive: true })
 const browser = await chromium.launch()
 for (const [width, height] of [[1440, 900], [390, 844]]) {
-  const page = await browser.newPage({ viewport: { width, height } })
+  const page = await browser.newPage({ viewport: { width, height }, isMobile: width <= 600, hasTouch: width <= 600 })
   await page.addInitScript(() => {
     addEventListener('pagereveal', e => {
       if (!e.viewTransition) return

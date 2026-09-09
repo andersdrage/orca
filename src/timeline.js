@@ -281,8 +281,8 @@ export function initTimeline(scrollerEl) {
      retry-loopen under korrigerer posisjonen når fanen får ekte størrelse. */
   /* Intro-entré: luft fra venstre viewportkant til tekstblokka (ornamentet
      henger 34px lenger ut og får dermed ~50px). */
-  const INTRO_EDGE_GAP = 84
-  let initialScroll = introPlaced ? introContentLeft - INTRO_EDGE_GAP : copyWidth - edgeInset
+  const introEdgeGap = () => parseFloat(getComputedStyle(scroller).getPropertyValue('--intro-edge-gap')) || 84
+  let initialScroll = introPlaced ? introContentLeft - introEdgeGap() : copyWidth - edgeInset
   let useIntroEntry = introPlaced
   let returningToCase = false
 
@@ -383,7 +383,7 @@ export function initTimeline(scrollerEl) {
     const calibrate = () => {
       if (introDismissed || userInteracted || stableFrames > 30) return
       if (placeIntro()) {
-        const target = introContentLeft - INTRO_EDGE_GAP
+        const target = introContentLeft - introEdgeGap()
         if (Math.abs(target - scroller.scrollLeft) > 2) {
           scroller.scrollLeft = target
           elasticCurrent = target
@@ -401,14 +401,28 @@ export function initTimeline(scrollerEl) {
      hjul-bursts sloss med brukerens input. Kanten rettes kun når det trengs:
      ved last og resize. Navigasjon bevarer posisjonen brukeren forlot. */
 
-  window.addEventListener('resize', () => {
-    const progress = copyWidth ? scroller.scrollLeft / copyWidth : 1
+  let layoutViewportWidth = innerWidth
+  const refreshLayout = () => {
+    // Use the previous geometry to preserve the visible project through a
+    // toolbar resize or rotation, rather than snapping to a different case.
+    const anchor = tileGeometry.map(entry => ({
+      tile: entry.tile,
+      center: entry.contentLeft + entry.width / 2 - scroller.scrollLeft,
+    })).sort((a, b) => Math.abs(a.center - layoutViewportWidth / 2) - Math.abs(b.center - layoutViewportWidth / 2))[0]
+    clearElasticTransforms()
     copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
-    scroller.scrollLeft = progress * copyWidth
+    if (!introDismissed) placeIntro()
+    if (useIntroEntry && !userInteracted && !introDismissed) {
+      scroller.scrollLeft = introContentLeft - introEdgeGap()
+    } else if (anchor) {
+      scroller.scrollLeft = anchor.tile.offsetLeft + anchor.tile.offsetWidth / 2 - anchor.center / layoutViewportWidth * innerWidth
+    }
+    layoutViewportWidth = innerWidth
     elasticCurrent = scroller.scrollLeft
-    settleEdge('instant')
     measureTiles()
-  })
+  }
+  window.addEventListener('resize', refreshLayout)
+  document.body.addEventListener('world:map-intro-done', refreshLayout)
 
   /* B sykler MICROMILSPEC-coveret — kun her på forsiden. Bytter bilde og ratio
      på tilen i alle tre kopiene, lagrer valget (case-heroen følger etter ved
@@ -671,7 +685,7 @@ export function initTimeline(scrollerEl) {
     copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
     if (!introDismissed) placeIntro()
     scroller.scrollLeft = useIntroEntry && !userInteracted && !introDismissed
-      ? introContentLeft - INTRO_EDGE_GAP
+      ? introContentLeft - introEdgeGap()
       : anchor.tile.offsetLeft + anchor.tile.offsetWidth / 2 - anchor.center
     elasticCurrent = scroller.scrollLeft
     measureTiles()

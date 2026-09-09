@@ -10,7 +10,7 @@ for (const engine of (process.env.PERF_ENGINES || 'chromium,webkit').split(','))
   const browser = await ({ chromium, webkit })[engine].launch({ headless: process.env.PERF_HEADED !== '1' })
   const viewports = process.env.PERF_VIEWPORTS === 'desktop' ? [[1440, 900]] : process.env.PERF_VIEWPORTS === 'mobile' ? [[390, 844]] : [[1440, 900], [390, 844]]
   for (const [width, height] of viewports) {
-    const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: Number(process.env.PERF_DPR || 1) })
+    const context = await browser.newContext({ viewport: { width, height }, isMobile: width <= 600, hasTouch: width <= 600, deviceScaleFactor: Number(process.env.PERF_DPR || 1) })
     const samples = []
     await context.exposeBinding('reportFrames', (_, result) => samples.push(result))
     await context.addInitScript(() => {

@@ -166,6 +166,10 @@ body {
 
 /* ---- Verden: index | About | Praise side om side, kamera panorerer ---- */
 
+/* Clip at both levels: body overflow alone propagates to the viewport and
+   mobile browsers can include the entire off-screen world in innerWidth. */
+html:has(body.world-mode) { overflow: hidden; }
+
 body.world-mode {
   height: 100svh;
   overflow: hidden;
@@ -1028,6 +1032,7 @@ body.world-mode {
 /* Full-bleed scroller: bryter ut av 800px-kolonnen til hele viewport-bredden. */
 .timeline-scroller {
   --intro-width: min(320px, 62vw);
+  --intro-edge-gap: 84px;
   position: relative; /* ankerpunkt for .timeline-intro (absolutt i innholdet) */
   flex: 1;
   min-height: 0;
@@ -1240,6 +1245,24 @@ body.world-mode {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+@media (max-width: 600px) {
+  .timeline-scroller {
+    --intro-width: min(260px, 55vw);
+    --intro-edge-gap: 54px;
+  }
+  .timeline-copy { gap: 64px; }
+  .timeline-tile {
+    /* Include the full 20% centre enlargement in the available phone width. */
+    height: min(50svh, calc((100vw - 48px) / .9));
+    aspect-ratio: 3 / 4;
+  }
+  /* Give the wide FINN mark breathing room instead of cropping its lettering. */
+  [data-tile-id='finn'] .timeline-tile__image {
+    object-fit: contain;
+    background: rgb(8, 191, 254);
+  }
 }
 
 /* Bildet er tilen — ingen bakgrunnsflate bak (unngår svart rektangel i snapshots).
