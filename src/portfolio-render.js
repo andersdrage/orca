@@ -90,7 +90,7 @@ function titleBlockHtml(singleCase) {
       ${cell('Project', singleCase.title, 'title-block__project')}
       ${singleCase.year ? cell('Year', singleCase.year, 'title-block__year') : ''}
       ${cell('Role', role, 'title-block__role')}
-      <div class="title-block__signature" aria-hidden="true"><img src="/drage-logo.svg" alt="" width="28" height="24" /></div>
+      <div class="title-block__signature" aria-hidden="true"><img src="/images/dragonmark.svg" alt="" width="77" height="57" /></div>
     </dl>
     ${contributors ? `<dl class="title-block__contributors">${contributors}</dl>` : ''}
   </div>`

@@ -1,5 +1,5 @@
-/* /logo — spinnende drage-logo med 3D-halo av ekstruderte kort (WebGL).
-   Svart flate: videoens svarte bakgrunn går i ett med siden (som i footeren). */
+/* /logo — dragemerke med 3D-halo av ekstruderte kort (WebGL).
+   Det lyse SVG-merket ligger på svart flate (som i footeren). */
 
 * {
   box-sizing: border-box;
@@ -52,7 +52,7 @@ body {
 }
 
 .stage__logo {
-  /* Videoens svarte bakgrunn = usynlige kanter mot siden. */
+  filter: invert(1);
   display: block;
   width: var(--logo-w, 280px);
   height: auto;

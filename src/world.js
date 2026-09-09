@@ -13,7 +13,7 @@ import { isCasePath } from './case-navigation.js'
 import { initTimeline } from './timeline.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
-import { createPageStateContent, syncPageStateMedia } from './page-state.js'
+import { createPageStateContent } from './page-state.js'
 
 /* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
    forsiden — lenken bor i nedre venstre hjørne, og kameraet panorerer nedover
@@ -94,7 +94,6 @@ export function initWorld(header) {
     })
     const main = slots[index].querySelector('main')
     if (skipLink && main) skipLink.href = `#${main.id}`
-    syncPageStateMedia(world)
     syncVisibleMedia(world)
   }
 

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/drage-logo.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="/images/dragonmark.svg" type="image/svg+xml" sizes="any" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Testside — skal ikke indekseres. -->
     <meta name="robots" content="noindex, nofollow" />
@@ -13,11 +13,9 @@
   <body>
     <a href="/" class="back-link">Anders Drage</a>
 
-    <main class="stage" aria-label="Spinning dragon logo surrounded by a 3D halo of work cards">
+    <main class="stage" aria-label="Dragon mark surrounded by a 3D halo of work cards">
       <canvas class="halo" id="halo-canvas" aria-hidden="true"></canvas>
-      <video class="stage__logo" loop muted playsinline preload="none" poster="/images/drage-black-bg-preview-001-poster.webp" aria-hidden="true">
-        <source src="/images/drage-black-bg-preview-001.mp4" type="video/mp4" />
-      </video>
+      <img class="stage__logo" src="/images/dragonmark.svg" alt="" width="77" height="57" />
     </main>
 
     <script type="module" src="/src/logo-test.js"></script>

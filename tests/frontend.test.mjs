@@ -1206,7 +1206,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
-      assert.equal(await page.locator('.site-footer__logo-video').getAttribute('data-media-src'), '/images/drage-black-bg-preview-001.mp4')
+      assert.equal(await page.locator('.site-footer__mark').getAttribute('src'), '/images/dragonmark.svg')
     })
 
     test('Uber long-page gallery opens readable images and restores the case on close', async (t) => {
@@ -1555,22 +1555,23 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForURL(base + '/')
     })
 
-    test('the dragon animates only on the active error state and keeps a still if video is unavailable', async (t) => {
+    test('the updated dragon stays available on failed navigation and the standalone error page', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await page.route('**/praise/', (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.waitForFunction(() => document.querySelector('.world-page[data-path="/praise/"]')?.dataset.loadState === 'error')
-      assert.equal(await page.locator('.world-page[data-path="/praise/"] video').getAttribute('src'), null)
       await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
-      await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .page-state__mark video')?.currentTime > 0)
+      const mark = page.locator('.world-page:not([inert]) .page-state__mark img')
+      await mark.waitFor({ state: 'visible' })
+      await mark.evaluate(img => img.decode())
+      assert.equal(await mark.getAttribute('src'), '/images/dragonmark.svg')
+      assert.equal(await page.locator('.page-state__mark video').count(), 0)
       await page.locator('.site-header a[href="/about/"]').click()
-      assert.equal(await page.locator('.world-page[data-path="/praise/"] video').evaluate((video) => video.paused), true)
+      await activeWorld(page, '/about/')
 
-      await page.route('**/dragon-error-mark-v1.mp4', (route) => route.abort())
       await page.goto(base + '/404.html', { waitUntil: 'domcontentloaded' })
-      await page.waitForFunction(() => document.querySelector('.page-state__mark img').complete)
-      assert.equal(await page.locator('.page-state__mark').evaluate((mark) => mark.classList.contains('is-playing')), false)
-      assert.ok(await page.locator('.page-state__mark img').evaluate((img) => img.naturalWidth > 0))
+      await page.locator('.page-state__mark img').evaluate(img => img.decode())
+      assert.equal(await page.locator('.page-state__mark img').getAttribute('src'), '/images/dragonmark.svg')
       assert.equal(await page.getByRole('link', { name: 'Back home' }).count(), 1)
     })
 
