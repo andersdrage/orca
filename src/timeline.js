@@ -495,7 +495,6 @@ export function initTimeline(scrollerEl) {
     if (reducedMotionQuery.matches) scroller.scrollTo({ left: scroller.scrollLeft, behavior: 'instant' })
   })
   const finePointer = window.matchMedia('(pointer: fine)')
-  const touchLabels = window.matchMedia('(hover: none)')
 
   let tileGeometry = []
   let elasticFrameId = 0
@@ -538,7 +537,7 @@ export function initTimeline(scrollerEl) {
       const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
       // Scrub the same vertical path in both directions, retracting while the
       // name is still on screen rather than waiting until it reaches an edge.
-      const progress = !touchLabels.matches ? 0 : reducedMotionQuery.matches
+      const progress = reducedMotionQuery.matches
         ? Number(distance < .45) : Math.min(1, Math.max(0, (.6 - distance) / .45))
       const revealLabel = progress > 0
       const labelProgress = progress.toFixed(4)
@@ -678,7 +677,6 @@ export function initTimeline(scrollerEl) {
   document.addEventListener('visibilitychange', scheduleElastic)
   reducedMotionQuery.addEventListener('change', scheduleElastic)
   finePointer.addEventListener('change', scheduleElastic)
-  touchLabels.addEventListener('change', scheduleElastic)
 
   let uniformApplied = sameSizeThumbnails()
   const updateThumbnails = () => {

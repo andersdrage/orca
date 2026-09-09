@@ -992,6 +992,39 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('desktop project names follow magnification without hover', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' })
+      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+      await page.mouse.move(5, 5)
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+      const tile = page.locator('[data-copy="1"] [data-tile-id="hjemla"]')
+      const label = tile.locator('.timeline-tile__hover-label')
+      const move = async center => {
+        await tile.evaluate((el, center) => { el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - center }, center)
+        await page.waitForTimeout(900)
+      }
+      const offset = () => label.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42)
+      await move(720)
+      assert.equal(await tile.evaluate(el => el.matches(':hover')), false)
+      assert.ok(Math.abs(await offset()) < 1, 'name emerges as the image grows, without a pointer over it')
+      const scale = () => tile.evaluate(el => Number(el.style.getPropertyValue('--tile-magnification')))
+      const centredScale = await scale()
+      await move(432)
+      assert.ok(await offset() < -5, 'name retracts with scrolling')
+      assert.ok(await scale() < centredScale, 'name and image shrink together')
+      await move(144)
+      const hiddenOffset = await offset()
+      assert.ok(hiddenOffset < -40)
+      const r = await tile.boundingBox()
+      await page.mouse.move(144, r.y + r.height / 2)
+      await page.waitForTimeout(700)
+      assert.equal(await tile.evaluate(el => el.matches(':hover')), true)
+      assert.ok(Math.abs(await offset() - hiddenOffset) < 1, 'hover cannot reveal a name away from the centre')
+      await page.mouse.move(5, 5)
+      await move(720)
+      assert.ok(Math.abs(await offset()) < 1, 'reverse scrolling reveals the name again')
+    })
+
     test('touch project names emerge near centre and tuck away after passing in either direction', async (t) => {
       const page = await visit(t, '/', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' })
       await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))

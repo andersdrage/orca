@@ -1311,8 +1311,8 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   }
 }
 
-/* Prosjektnavnet: gjemt bak bildets nederste kant, skyves ut nedenfra på hover
-   med fjær-easing (overshoot ~8 % som setter seg) — bevegelse, ikke fade. */
+/* Project names follow the same centre-driven growth on every device,
+   retracing their path behind the image as it moves away. */
 .timeline-tile__hover-label {
   position: absolute;
   top: 100%;
@@ -1328,26 +1328,14 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   white-space: nowrap;
   pointer-events: none;
   transform: translate(-50%, calc(-100% - 24px));
-  transition: transform 620ms linear(
-    0, 0.301 7.4%, 0.609 15.4%, 0.865 23.4%, 1.053 31.7%, 1.145 39.8%,
-    1.132 47.7%, 1.085 56%, 1.021 68.3%, 0.998 80.5%, 1
-  );
+  transition: none;
 }
 
-@media (hover: hover) {
-  a.timeline-tile:hover .timeline-tile__hover-label { transform: translate(-50%, 0); }
+a.timeline-tile.is-label-revealed .timeline-tile__hover-label {
+  transform: translate(-50%, calc((var(--tile-label-progress, 0) - 1) * (100% + 24px)));
 }
 a.timeline-tile:focus-visible .timeline-tile__hover-label {
   transform: translate(-50%, 0);
-}
-
-@media (hover: none) {
-  .timeline-tile__hover-label {
-    transition: none;
-  }
-  a.timeline-tile.is-label-revealed .timeline-tile__hover-label {
-    transform: translate(-50%, calc((var(--tile-label-progress, 0) - 1) * (100% + 24px)));
-  }
 }
 
 /* Ved klikk: etiketten skal ikke inn i morph-snapshotet. */
