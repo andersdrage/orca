@@ -83,6 +83,7 @@ export default defineConfig({
         archivedWork: resolve(__dirname, 'archived-work/index.html'),
         offMarket: resolve(__dirname, 'off-market/index.html'),
         logo: resolve(__dirname, 'logo/index.html'),
+        sharingImage: resolve(__dirname, 'sharing-image/index.html'),
       },
     },
   },
