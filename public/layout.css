@@ -1601,6 +1601,14 @@ body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
 }
 
 /* Animation inspector: S shows or hides the panel and frame statistics. */
+/* A site-wide preview override; restoring the setting restores each component's radius. */
+html[data-rounded-corners="false"],
+html[data-rounded-corners="false"] *,
+html[data-rounded-corners="false"] *::before,
+html[data-rounded-corners="false"] *::after {
+  border-radius: 0 !important;
+}
+
 .debug-panel {
   position: fixed;
   bottom: 56px;

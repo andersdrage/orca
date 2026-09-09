@@ -8,11 +8,18 @@ import { THUMBNAIL_SETTING, THUMBNAIL_CHANGE, sameSizeThumbnails } from './thumb
 
 const RATE = 0.3
 const STORAGE_KEY = 'debug:slow-animations'
+const CORNERS_KEY = 'debug:rounded-corners'
 
 export function initAnimationInspector() {
   let panel = null
 
   const isEnabled = () => sessionState.getItem(STORAGE_KEY) === '1'
+  const roundedCorners = () => sessionState.getItem(CORNERS_KEY) !== '0'
+  const syncCorners = () => {
+    document.documentElement.dataset.roundedCorners = String(roundedCorners())
+    if (panel) panel.querySelector('[data-debug-corners]').checked = roundedCorners()
+  }
+  syncCorners()
 
   function setAllPlaybackRates(rate) {
     document.getAnimations().forEach((animation) => {
@@ -33,6 +40,10 @@ export function initAnimationInspector() {
         <input type="checkbox" data-debug-thumbnails ${sameSizeThumbnails() ? 'checked' : ''} />
         <span>Same size thumbnails</span>
       </label>
+      <label class="debug-panel__row">
+        <input type="checkbox" data-debug-corners ${roundedCorners() ? 'checked' : ''} />
+        <span>Rounded corners</span>
+      </label>
       <p class="debug-panel__hint">Press S to hide</p>`
     document.body.append(panel)
     initFpsMeter(panel)
@@ -44,9 +55,14 @@ export function initAnimationInspector() {
       sessionState.setItem(THUMBNAIL_SETTING, event.target.checked ? '1' : '0')
       window.dispatchEvent(new Event(THUMBNAIL_CHANGE))
     })
+    panel.querySelector('[data-debug-corners]').addEventListener('change', event => {
+      sessionState.setItem(CORNERS_KEY, event.target.checked ? '1' : '0')
+      syncCorners()
+    })
   }
 
   window.addEventListener('pageshow', () => {
+    syncCorners()
     if (panel) panel.querySelector('[data-debug-thumbnails]').checked = sameSizeThumbnails()
   })
 
