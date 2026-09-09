@@ -98,8 +98,11 @@ function titleBlockHtml(singleCase) {
 
 /** @param {typeof portfolioCases[number]['items'][number]} item */
 function wrapFigure(item, eager = false) {
+  const figureStyle = item.maxWidth
+    ? `max-width: ${Number(item.maxWidth)}px; margin-inline: auto`
+    : eager && isVideo(item.file) ? `width: min(100%, calc(90svh * ${mediaRatio(item.file)}))` : ''
   return `<div class="portfolio-item w-full">
-  <figure ${eager && isVideo(item.file) ? `style="width: min(100%, calc(90svh * ${mediaRatio(item.file)}))"` : ''} class="portfolio-asset w-full overflow-hidden rounded-[24px] bg-zinc-100">
+  <figure ${figureStyle ? `style="${figureStyle}"` : ''} class="portfolio-asset w-full overflow-hidden rounded-[24px] bg-zinc-100">
     ${mediaHtml(item, eager)}
   </figure>${captionHtml(item)}
   </div>`

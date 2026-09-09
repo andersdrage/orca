@@ -157,6 +157,7 @@ export const portfolioCases = [
       { file: 'nettavisen-mindjek-26.png', span: 'full', alt: 'Nettavisen advertising and vertical brand campaigns' },
       // Tumblr serves the supplied .png URL as a JPEG; saved unchanged in its actual format.
       { file: 'nettavisen-tumblr-overview.jpg', span: 'full', alt: 'Yellow Nettavisen campaign poster in a station' },
+      { file: 'nettavisen-mindjek-01.png', span: 'full', maxWidth: 400, alt: 'Nettavisen dimensional sign above the office entrance' },
     ],
   },
   {
