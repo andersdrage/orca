@@ -1328,20 +1328,15 @@ body.world-mode {
 .timeline-tile--image .timeline-tile__image {
   border-radius: inherit;
   z-index: 1;
-  /* Hover-skalering ligger på BILDET, ikke tilen — elastikk-scrollen skriver
-     transform på tilen per frame, og en transition der ville retargetet og
-     flimret. Diskret hover-event → transition er trygt her. */
+  /* Keyboard focus animates the image; scroll magnification belongs to the tile. */
   transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
-@media (hover: hover) {
-  a.timeline-tile:hover .timeline-tile__image { transform: scale(1.03); }
-}
 a.timeline-tile:focus-visible .timeline-tile__image {
   transform: scale(1.03);
 }
 
-/* Freeze the clicked hover size while the destination loads. */
+/* Preserve the image's current transform while the destination loads. */
 a.timeline-tile.is-navigating .timeline-tile__image {
   transition: none;
   transform: var(--project-click-transform, none);
