@@ -90,3 +90,7 @@ scrolling returns to the top, and blocked images produce an actionable failure.
 ## DRA-72: plain project navigation
 
 The previous index/project morph, fallback animation, and staggered case entrance are removed. Regression checks cover plain opening and return navigation on desktop and mobile with normal and reduced motion, including the last loop item, Close, browser Back, visible-media autoplay, and saved overview state. `tests/session-state.test.mjs` retains the cached-document storage check from the retired transition helper tests.
+
+## DRA-72: thumbnail reveal
+
+An explicit index click captures only the clicked image. The browser waits for the destination and slides that original thumbnail down over the real, stationary case. The document root is excluded from snapshots so case controls remain interactive. Close, Back/Forward, reduced motion, legacy layouts, and unavailable native transitions use ordinary navigation. Reveal checks cover desktop/mobile frames, real image pixels, fixed case geometry, scroll cancellation, immediate close, skipped transitions, repeated entry, reload, and return-position cleanup.

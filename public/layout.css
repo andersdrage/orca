@@ -1341,10 +1341,10 @@ a.timeline-tile:focus-visible .timeline-tile__image {
   transform: scale(1.03);
 }
 
-/* Ved klikk: nullstill momentant så morph-snapshotet tas i hvilestørrelse. */
+/* Freeze the clicked hover size while the destination loads. */
 a.timeline-tile.is-navigating .timeline-tile__image {
   transition: none;
-  transform: none;
+  transform: var(--project-click-transform, none);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2775,6 +2775,29 @@ a.timeline-tile.is-navigating .timeline-tile__image {
 }
 
 .page-case .case-below { background: #fafafa; }
+
+/* A single captured thumbnail moves over the fully drawn destination.
+   The browser holds the old page until the new page is ready to paint. */
+@view-transition { navigation: auto; }
+:root { view-transition-name: none; }
+html.project-reveal-active::view-transition { pointer-events: none; }
+html.project-reveal-active::view-transition-group(project-thumbnail) {
+  z-index: 1;
+  animation: none;
+}
+html.project-reveal-active::view-transition-image-pair(project-thumbnail) { overflow: visible; }
+html.project-reveal-active::view-transition-old(project-thumbnail) {
+  opacity: 1;
+  mix-blend-mode: normal;
+  animation: project-thumbnail-reveal 560ms 50ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes project-thumbnail-reveal {
+  from { transform: translateY(0); }
+  to { transform: translateY(var(--project-reveal-distance)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
 
 .site-footer__story { color: #52525b; }
 .site-footer__dragon {

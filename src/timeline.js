@@ -7,6 +7,7 @@ import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
 import { FEATURED_ORDER, isCasePath } from './case-navigation.js'
 import { thumbnailAppearance, sameSizeThumbnails, THUMBNAIL_CHANGE } from './thumbnail-settings.js'
+import { rememberProjectReveal } from './project-reveal.js'
 
 const TILES = [
   {
@@ -713,6 +714,7 @@ export function initTimeline(scrollerEl) {
     scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => {
       tile.classList.remove('is-navigating', 'is-pressed')
       tile.style.removeProperty('scale')
+      tile.style.removeProperty('--project-click-transform')
     })
     updateMagnification()
   }
@@ -738,6 +740,7 @@ export function initTimeline(scrollerEl) {
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
     if (!isSameTabNavigation(event, tile)) return
+    rememberProjectReveal(tile)
     tile.classList.add('is-navigating')
     sessionState.setItem('timeline:last-case', tile.dataset.tileId)
     const rect = tile.getBoundingClientRect()

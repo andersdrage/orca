@@ -818,7 +818,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForFunction(() => document.querySelector('.case-below video').currentTime > 0)
     })
 
-    test('project navigation opens and returns without animation at desktop and mobile sizes', async (t) => {
+    test('project navigation keeps case content still and returns instantly at desktop and mobile sizes', async (t) => {
       const page = await visit(t, '/', {}, () => {
         addEventListener('pagereveal', event => { window.hasNavigationTransition = Boolean(event.viewTransition) })
       })
@@ -852,10 +852,11 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
               hidden: el.getBoundingClientRect().height === 0,
             }
           })
-          assert.equal(entry.transition, false)
+          if (reducedMotion === 'reduce') assert.equal(entry.transition, false)
           assert.deepEqual(entry.animations, [], `${id}: no native, fallback, or staggered case entrance`)
           assert.equal(entry.opacity, '1')
           assert.equal(entry.hidden, false)
+          if (reducedMotion === 'reduce') assert.equal(await page.locator('html.project-reveal-active').count(), 0)
           if (id === 'uber') await page.goBack({ waitUntil: 'domcontentloaded' })
           else await page.locator('.case-close').click()
           await page.waitForURL(base + '/')
@@ -874,6 +875,104 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           assert.equal(returned.transition, false)
           assert.equal(returned.navigating, 0)
         }
+      }
+    })
+
+    test('project reveal moves one thumbnail over a fully drawn stationary case', async (t) => {
+      for (const width of [1440, 390]) {
+        const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {
+          addEventListener('pagereveal', event => {
+            if (!event.viewTransition || location.pathname === '/') return
+            event.viewTransition.ready.then(() => {
+              window.revealAnimations = document.getAnimations()
+              window.revealAnimations.forEach(animation => { animation.pause(); animation.currentTime = 0 })
+            }, () => {})
+          })
+        })
+        await ready(page, '/')
+        await page.emulateMedia({ reducedMotion: 'no-preference' })
+        const tile = page.locator('[data-copy="1"] [data-tile-id="micromilspec"]')
+        await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+        await tile.evaluate(el => { el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2 })
+        await page.waitForTimeout(500)
+        await tile.hover()
+        await page.waitForTimeout(300)
+        await tile.click()
+        await page.waitForURL('**/micromilspec/')
+        await page.waitForFunction(() => window.revealAnimations?.some(animation => animation.animationName === 'project-thumbnail-reveal'))
+        const frame = () => page.evaluate(() => {
+          const style = pseudo => getComputedStyle(document.documentElement, pseudo)
+          const image = style('::view-transition-old(project-thumbnail)')
+          const group = style('::view-transition-group(project-thumbnail)')
+          const intro = document.querySelector('.case-lead__intro').getBoundingClientRect().toJSON()
+          const block = document.querySelector('.case-title-block').getBoundingClientRect().toJSON()
+          return { transform: image.transform, opacity: image.opacity, width: group.width, height: group.height,
+            caseOpacity: getComputedStyle(document.querySelector('.case-lead__intro')).opacity, caseTransform: getComputedStyle(document.querySelector('[data-case-root]')).transform,
+            rootSnapshot: getComputedStyle(document.documentElement).viewTransitionName, intro, block }
+        })
+        assert.equal(await page.locator('html.project-reveal-active').count(), 1, 'arrival resize events must not cancel the reveal')
+        const start = await frame()
+        assert.equal(start.rootSnapshot, 'none', 'only the thumbnail is captured; the case remains interactive')
+        assert.equal(start.caseOpacity, '1')
+        assert.equal(start.caseTransform, 'none')
+        const pixels = await sharp(await page.screenshot()).stats()
+        assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 25), 'the held thumbnail is painted, not an empty layer')
+        await page.evaluate(() => window.revealAnimations.forEach(animation => { animation.currentTime = 180 }))
+        const middle = await frame()
+        assert.equal(middle.opacity, '1')
+        assert.equal(middle.width, start.width)
+        assert.equal(middle.height, start.height)
+        assert.deepEqual(middle.intro, start.intro)
+        assert.deepEqual(middle.block, start.block)
+        const travel = await page.evaluate(() => {
+          const matrix = new DOMMatrixReadOnly(getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform)
+          return { x: matrix.m41, y: matrix.m42, scale: matrix.a }
+        })
+        assert.equal(travel.x, 0)
+        assert.equal(travel.scale, 1)
+        assert.ok(travel.y > 50)
+        await page.evaluate(() => window.revealAnimations.forEach(animation => animation.finish()))
+        await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
+        await page.reload()
+        assert.equal(await page.locator('html.project-reveal-active').count(), 0, 'reload cannot replay the consumed reveal')
+        await page.locator('.case-close').click()
+        await page.waitForURL(base + '/')
+        assert.equal(await page.locator('[data-project-reveal-source]').count(), 0)
+      }
+    })
+
+    test('project reveal clears on scroll or immediate close and skips unavailable transitions', async (t) => {
+      const page = await visit(t, '/', {}, () => {
+        addEventListener('pagereveal', event => {
+          if (!event.viewTransition || location.pathname === '/') return
+          if (sessionStorage.getItem('test:skip-reveal')) return event.viewTransition.skipTransition()
+          event.viewTransition.ready.then(() => {
+            window.revealAnimations = document.getAnimations()
+            window.revealAnimations.forEach(animation => animation.pause())
+          }, () => {})
+        })
+      })
+      await ready(page, '/')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      for (const action of ['scroll', 'close', 'resize', 'skip']) {
+        if (action === 'skip') await page.evaluate(() => sessionStorage.setItem('test:skip-reveal', '1'))
+        const tile = page.locator('[data-tile-id="micromilspec"]').filter({ visible: true })
+        const index = await tile.evaluateAll(els => els.findIndex(el => { const r = el.getBoundingClientRect(); return r.left < innerWidth && r.right > 0 }))
+        await tile.nth(index).click()
+        await page.waitForURL('**/micromilspec/')
+        if (action !== 'skip') {
+          await page.waitForFunction(() => window.revealAnimations?.length)
+          if (action === 'scroll') await page.mouse.wheel(0, 100)
+          if (action === 'resize') await page.setViewportSize({ width: 1450, height: 900 })
+        }
+        if (action !== 'close') {
+          await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
+          assert.equal(await page.locator('.case-lead__intro').evaluate(el => getComputedStyle(el).opacity), '1')
+        }
+        await page.locator('.case-close').click()
+        await page.waitForURL(base + '/')
+        await ready(page, '/')
+        assert.equal(await page.locator('[data-project-reveal-source]').count(), 0)
       }
     })
 

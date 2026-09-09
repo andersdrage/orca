@@ -8,6 +8,7 @@ import { initCreditsLayout } from './credits-layout.js'
 import { initCaseGallery } from './case-gallery.js'
 import { initCaseComparisons } from './case-comparison.js'
 import { caseNeighbors, caseArrowDirection } from './case-navigation.js'
+import { initProjectReveal } from './project-reveal.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
@@ -145,3 +146,4 @@ function initCaseClose() {
 initCaseClose()
 
 initHeader()
+initProjectReveal(root)
