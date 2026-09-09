@@ -1,11 +1,17 @@
-# DRA-72 — thumbnail reveal
+# DRA-72 — same-document thumbnail reveal
 
-Clicking a project in the index reveals the actual case intro and title block behind the selected thumbnail. Only the thumbnail moves: straight down below the viewport over 560 ms, after a 50 ms hold. Its clicked crop and hover size are retained. The case stays still and its controls remain interactive.
+Index-to-project clicks now load the case inside the existing document. The project HTML and intro fonts are prepared before `document.startViewTransition()` captures the clicked thumbnail. The case intro and title block are mounted behind that snapshot; only the image slides down, over 560 ms after a 50 ms hold. The document root is excluded from snapshots, and the case controls remain interactive.
 
-The browser captures the existing thumbnail and holds the source document until the destination is ready. The document root is excluded from view-transition snapshots. There is no copied image to decode on arrival, whole-page fade, reverse transition, or scripted fallback animation.
+The overview stays mounted in a hidden, inert container with its original scroll positions. Close returns through the case history entries to the originating overview. Browser Back/Forward restores individual case entries and their scroll positions. Project arrows also stay in the current document. URLs, titles and social/description metadata update with each case; direct URLs and reloads retain their standalone HTML entries.
 
-`src/project-reveal.js` limits the effect to a fresh same-tab index click in presentation mode. It consumes the navigation hint once, clears source names on return, and cancels on scroll, resize, keyboard input or leaving the page. Close, Back/Forward, reduced motion, legacy layouts, and unsupported or skipped native transitions use ordinary navigation.
+`src/project-navigation.js` coordinates preparation, history, mount/unmount and cancellation. `src/case-view.js` installs case controls and returns a cleanup function for global listeners, observers, media and dialogs. `src/project-page.js` shares a bounded document cache with intent warmup and evicts failed requests. The footer observer releases removed cases.
 
-Rollback: `b06bb68` is the plain-navigation starting point on `codex/dra-72-project-transition`. `ac45dfe` is the earlier main-branch baseline.
+Reduced motion, keyboard activation, legacy layouts and browsers without View Transitions swap content immediately in the same document. Scroll, resize, Escape and subsequent navigation interrupt an active reveal. Failed preparation falls back to the ordinary project link. A standalone case opened directly still uses ordinary navigation when Close needs an overview document that has not been loaded.
 
-Validation covers both Chromium and WebKit, desktop/mobile frames, painted thumbnail pixels, stationary case geometry, repeated navigation, reload, immediate close, scroll interruption, skipped transitions and saved index position. Dated captures under `screenshots/` preserve the iterations; the `2026-09-09_dra72-slide-final` folder contains the desktop frames, and `2026-09-10_dra72-slide-mobile-check` contains the final touch-device frames after filtering Safari’s unchanged-viewport resize event.
+The hover enlargement was removed in the preceding iteration. Scroll-based thumbnail magnification remains.
+
+Rollback: `af8bc1c` keeps the hover removal and the earlier cross-document reveal; `b06bb68` is the plain-navigation starting point; `ac45dfe` is the earlier main-branch baseline. Changes remain on `codex/dra-72-project-transition` until explicitly pushed.
+
+The final 16 focused checks pass in Chromium and WebKit. Broader checks also cover the reusable controls, media, footer and storage behavior; the pre-existing archive-content assertion remains outside this change.
+
+Validation covers persistent document identity, actual image pixels, stationary intro geometry, desktop and touch mobile sizes, Back/Forward, Close after project arrows, overview focus and exact timeline position, control cleanup, interrupted/pending/failed navigation, and an unavailable View Transitions API. Dated before/after captures and intermediate frames are saved locally under `screenshots/`.

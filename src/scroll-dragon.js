@@ -68,6 +68,9 @@ export function initScrollDragons() {
   }, { rootMargin: '200px' })
 
   const scan = () => {
+    footers.forEach((state, footer) => {
+      if (!footer.isConnected) { observer.unobserve(footer); footers.delete(footer) }
+    })
     document.querySelectorAll('.site-footer').forEach(footer => {
       if (footers.has(footer)) return
       const figure = footer.querySelector('.site-footer__dragon')

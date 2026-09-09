@@ -2,11 +2,11 @@ import { sessionState } from './session-state.js'
 import { syncVisibleMedia } from './visible-media.js'
 import { initCaseIntroScroll } from './case-intro-scroll.js'
 
-export function initCreditsLayout(root) {
+export function initCreditsLayout(root, { signal } = {}) {
   const credits = root.querySelector('.case-credits')
   const lead = root.querySelector('.case-lead, .case-legacy-lead')
   if (!lead) return
-  const updateIntroScroll = initCaseIntroScroll(lead)
+  const updateIntroScroll = initCaseIntroScroll(lead, { signal })
   const hero = lead.querySelector('.case-cover-hero')
   const content = lead.nextElementSibling
   const onlyCover = hero?.children.length > 0 && content?.children.length === 0
@@ -59,5 +59,5 @@ export function initCreditsLayout(root) {
     apply()
     if (key === 'p') window.scrollTo({ top: 0, behavior: 'instant' })
     syncVisibleMedia(root)
-  })
+  }, { signal })
 }

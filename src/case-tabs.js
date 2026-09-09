@@ -1,4 +1,5 @@
 export function initCaseTabs(root) {
+  const cleanups = []
   root.querySelectorAll('[data-case-tabs]').forEach((group) => {
     const bar = group.querySelector('[role="tablist"]')
     const scroller = group.querySelector('.case-tabs__scroll')
@@ -51,8 +52,10 @@ export function initCaseTabs(root) {
     })
 
     positionPill()
-    new ResizeObserver(() => positionPill()).observe(bar)
-    document.fonts.ready.then(() => positionPill())
+    const resize = new ResizeObserver(() => positionPill())
+    resize.observe(bar)
+    let disposed = false
+    document.fonts.ready.then(() => { if (!disposed) positionPill() })
     // These small images load together only near the gallery, so keyboard
     // switching is immediate without competing with the case hero at entry.
     const observer = new IntersectionObserver((entries) => {
@@ -61,5 +64,7 @@ export function initCaseTabs(root) {
       observer.disconnect()
     }, { rootMargin: '400px' })
     observer.observe(group)
+    cleanups.push(() => { disposed = true; observer.disconnect(); resize.disconnect() })
   })
+  return () => cleanups.forEach(cleanup => cleanup())
 }

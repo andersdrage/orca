@@ -807,7 +807,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(await page.locator('.timeline-copy').first().evaluate(el => Boolean(el.style.transform)), 'scroll wakes the spring after return')
     })
 
-    test('case autoplay starts when visible after ordinary project navigation', async (t) => {
+    test('case autoplay starts when visible after same-document project navigation', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')
       await page.emulateMedia({ reducedMotion: 'no-preference' })
@@ -826,6 +826,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       for (const [width, height, reducedMotion] of [[1440, 900, 'no-preference'], [390, 844, 'no-preference'], [390, 844, 'reduce']]) {
         await page.setViewportSize({ width, height })
         await page.emulateMedia({ reducedMotion })
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
         for (const id of ['micromilspec', 'uber']) {
           const tile = page.locator(`[data-copy="1"] [data-tile-id="${id}"]`)
           await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
@@ -881,15 +882,19 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('project reveal moves one thumbnail over a fully drawn stationary case', async (t) => {
       for (const width of [1440, 390]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {
-          addEventListener('pagereveal', event => {
-            if (!event.viewTransition || location.pathname === '/') return
-            event.viewTransition.ready.then(() => {
+          const start = document.startViewTransition.bind(document)
+          document.startViewTransition = update => {
+            const transition = start(update)
+            transition.ready.then(() => {
               window.revealAnimations = document.getAnimations()
               window.revealAnimations.forEach(animation => { animation.pause(); animation.currentTime = 0 })
             }, () => {})
-          })
+            return transition
+          }
+          window.documentIdentity = crypto.randomUUID()
         })
         await ready(page, '/')
+        const identity = await page.evaluate(() => window.documentIdentity)
         await page.emulateMedia({ reducedMotion: 'no-preference' })
         const tile = page.locator('[data-copy="1"] [data-tile-id="micromilspec"]')
         await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
@@ -900,6 +905,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await tile.click()
         await page.waitForURL('**/micromilspec/')
         await page.waitForFunction(() => window.revealAnimations?.some(animation => animation.animationName === 'project-thumbnail-reveal'))
+        assert.equal(await page.evaluate(() => window.documentIdentity), identity, 'project reveal retains the same document')
+        assert.equal(await page.evaluate(() => performance.getEntriesByType('navigation').length), 1)
         const frame = () => page.evaluate(() => {
           const style = pseudo => getComputedStyle(document.documentElement, pseudo)
           const image = style('::view-transition-old(project-thumbnail)')
@@ -943,14 +950,16 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('project reveal clears on scroll or immediate close and skips unavailable transitions', async (t) => {
       const page = await visit(t, '/', {}, () => {
-        addEventListener('pagereveal', event => {
-          if (!event.viewTransition || location.pathname === '/') return
-          if (sessionStorage.getItem('test:skip-reveal')) return event.viewTransition.skipTransition()
-          event.viewTransition.ready.then(() => {
+        const start = document.startViewTransition.bind(document)
+        document.startViewTransition = update => {
+          const transition = start(update)
+          if (sessionStorage.getItem('test:skip-reveal')) transition.skipTransition()
+          else transition.ready.then(() => {
             window.revealAnimations = document.getAnimations()
             window.revealAnimations.forEach(animation => animation.pause())
           }, () => {})
-        })
+          return transition
+        }
       })
       await ready(page, '/')
       await page.emulateMedia({ reducedMotion: 'no-preference' })
@@ -974,6 +983,100 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await ready(page, '/')
         assert.equal(await page.locator('[data-project-reveal-source]').count(), 0)
       }
+    })
+
+
+    test('same-document cases retain URLs, history, focus and one set of controls across repeated visits', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      await page.evaluate(async () => { await document.fonts.ready; window.documentIdentity = 'overview'; window.savedTimeline = document.querySelector('[data-timeline]') })
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+      for (const id of ['uber', 'boligmappa', 'micromilspec']) {
+        const tile = page.locator(`[data-copy="1"] [data-tile-id="${id}"]`)
+        await tile.evaluate(el => { el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2 })
+        await page.waitForTimeout(500)
+        const left = await page.locator('[data-timeline]').evaluate(el => el.scrollLeft)
+        const copies = page.locator(`[data-tile-id="${id}"]`)
+        const visible = await copies.evaluateAll(els => els.findIndex(el => { const r = el.getBoundingClientRect(); return r.left > 0 && r.right < innerWidth }))
+        const bounds = await copies.nth(visible).boundingBox()
+        await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)
+        await page.waitForURL(`**/${id}/`)
+        assert.equal(await page.evaluate(() => window.documentIdentity), 'overview')
+        assert.equal(await page.locator('.case-close').count(), 1)
+        assert.equal(await page.locator('[data-case-root]').count(), 1)
+        assert.equal(await page.getByRole('main').count(), 1)
+        await page.keyboard.press('c')
+        assert.equal(await page.locator('.case-lead, .case-legacy-lead').getAttribute('data-layout'), 'columns', 'one key press changes the active case exactly once')
+        await page.keyboard.press('p')
+        await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }))
+        await page.waitForFunction(() => Math.abs(scrollY - 500) < 2)
+        await page.goBack()
+        await page.waitForSelector('.project-overview-suspended', { state: 'detached' })
+        assert.equal(await page.evaluate(() => window.savedTimeline === document.querySelector('[data-timeline]')), true)
+        assert.ok(Math.abs(await page.locator('[data-timeline]').evaluate(el => el.scrollLeft) - left) < 2, `${id} timeline position: ${await page.locator('[data-timeline]').evaluate(el => el.scrollLeft)} vs ${left}`)
+        assert.equal(await page.locator('[data-case-root], .case-close, .project-audio, .case-image-viewer').count(), 0)
+        await page.goForward()
+        await page.waitForSelector('[data-case-root]')
+        assert.equal(await page.evaluate(() => window.documentIdentity), 'overview')
+        assert.ok(Math.abs(await page.evaluate(() => scrollY) - 500) < 2)
+        await page.keyboard.press('ArrowRight')
+        await page.waitForURL(`**/${FEATURED_ORDER[(FEATURED_ORDER.indexOf(id) + 1) % FEATURED_ORDER.length]}/`)
+        assert.equal(await page.locator('.case-close').count(), 1)
+        await page.locator('.case-close').click()
+        await page.waitForURL(base + '/')
+        assert.equal(await page.evaluate(() => window.documentIdentity), 'overview')
+        await page.evaluate(() => sessionStorage.removeItem('credits:layout'))
+      }
+      await page.locator('[data-copy="1"] [data-tile-id="micromilspec"]').click()
+      await page.waitForURL('**/micromilspec/')
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+      await page.locator('.case-close').click()
+      await page.waitForURL(base + '/')
+      assert.ok(await page.locator('[data-tile-id="micromilspec"]').evaluateAll(els => els.some(el => { const r = el.getBoundingClientRect(); return r.right > 0 && r.left < innerWidth })), 'rotation while a case is open preserves the selected thumbnail')
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.locator('.site-header a[href="/about/"]').click()
+      await activeWorld(page, '/about/')
+      await page.evaluate(() => {
+        const link = document.createElement('a'); link.href = '/uber/'; link.textContent = 'Open Uber'; link.id = 'test-case-link'
+        document.querySelector('.world-page[data-path="/about/"] main').prepend(link)
+      })
+      await page.locator('#test-case-link').click()
+      await page.waitForURL('**/uber/')
+      await page.locator('.case-close').click()
+      await page.waitForURL('**/about/')
+      assert.equal(await page.evaluate(() => window.documentIdentity), 'overview')
+      await activeWorld(page, '/about/')
+    })
+
+    test('pending project loads can be cancelled and failed loads retain ordinary navigation', async (t) => {
+      const page = await visit(t, '/', {}, () => { window.documentIdentity = 'overview'; document.startViewTransition = undefined })
+      await ready(page, '/')
+      let release
+      await page.route('**/micromilspec/', async route => {
+        await new Promise(resolve => { release = resolve })
+        await route.continue()
+      })
+      const tile = page.locator('[data-copy="1"] [data-tile-id="micromilspec"]')
+      await tile.click()
+      await page.waitForFunction(() => document.querySelector('a[aria-busy="true"]'))
+      await page.keyboard.press('Escape')
+      release()
+      await page.waitForTimeout(300)
+      assert.equal(new URL(page.url()).pathname, '/')
+      assert.equal(await page.locator('a[aria-busy="true"], .is-navigating').count(), 0)
+      await page.unroute('**/micromilspec/')
+      await tile.click()
+      await page.waitForURL('**/micromilspec/')
+      assert.equal(await page.evaluate(() => window.documentIdentity), 'overview', 'unsupported animation still uses same-document navigation')
+      assert.equal(await page.locator('html.project-reveal-active').count(), 0)
+      await page.locator('.case-close').click()
+      await page.waitForURL(base + '/')
+      await page.route('**/hjemla/', route => route.request().isNavigationRequest() ? route.continue() : route.fulfill({ status: 503, body: 'Unavailable' }))
+      await page.locator('[data-copy="1"] [data-tile-id="hjemla"]').click()
+      await page.waitForURL('**/hjemla/')
+      await page.waitForSelector('[data-case-root]')
+      assert.equal(await page.evaluate(() => performance.getEntriesByType('navigation')[0].name.endsWith('/hjemla/')), true)
     })
 
     test('intro stays clear of the enlarged first thumbnail during forward and reverse scrolling', async (t) => {
@@ -1229,22 +1332,25 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(Math.abs(restoredCenter - originalCenter) < 3, `return keeps its original screen position: ${originalCenter} → ${restoredCenter}`)
     })
 
-    if (engine === 'chromium') test('cold homepage to case transition captures a decoded hero without prerendering', async (t) => {
+    test('cold homepage reveal captures a decoded thumbnail over a ready intro', async (t) => {
       const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
-        window.addEventListener('pagereveal', (event) => {
-          if (!event.viewTransition) return
-          event.viewTransition.ready.then(() => {
-            if (location.pathname === '/micromilspec/') sessionStorage.setItem('test:hero-ready', String(!!document.querySelector('.case-cover-hero img')?.naturalWidth))
+        const start = document.startViewTransition.bind(document)
+        document.startViewTransition = update => {
+          const image = document.querySelector('[data-project-reveal-source]')
+          window.capturedDecodedThumbnail = Boolean(image?.complete && image.naturalWidth)
+          const transition = start(update)
+          transition.ready.then(() => {
+            window.introReady = Boolean(document.querySelector('.case-lead__intro')?.textContent.trim()) && document.fonts.check('16px DragePlantin')
           }, () => {})
-        })
+          return transition
+        }
       })
       await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
       const tile = page.locator('.timeline-copy[data-copy="1"] a').first()
-      await tile.hover()
-      await page.waitForTimeout(300)
       await tile.click()
       await page.waitForURL('**/micromilspec/')
-      await page.waitForFunction(() => sessionStorage.getItem('test:hero-ready') === 'true')
+      await page.waitForFunction(() => window.introReady === true)
+      assert.equal(await page.evaluate(() => window.capturedDecodedThumbnail), true)
     })
 
     test('retired URLs are not redirected and all moved work has one destination', async (t) => {

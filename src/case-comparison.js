@@ -1,4 +1,4 @@
-export function initCaseComparisons(root) {
+export function initCaseComparisons(root, { signal } = {}) {
   root.querySelectorAll('[data-case-comparison]').forEach((frame) => {
     const slider = frame.querySelector('input')
     const before = frame.querySelector('.case-comparison__before')
@@ -43,7 +43,7 @@ export function initCaseComparisons(root) {
       try { await Promise.all(images.map(image => image.decode())) }
       catch { return }
       finally { preparing = false }
-      if (!visible || interacted || reduced.matches || document.hidden) return
+      if (signal?.aborted || !visible || interacted || reduced.matches || document.hidden) return
       demonstrated = true
       const stops = [50, 70, 30, 50]
       const offsets = [0, 0.25, 0.7, 1]
@@ -105,11 +105,12 @@ export function initCaseComparisons(root) {
     reduced.addEventListener('change', () => {
       if (reduced.matches) stopDemo(true)
       else demonstrate()
-    })
+    }, { signal })
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopDemo(true)
       else demonstrate()
-    })
+    }, { signal })
+    signal?.addEventListener('abort', () => { visible = false; observer.disconnect(); stopDemo(true) }, { once: true })
     render(50)
   })
 }

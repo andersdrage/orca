@@ -1,3 +1,5 @@
+import { initProjectNavigation } from './project-navigation.js'
+import { prepareProjectPage } from './project-page.js'
 import { initScrollDragons } from './scroll-dragon.js'
 import { initAnimationInspector } from './debug-panel.js'
 import { initDesignAudit } from './design-audit.js'
@@ -44,9 +46,7 @@ function initCaseWarmup() {
       images.set(src, image)
       image.decode().catch(() => {})
     })
-    fetchOnce(link.href).then(async (response) => {
-      if (!response?.ok) return
-      const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+    prepareProjectPage(link.href).then((doc) => {
       doc.querySelectorAll('script[src], link[rel="stylesheet"][href], link[rel="modulepreload"][href], link[as="font"][href]').forEach((el) => {
         const asset = el.getAttribute('src') || el.getAttribute('href')
         if (asset) fetchOnce(new URL(asset, link.href).href)
@@ -91,6 +91,7 @@ export function initHeader() {
      gjør initWorld ingenting, og scroll-lytteren under gjelder der i stedet
      (i world-mode scroller seksjonene internt — world.js har egen lytter). */
   initWorld(header)
+  initProjectNavigation()
   initScrollDragons()
 
   function updateHeaderScrollState() {

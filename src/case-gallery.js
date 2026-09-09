@@ -61,4 +61,8 @@ export function initCaseGallery(root) {
       show(index + (event.key === 'ArrowLeft' ? -1 : 1))
     }
   })
+  return () => {
+    if (dialog.open) { dialog.close(); document.documentElement.style.overflow = previousOverflow }
+    dialog.remove()
+  }
 }

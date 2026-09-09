@@ -1,5 +1,5 @@
 // The intro stays behind the media; its opacity follows the actual overlap.
-export function initCaseIntroScroll(lead) {
+export function initCaseIntroScroll(lead, { signal } = {}) {
   const copy = lead.querySelector('.case-lead__copy, .case-legacy-copy')
   const content = lead.nextElementSibling
   if (!copy || !content) return () => {}
@@ -24,14 +24,16 @@ export function initCaseIntroScroll(lead) {
     lead.style.setProperty('--intro-opacity', String(1 - covered))
   }
   function schedule() {
+    if (signal?.aborted) return
     if (!frame) frame = requestAnimationFrame(update)
   }
-  window.addEventListener('scroll', schedule, { passive: true })
-  window.addEventListener('resize', schedule, { passive: true })
-  window.addEventListener('pageshow', schedule)
-  reduced.addEventListener('change', schedule)
+  window.addEventListener('scroll', schedule, { passive: true, signal })
+  window.addEventListener('resize', schedule, { passive: true, signal })
+  window.addEventListener('pageshow', schedule, { signal })
+  reduced.addEventListener('change', schedule, { signal })
   const observer = new ResizeObserver(schedule)
   observer.observe(lead)
   observer.observe(copy)
+  signal?.addEventListener('abort', () => { observer.disconnect(); cancelAnimationFrame(frame) }, { once: true })
   return schedule
 }
