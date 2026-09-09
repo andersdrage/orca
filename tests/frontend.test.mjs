@@ -574,6 +574,46 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('opening map paints all six pages inside desktop and phone viewports on a slow connection', async (t) => {
+      for (const width of [390, 1440]) {
+        const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390, reducedMotion: 'no-preference' }, () => {
+          const fetchPage = window.fetch
+          window.fetch = async (url, options) => {
+            if (/^\/(about|praise|history|people|archived-work)\/$/.test(String(url))) await new Promise(resolve => setTimeout(resolve, 500))
+            return fetchPage(url, options)
+          }
+          const animate = Element.prototype.animate
+          window.heldMapAnimations = []
+          Element.prototype.animate = function (...args) {
+            const animation = animate.apply(this, args)
+            if (document.body.classList.contains('world-map-intro') && this.matches('.world, .world-page')) {
+              animation.pause()
+              animation.currentTime = 0
+              window.heldMapAnimations.push(animation)
+            }
+            return animation
+          }
+        })
+        await page.waitForFunction(() => window.heldMapAnimations.length === 2)
+        const cards = await page.locator('.world-page').evaluateAll(elements => elements.map(el => {
+          const r = el.getBoundingClientRect()
+          return { path: el.dataset.path, x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }
+        }))
+        assert.equal(cards.length, 6)
+        const screenshot = await page.screenshot()
+        for (const card of cards) {
+          assert.ok(card.x >= 0 && card.y >= 0 && card.right <= width && card.bottom <= page.viewportSize().height, `${engine} ${width}: ${JSON.stringify(card)}`)
+          const pixel = await sharp(screenshot).extract({ left: Math.round(card.x + card.width * .2), top: Math.round(card.y + card.height * .2), width: 1, height: 1 }).raw().toBuffer()
+          assert.ok([...pixel].slice(0, 3).every(channel => channel >= 245), `${card.path} paints a visible card, not just map backdrop`)
+        }
+        await page.evaluate(() => window.heldMapAnimations.forEach(animation => animation.play()))
+        await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+        assert.equal(await page.evaluate(() => innerWidth), width)
+        await page.locator('.site-header nav a[href="/about/"]').click()
+        await activeWorld(page, '/about/')
+      }
+    })
+
     test('phone thumbnails fit portrait frames and keep the intro clear after opening and rotation', async (t) => {
       const page = await visit(t, '/', { viewport: { width: 390, height: 700 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' })
       await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))

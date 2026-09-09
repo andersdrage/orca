@@ -187,9 +187,12 @@ body.world-mode {
 /* 2D-verden: rad 1 = forside | About | Praise, arkivet ligger under forsiden. */
 .world {
   display: grid;
-  grid-template-columns: repeat(3, 100vw);
-  grid-auto-rows: 100svh;
+  /* Proportional tracks shrink with the overview. WebKit leaves viewport-unit
+     grid tracks full-sized under CSS zoom, placing five map cards off-screen. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   width: 300vw;
+  height: 300svh;
   /* Bakteppet som kommer til syne bak kortene når sidene skalerer ned. */
   background: #e9e6e0;
 }
