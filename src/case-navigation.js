@@ -1,16 +1,14 @@
-// Featured sequence follows the homepage timeline; archived cases stay in the basement.
-export const FEATURED_ORDER = ['micromilspec', 'hjemla', 'off-market', 'boligmappa', 'finn', 'nettavisen', 'uber']
-export const ARCHIVED_ORDER = ['hmkg', 'humming-people', 'brathwait', 'mountain-milk']
+// Shared by thumbnail order, case arrows and return-transition detection.
+export const FEATURED_ORDER = ['houeland', 'micromilspec', 'hjemla', 'off-market', 'boligmappa', 'nettavisen', 'finn', 'uber']
+
+export const isCasePath = pathname => FEATURED_ORDER.some(id => pathname === `/${id}/` || pathname === `/${id}`)
 
 export function caseNeighbors(caseId) {
-  const archived = ARCHIVED_ORDER.includes(caseId)
-  const order = archived ? ARCHIVED_ORDER : FEATURED_ORDER
-  const index = order.indexOf(caseId)
+  const index = FEATURED_ORDER.indexOf(caseId)
   if (index === -1) return null
   return {
-    archived,
-    previous: order[(index + order.length - 1) % order.length],
-    next: order[(index + 1) % order.length],
+    previous: FEATURED_ORDER[(index + FEATURED_ORDER.length - 1) % FEATURED_ORDER.length],
+    next: FEATURED_ORDER[(index + 1) % FEATURED_ORDER.length],
   }
 }
 

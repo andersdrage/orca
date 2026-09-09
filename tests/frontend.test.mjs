@@ -2,10 +2,11 @@ import assert from 'node:assert/strict'
 import { after, before, describe, test } from 'node:test'
 import { preview } from 'vite'
 import { chromium, webkit } from 'playwright'
+import { FEATURED_ORDER } from '../src/case-navigation.js'
 import { loadLazyMedia } from '../scripts/screenshot-media.mjs'
 
 const worldPaths = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
-const casePaths = ['/micromilspec/', '/hjemla/', '/off-market/', '/boligmappa/', '/finn/', '/nettavisen/', '/uber/', '/hmkg/', '/humming-people/', '/brathwait/', '/mountain-milk/']
+const casePaths = FEATURED_ORDER.map(id => `/${id}/`)
 let server
 let base
 
@@ -381,10 +382,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('selected projects are named once and keyboard activation opens a case', async (t) => {
       const page = await visit(t, '/')
       const links = page.locator('.timeline-copy[data-copy="1"] a')
-      assert.equal(await links.count(), 7)
+      assert.equal(await links.count(), 8)
       const names = await links.evaluateAll((links) => links.map((link) => link.getAttribute('aria-label')))
       assert.ok(names.every(Boolean))
-      assert.equal(new Set(names).size, 7)
+      assert.equal(new Set(names).size, 8)
       for (const name of names) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 1)
       assert.equal(await page.locator('.timeline-copy[aria-hidden="true"] a:not([tabindex="-1"])').count(), 0)
       await page.getByRole('link', { name: 'MICROMILSPEC', exact: true }).focus()
@@ -1049,12 +1050,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/')
       assert.equal(await page.locator('.timeline-copy').count(), 3)
-      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 7)
+      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 8)
       await page.locator('.site-header a[href="/about/"]').click()
       await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/archived-work/')
-      assert.equal(await page.locator('.archived-grid__item').count(), 158)
+      assert.equal(await page.locator('.archived-grid__item').count(), 164)
       await page.locator('.world-page:not([inert]) [data-project="hmkg"] button').first().click()
       assert.equal(await page.getByRole('dialog').count(), 1)
     })
@@ -1092,7 +1093,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('new archive films have posters and open as playable videos', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')
-      for (const [id, count] of [['klp', 2], ['kindly', 3], ['abelee', 2], ['brevio', 3], ['just', 2]]) {
+      for (const [id, count] of [['klp', 2], ['kindly', 3], ['abelee', 2], ['brevio', 3], ['just', 4]]) {
         const block = page.locator(`[data-project="${id}"]`)
         const previews = block.locator('video')
         assert.equal(await previews.count(), count)
@@ -1120,12 +1121,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('archived projects have separate blocks and retain every image and lightbox position', async (t) => {
       const page = await visit(t, '/archived-work/')
-      const expected = [['intro', 2], ['agens', 5], ['aprila', 1], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 2], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['kaos', 14], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hellstrom', 2], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['daccord', 9], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
+      const expected = [['intro', 2], ['agens', 5], ['aprila', 5], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 4], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['kaos', 14], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hellstrom', 2], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['daccord', 9], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
       const blocks = page.locator('.archived-project')
       assert.deepEqual(await blocks.evaluateAll((blocks) => blocks.map((block) => [block.dataset.project, block.querySelectorAll('button').length])), expected)
       assert.equal(await page.locator('.archived-card').count(), 1)
       const indices = await blocks.locator('button').evaluateAll((buttons) => buttons.map((button) => Number(button.dataset.index)).sort((a, b) => a - b))
-      assert.deepEqual(indices, Array.from({ length: 158 }, (_, i) => i))
+      assert.deepEqual(indices, Array.from({ length: 164 }, (_, i) => i))
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
         await page.waitForFunction((count) => document.querySelector('.archived-project__grid')?.children.length === count, width > 900 ? 4 : 2)
@@ -1248,32 +1249,55 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.getByRole('link', { name: 'Back home' }).count(), 1)
     })
 
-    test('archived arrows preserve a direct-entry fallback and browser Back stays native', async (t) => {
-      const page = await visit(t, '/hmkg/')
-      await page.keyboard.press('ArrowRight')
-      await page.waitForURL('**/humming-people/')
-      await page.keyboard.press('ArrowRight')
-      await page.waitForURL('**/brathwait/')
-      await page.goBack()
-      await page.waitForURL('**/humming-people/')
-      await page.getByRole('button', { name: 'Close project and return to overview' }).click()
-      await page.waitForURL('**/archived-work/')
+    test('retired case URLs redirect to their intact archive projects', async (t) => {
+      const page = await visit(t, '/')
+      for (const [id, count] of [['hmkg', 4], ['humming-people', 11], ['brathwait', 23], ['mountain-milk', 6]]) {
+        await page.goto(base + `/${id}/`)
+        await page.waitForURL('**/archived-work/')
+        await ready(page, '/archived-work/')
+        assert.equal(await page.locator(`[data-project="${id}"] button`).count(), count)
+        assert.equal(await page.locator('[data-case-root]').count(), 0)
+      }
     })
 
-    test('an explicit world entry is preserved through an archived case chain and reload', async (t) => {
+    test('Houeland joins the featured order with a visible cover and correct neighbours', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      assert.deepEqual(await page.locator('.timeline-copy[data-copy="1"] a').evaluateAll(links => links.map(link => new URL(link.href).pathname)), casePaths)
+      await page.getByRole('link', { name: 'Houeland', exact: true }).click()
+      await page.waitForURL('**/houeland/')
+      assert.equal(await page.locator('.title-block__year dd').textContent(), '2026')
+      const image = page.locator('.case-below .portfolio-asset img').first()
+      await image.scrollIntoViewIfNeeded()
+      await image.evaluate(el => el.decode())
+      assert.ok(await image.isVisible())
+      await page.keyboard.press('ArrowLeft')
+      await page.waitForURL('**/uber/')
+      await page.keyboard.press('ArrowRight')
+      await page.waitForURL('**/houeland/')
+      await page.keyboard.press('ArrowRight')
+      await page.waitForURL('**/micromilspec/')
+      await page.goto(base + '/boligmappa/')
+      await page.keyboard.press('ArrowRight')
+      await page.waitForURL('**/nettavisen/')
+      await page.keyboard.press('ArrowRight')
+      await page.waitForURL('**/finn/')
+    })
+
+    test('an explicit world entry is preserved through a featured case chain and reload', async (t) => {
       const page = await visit(t, '/history/')
       // The gallery intentionally opens a lightbox; supply a test link to exercise
       // the supported same-origin case entry without changing production content.
       await page.evaluate(() => {
         const link = document.createElement('a')
-        link.href = '/hmkg/'
+        link.href = '/houeland/'
         link.textContent = 'Open test case'
         document.querySelector('.world-page:not([inert]) main').prepend(link)
       })
       await page.getByRole('link', { name: 'Open test case' }).click()
-      await page.waitForURL('**/hmkg/')
+      await page.waitForURL('**/houeland/')
       await page.keyboard.press('ArrowRight')
-      await page.waitForURL('**/humming-people/')
+      await page.waitForURL('**/micromilspec/')
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.keyboard.press('Escape')
       await page.waitForURL('**/history/')

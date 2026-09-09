@@ -18,6 +18,16 @@ export const micromilspecCovers = [
 
 export const portfolioCases = [
   {
+    id: 'houeland',
+    year: '2026',
+    title: 'Houeland',
+    layout: 'split',
+    intro: 'Brand and UX design for Houeland.',
+    items: [
+      { file: 'new-covers/cover-ratio-houeland.webp', span: 'full', alt: 'Houeland — embossed seal for selected properties' },
+    ],
+  },
+  {
     id: 'micromilspec',
     year: '2019–2024',
     title: 'MICROMILSPEC',
@@ -74,18 +84,6 @@ export const portfolioCases = [
     ],
   },
   {
-    id: 'hmkg',
-    year: '2014',
-    title: 'HMKG',
-    intro: 'Premium business cards for His Majesty The King’s Guard.',
-    items: [
-      { file: 'hmkg-1-full.jpg', span: 'full', alt: 'HMKG' },
-      { file: 'hmkg-2-full.jpg', span: 'full', alt: 'HMKG' },
-      { file: 'hmkg-3-full.jpg', span: 'full', alt: 'HMKG' },
-      { file: 'hmkg-4-full.jpg', span: 'full', alt: 'HMKG' },
-    ],
-  },
-  {
     id: 'off-market',
     year: '2017–2018',
     title: 'Off Market',
@@ -109,21 +107,6 @@ export const portfolioCases = [
       { file: 'offmarket-6-full.jpg', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-7-full.mp4', span: 'full', alt: 'Off Market' },
       { file: 'offmarket-8-full.jpg', span: 'full', alt: 'Off Market' },
-    ],
-  },
-  {
-    id: 'mountain-milk',
-    year: '2011',
-    title: 'Mountain Milk',
-    intro: 'Case study in the works — more on this project soon.',
-    items: [
-      { file: 'mm-1.jpg', span: 'full', alt: 'Mountain Milk' },
-      { file: 'mm-2.jpg', span: 'full', alt: 'Mountain Milk' },
-      { file: 'mm-3.jpg', span: 'full', alt: 'Mountain Milk' },
-      /* Triptyk — vises tre i bredden. */
-      { file: 'mm-4-1-3.jpg', span: 'third', alt: 'Mountain Milk' },
-      { file: 'mm-4-2-3.jpg', span: 'third', alt: 'Mountain Milk' },
-      { file: 'mm-4-3-3.jpg', span: 'third', alt: 'Mountain Milk' },
     ],
   },
   {
@@ -193,58 +176,6 @@ export const portfolioCases = [
       { file: 'finn-lokaler/4-half-v1.jpg', span: 'half', alt: 'FINN office interior with colorful chairs and illustrated partitions' },
       { file: 'finn-lokaler/5-half-v1.jpg', span: 'half', alt: 'FINN glass doors decorated with geometric frames and animal photographs' },
       { file: 'finn-lokaler/6-half-v1.jpg', span: 'half', alt: 'FINN sign above a red wall-mounted coat rack' },
-    ],
-  },
-  {
-    id: 'humming-people',
-    year: '2018',
-    title: 'Humming People',
-    intro: 'LP and booklet design for the band Humming People.',
-    items: [
-      { file: 'hp-1-full.jpg', span: 'full', alt: 'Humming People' },
-      { file: 'hp-2-full.jpg', span: 'full', alt: 'Humming People' },
-      { file: 'hp-3-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-4-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-5-full.jpg', span: 'full', alt: 'Humming People' },
-      { file: 'hp-6-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-7-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-8-full.jpg', span: 'full', alt: 'Humming People' },
-      { file: 'hp-9-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-10-half.jpg', span: 'half', alt: 'Humming People' },
-      { file: 'hp-11-full.jpg', span: 'full', alt: 'Humming People' },
-    ],
-  },
-  {
-    id: 'brathwait',
-    year: '2015',
-    title: 'Brathwait',
-    intro: 'Brand and UX design for the watch brand Brathwait.',
-    items: [
-      /* Hero = samme cover som tidslinje-tilen. Deretter presentasjonen i
-         sekvens, alle i full bredde under hverandre. */
-      { file: 'brathwait-cover.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-1.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-2.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-3.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-4.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-5.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-6.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-7.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-8.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-9.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-10.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-11.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-12.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-13.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-14.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-15.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-16.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-17.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-18.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-19.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-20.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-21.jpg', span: 'full', alt: 'Brathwait' },
-      { file: 'brathwait-22.jpg', span: 'full', alt: 'Brathwait' },
     ],
   },
   {

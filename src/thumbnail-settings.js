@@ -5,6 +5,7 @@ export const THUMBNAIL_CHANGE = 'thumbnails:change'
 export const sameSizeThumbnails = () => sessionState.getItem(THUMBNAIL_SETTING) === '1'
 
 const covers = {
+  houeland: 'houeland',
   micromilspec: 'micro',
   hjemla: 'hjemla',
   'off-market': 'offmarket',

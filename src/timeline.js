@@ -6,9 +6,19 @@ import { micromilspecCovers } from './portfolio-data.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
 import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
+import { FEATURED_ORDER, isCasePath } from './case-navigation.js'
 import { thumbnailAppearance, sameSizeThumbnails, THUMBNAIL_CHANGE } from './thumbnail-settings.js'
 
 const TILES = [
+  {
+    id: 'houeland',
+    title: 'Houeland',
+    href: '/houeland/',
+    image: '/images/new-covers/cover-ratio-houeland.webp',
+    color: '#e3d9c5',
+    ratio: '13 / 10',
+    h: '43svh',
+  },
   {
     id: 'micromilspec',
     title: 'MICROMILSPEC',
@@ -52,16 +62,6 @@ const TILES = [
     h: '51svh',
   },
   {
-    id: 'finn',
-    title: 'FINN.no',
-    href: '/finn/',
-    image: '/images/finn-5.jpg',
-    color: '#c9a227',
-    /* Samme aspekt som bildet (1920×1080). */
-    ratio: '16 / 9',
-    h: '38svh',
-  },
-  {
     id: 'nettavisen',
     title: 'Nettavisen',
     href: '/nettavisen/',
@@ -70,6 +70,16 @@ const TILES = [
     /* Samme aspekt som coveret (1147×1190). */
     ratio: '1147 / 1190',
     h: '48svh',
+  },
+  {
+    id: 'finn',
+    title: 'FINN.no',
+    href: '/finn/',
+    image: '/images/finn-5.jpg',
+    color: '#c9a227',
+    /* Samme aspekt som bildet (1920×1080). */
+    ratio: '16 / 9',
+    h: '38svh',
   },
   {
     id: 'uber',
@@ -82,7 +92,7 @@ const TILES = [
     h: '38svh',
   },
 
-]
+].sort((a, b) => FEATURED_ORDER.indexOf(a.id) - FEATURED_ORDER.indexOf(b.id))
 
 function tileHtml(tile) {
   tile = thumbnailAppearance(tile)
@@ -275,7 +285,7 @@ export function initTimeline(scrollerEl) {
      (Med bfcache bevares posisjonen naturlig; denne koden kjører da ikke.) */
   try {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    if (/^\/(micromilspec|off-market|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) {
+    if (isCasePath(new URL(fromUrl).pathname)) {
       const id = sessionState.getItem('timeline:last-case')
       const tile = id ? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`) : null
       if (tile) {
@@ -739,7 +749,7 @@ export function initTimeline(scrollerEl) {
     const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
     let fromCase = false
     try {
-      fromCase = /^\/(micromilspec|off-market|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)
+      fromCase = isCasePath(new URL(fromUrl).pathname)
     } catch {
       fromCase = false
     }

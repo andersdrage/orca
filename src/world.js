@@ -9,6 +9,7 @@
    stående på riktig side; søsknene hentes og monteres rundt. */
 
 import { initArchivedGrid } from './archived-grid.js'
+import { isCasePath } from './case-navigation.js'
 import { initTimeline } from './timeline.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
@@ -186,7 +187,7 @@ export function initWorld(header) {
     /* Ikke ved case-retur — der eier tilbake-morphen hele ankomsten. */
     try {
       const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-      if (/^\/(micromilspec|off-market|uber|boligmappa|hjemla|hmkg|mountain-milk|humming-people|nettavisen|finn|brathwait)\/?$/.test(new URL(fromUrl).pathname)) return
+      if (isCasePath(new URL(fromUrl).pathname)) return
     } catch {
       /* ugyldig referrer → kjør introen */
     }

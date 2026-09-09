@@ -18,5 +18,27 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/hmkg",
+      "destination": "/archived-work/",
+      "permanent": true
+    },
+    {
+      "source": "/mountain-milk",
+      "destination": "/archived-work/",
+      "permanent": true
+    },
+    {
+      "source": "/humming-people",
+      "destination": "/archived-work/",
+      "permanent": true
+    },
+    {
+      "source": "/brathwait",
+      "destination": "/archived-work/",
+      "permanent": true
+    }
   ]
 }

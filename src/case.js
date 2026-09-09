@@ -6,7 +6,7 @@ import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import { initCaseTabs } from './case-tabs.js'
 import { initCreditsLayout } from './credits-layout.js'
 import { initCaseGallery } from './case-gallery.js'
-import { ARCHIVED_ORDER, caseNeighbors, caseArrowDirection } from './case-navigation.js'
+import { caseNeighbors, caseArrowDirection } from './case-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
 import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
 import closeIconUrl from './assets/icons/close.svg?url'
@@ -29,7 +29,7 @@ function getReturnOverview() {
   const saved = history.state?.caseOverview
   if (OVERVIEWS.includes(saved)) return saved
   const from = previousUrl()
-  let overview = ARCHIVED_ORDER.includes(root?.dataset.caseId) ? '/archived-work/' : '/'
+  let overview = '/'
   if (OVERVIEWS.includes(from?.pathname)) overview = from.pathname
   else {
     try {

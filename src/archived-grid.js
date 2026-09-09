@@ -3,7 +3,6 @@
    Første celle er et oransje intro-kort; capa-vignetten ligger som levende
    videocelle. Klikk åpner en lightbox med ‹ ›-navigasjon (og ← → / Esc). */
 
-import { portfolioCases } from './portfolio-data.js'
 import { mediaSize } from './media-dimensions.js'
 import { syncVisibleMedia } from './visible-media.js'
 
@@ -25,12 +24,32 @@ const ARCHIVED = [
   { id: 'abelee', title: 'Abelee', service: 'Brand + marketing', year: 2017, files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
   { id: 'nike', title: 'Nike app', year: 2016, files: ['misc-nike.jpg'] },
   { id: 'pressworks', title: 'Pressworks', year: 2017, files: ['misc-pressworks.jpg', 'pressworks-mobile-v1.jpg'] },
-  { id: 'hmkg', service: 'Print design', year: 2014 },
-  { id: 'humming-people', service: 'LP & booklet design', year: 2018 },
-  { id: 'brathwait', service: 'Brand + UX design', year: 2015 },
+  { id: 'hmkg', service: 'Print design', year: 2014, title: 'HMKG', files: [
+    'hmkg-1-full.jpg', 'hmkg-2-full.jpg', 'hmkg-3-full.jpg',
+    'hmkg-4-full.jpg',
+  ] },
+  { id: 'humming-people', service: 'LP & booklet design', year: 2018, title: 'Humming People', files: [
+    'hp-1-full.jpg', 'hp-2-full.jpg', 'hp-3-half.jpg',
+    'hp-4-half.jpg', 'hp-5-full.jpg', 'hp-6-half.jpg',
+    'hp-7-half.jpg', 'hp-8-full.jpg', 'hp-9-half.jpg',
+    'hp-10-half.jpg', 'hp-11-full.jpg',
+  ] },
+  { id: 'brathwait', service: 'Brand + UX design', year: 2015, title: 'Brathwait', files: [
+    'brathwait-cover.jpg', 'brathwait-1.jpg', 'brathwait-2.jpg',
+    'brathwait-3.jpg', 'brathwait-4.jpg', 'brathwait-5.jpg',
+    'brathwait-6.jpg', 'brathwait-7.jpg', 'brathwait-8.jpg',
+    'brathwait-9.jpg', 'brathwait-10.jpg', 'brathwait-11.jpg',
+    'brathwait-12.jpg', 'brathwait-13.jpg', 'brathwait-14.jpg',
+    'brathwait-15.jpg', 'brathwait-16.jpg', 'brathwait-17.jpg',
+    'brathwait-18.jpg', 'brathwait-19.jpg', 'brathwait-20.jpg',
+    'brathwait-21.jpg', 'brathwait-22.jpg',
+  ] },
   { id: 'tone', title: 'Tone Damli', service: 'Webdesign', year: 2015, files: ['tone-1.png', 'tone-2.png', 'tone-3.png', 'tone-4.png'] },
   { id: 'lego', title: 'Lego', service: 'UX design', year: 2012, files: ['lego-1.jpg', 'lego-2.jpg', 'lego-3.jpg'] },
-  { id: 'mountain-milk', service: 'Packaging design', year: 2011 },
+  { id: 'mountain-milk', service: 'Packaging design', year: 2011, title: 'Mountain Milk', files: [
+    'mm-1.jpg', 'mm-2.jpg', 'mm-3.jpg',
+    'mm-4-1-3.jpg', 'mm-4-2-3.jpg', 'mm-4-3-3.jpg',
+  ] },
   {
     /* Har ingen case — filene listes direkte. */
     id: 'houelandek',
@@ -66,22 +85,18 @@ function collectMedia() {
     { type: 'image', src: '/images/misc-logos.jpg', alt: 'Logo overview', title: 'Logos', projectId: 'logos' },
   ]
   ARCHIVED.forEach((project) => {
-    const singleCase = portfolioCases.find((c) => c.id === project.id)
-    const title = project.title ?? singleCase?.title
-    const files = project.files ?? singleCase?.items.map((item) => item.file) ?? []
-    files
-      .filter((file) => project.files || !/\.(mp4|webm|mov)$/i.test(file))
-      .forEach((file) => {
-        media.push({
-          type: /\.(mp4|webm|mov)$/i.test(file) ? 'video' : 'image',
-          src: `/images/${file}`,
-          poster: /\.(mp4|webm|mov)$/i.test(file) ? `/images/${file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}` : undefined,
-          alt: title,
-          title,
-          projectId: project.id,
-          meta: [project.service, project.year].filter(Boolean).join(', '),
-        })
+    const { title, files } = project
+    files.forEach((file) => {
+      media.push({
+        type: /\.(mp4|webm|mov)$/i.test(file) ? 'video' : 'image',
+        src: `/images/${file}`,
+        poster: /\.(mp4|webm|mov)$/i.test(file) ? `/images/${file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}` : undefined,
+        alt: title,
+        title,
+        projectId: project.id,
+        meta: [project.service, project.year].filter(Boolean).join(', '),
       })
+    })
   })
   return media
 }

@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+import deployment from './vercel.json'
 import { mediaDimensions } from './scripts/media-dimensions.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -17,6 +18,11 @@ function notFoundPage() {
       try {
         const root = built ? resolve(server.config.root, server.config.build.outDir) : server.config.root
         const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname)
+        const redirect = deployment.redirects?.find(rule => rule.source.replace(/\/$/, '') === pathname.replace(/\/$/, ''))
+        if (redirect) {
+          response.writeHead(redirect.permanent ? 308 : 307, { location: redirect.destination })
+          return response.end()
+        }
         const candidate = resolve(root, `.${pathname}`)
         if (candidate.startsWith(root + sep) && existsSync(candidate)) return next()
         let html = await readFile(resolve(root, '404.html'), 'utf8')
@@ -68,16 +74,13 @@ export default defineConfig({
         history: resolve(__dirname, 'history/index.html'),
         people: resolve(__dirname, 'people/index.html'),
         micromilspec: resolve(__dirname, 'micromilspec/index.html'),
+        houeland: resolve(__dirname, 'houeland/index.html'),
         hjemla: resolve(__dirname, 'hjemla/index.html'),
-        hmkg: resolve(__dirname, 'hmkg/index.html'),
         finn: resolve(__dirname, 'finn/index.html'),
         nettavisen: resolve(__dirname, 'nettavisen/index.html'),
         uber: resolve(__dirname, 'uber/index.html'),
         boligmappa: resolve(__dirname, 'boligmappa/index.html'),
         archivedWork: resolve(__dirname, 'archived-work/index.html'),
-        brathwait: resolve(__dirname, 'brathwait/index.html'),
-        hummingPeople: resolve(__dirname, 'humming-people/index.html'),
-        mountainMilk: resolve(__dirname, 'mountain-milk/index.html'),
         offMarket: resolve(__dirname, 'off-market/index.html'),
         logo: resolve(__dirname, 'logo/index.html'),
       },
