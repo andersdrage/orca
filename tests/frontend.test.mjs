@@ -1206,7 +1206,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
-      assert.equal(await page.locator('.site-footer__mark').getAttribute('src'), '/images/dragonmark.svg')
+      assert.equal(await page.locator('.site-footer__logo-video').getAttribute('data-media-src'), '/images/drage-black-bg-preview-001.mp4')
     })
 
     test('Uber long-page gallery opens readable images and restores the case on close', async (t) => {

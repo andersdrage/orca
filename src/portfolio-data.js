@@ -33,6 +33,12 @@ export const portfolioCases = [
     items: [
       { file: 'new-covers/cover-ratio-houeland.webp', span: 'full', alt: 'Houeland — embossed seal for selected properties' },
       { file: 'houeland-web.mp4', span: 'full', alt: 'Houeland website walkthrough' },
+      { file: 'houeland-1.jpg', span: 'full', alt: 'Houeland — green and gold seal for selected properties' },
+      { file: 'houeland-2.jpg', span: 'full', alt: 'Houeland — embossed seal on soap in a marble dish' },
+      { file: 'houeland-3.jpg', span: 'full', alt: 'Houeland — app icon on an iPhone home screen' },
+      { file: 'houeland-4.jpg', span: 'full', alt: 'Houeland — textured business cards for Hans Houeland' },
+      { file: 'houeland5.jpg', span: 'full', alt: 'Houeland — brand color palette' },
+      { file: 'houeland-6.jpg', span: 'full', alt: 'Houeland — typography and property listing copy' },
     ],
   },
   {

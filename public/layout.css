@@ -730,10 +730,9 @@ body.world-mode {
   text-align: center;
 }
 
-/* The shared black SVG becomes white against the footer. */
-.site-footer__mark {
-  filter: invert(1);
-  aspect-ratio: 77 / 57;
+/* Spinning dragon video; its black background blends into the footer. */
+.site-footer__logo-video {
+  aspect-ratio: 448 / 320;
   object-fit: contain;
   display: block;
   width: clamp(110px, 11vw, 160px);
