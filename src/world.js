@@ -68,6 +68,7 @@ export function initWorld(header) {
   let cameraIndex = selfIndex
   let travelId = 0
   let mapRasterScale = 1
+  let mapCamera = null
   const mapPreparationUntil = performance.now() + 200
 
   function prepareMain(main, index) {
@@ -207,16 +208,22 @@ export function initWorld(header) {
     // camera zoom. Six full-resolution page textures are wasteful at 25% size.
     mapRasterScale = CSS.supports('zoom', String(MAP_SCALE)) ? MAP_SCALE : 1
     if (mapRasterScale !== 1) world.style.zoom = String(mapRasterScale)
-    world.style.transformOrigin = '0 0'
-    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2 / mapRasterScale}vw, ${(100 - 300 * MAP_SCALE) / 2 / mapRasterScale}svh, 0) scale(${MAP_SCALE / mapRasterScale})`
+    // Keep translation outside the zoomed layout. Safari versions disagree
+    // about applying CSS zoom to transform offsets on the same element.
+    mapCamera = document.createElement('div')
+    mapCamera.className = 'world-map-camera'
+    world.before(mapCamera)
+    mapCamera.append(world)
+    world.style.transform = 'none'
+    mapCamera.style.transform = `translate3d(12.5vw, ${matchMedia('(max-width: 600px)').matches ? 18 : 12.5}svh, 0) scale(${MAP_SCALE / mapRasterScale})`
 
     const HOLD_MS = 1200
     const ZOOM_MS = 1400
     setTimeout(() => {
       if (introJourney !== travelId) return
-      const from = getComputedStyle(world).transform
+      const from = getComputedStyle(mapCamera).transform
       world.classList.remove('is-map')
-      const zoom = world.animate(
+      const zoom = mapCamera.animate(
         [{ transform: from }, { transform: `translate3d(0, 0, 0) scale(${1 / mapRasterScale})` }],
         { duration: ZOOM_MS, delay: 80, easing: EASING, fill: 'backwards' },
       )
@@ -232,6 +239,8 @@ export function initWorld(header) {
       unfold.id = 'world-card-unfold'
       const land = () => {
         if (introJourney !== travelId) return
+        mapCamera.replaceWith(world)
+        mapCamera = null
         world.style.transformOrigin = ''
         world.style.zoom = ''
         mapRasterScale = 1
@@ -275,7 +284,14 @@ export function initWorld(header) {
 
     // Sample every visible transform before canceling; cancel restores the CSS
     // destination, which is not necessarily where the camera/card is on screen.
-    const from = new DOMMatrix().scale(mapRasterScale).multiply(new DOMMatrix(getComputedStyle(world).transform)).toString()
+    const from = mapCamera
+      ? new DOMMatrix(getComputedStyle(mapCamera).transform).scale(mapRasterScale).toString()
+      : new DOMMatrix(getComputedStyle(world).transform).toString()
+    if (mapCamera) {
+      mapCamera.getAnimations().forEach(animation => animation.cancel())
+      mapCamera.replaceWith(world)
+      mapCamera = null
+    }
     world.style.zoom = ''
     mapRasterScale = 1
     const sectionTransforms = sections.map((section) => getComputedStyle(section).transform)

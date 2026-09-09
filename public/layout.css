@@ -197,6 +197,13 @@ body.world-mode {
   background: #e9e6e0;
 }
 
+.world-map-camera {
+  width: 100vw;
+  height: 100svh;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
 .world-page[data-path='/history/'] {
   grid-column: 1;
   grid-row: 2;
@@ -1336,10 +1343,10 @@ a.timeline-tile:focus-visible .timeline-tile__hover-label {
 
 @media (hover: none) {
   .timeline-tile__hover-label {
-    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: none;
   }
   a.timeline-tile.is-label-revealed .timeline-tile__hover-label {
-    transform: translate(-50%, 0);
+    transform: translate(-50%, calc((var(--tile-label-progress, 0) - 1) * (100% + 24px)));
   }
 }
 

@@ -586,7 +586,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           window.heldMapAnimations = []
           Element.prototype.animate = function (...args) {
             const animation = animate.apply(this, args)
-            if (document.body.classList.contains('world-map-intro') && this.matches('.world, .world-page')) {
+            if (document.body.classList.contains('world-map-intro') && this.matches('.world-map-camera, .world-page')) {
               animation.pause()
               animation.currentTime = 0
               window.heldMapAnimations.push(animation)
@@ -600,6 +600,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           return { path: el.dataset.path, x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }
         }))
         assert.equal(cards.length, 6)
+        assert.ok(Math.abs(cards[0].x / width - .14375) < .01, 'map begins at the left inset')
+        assert.ok(Math.abs(cards[0].y / page.viewportSize().height - (width === 390 ? .19875 : .14375)) < .01, 'map begins in the marked upper area')
         const screenshot = await page.screenshot()
         for (const card of cards) {
           assert.ok(card.x >= 0 && card.y >= 0 && card.right <= width && card.bottom <= page.viewportSize().height, `${engine} ${width}: ${JSON.stringify(card)}`)
@@ -1011,6 +1013,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         text.selectNodeContents(el.querySelector('.timeline-tile__hover-label'))
         return text.getBoundingClientRect().top - el.querySelector('img').getBoundingClientRect().bottom >= 20
       }), 'revealed text has clear space beneath the enlarged image')
+      await move(140)
+      const retracting = await offset()
+      assert.ok(retracting < -2 && retracting > -25, 'name visibly rises before reaching the viewport edge')
+      assert.equal(await label.evaluate(el => getComputedStyle(el).opacity), '1', 'retraction never fades the name')
+      await move(105)
+      assert.ok(await offset() < retracting - 5, 'further scrolling moves the name farther behind the image')
       await move(-30)
       assert.ok(await offset() < -20, 'passing the centre hides the name again')
       await move(195)

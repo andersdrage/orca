@@ -536,9 +536,16 @@ export function initTimeline(scrollerEl) {
       const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
       const center = entry.contentLeft + entry.width / 2 - elasticCurrent + tension * lag
       const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
-      // Reveal the name as the thumbnail grows near centre. A small difference
-      // between entry/exit thresholds keeps slow reversals from flickering.
-      const revealLabel = touchLabels.matches && distance < (entry.labelRevealed ? .55 : .45)
+      // Scrub the same vertical path in both directions, retracting while the
+      // name is still on screen rather than waiting until it reaches an edge.
+      const progress = !touchLabels.matches ? 0 : reducedMotionQuery.matches
+        ? Number(distance < .45) : Math.min(1, Math.max(0, (.6 - distance) / .45))
+      const revealLabel = progress > 0
+      const labelProgress = progress.toFixed(4)
+      if (entry.labelProgress !== labelProgress) {
+        entry.tile.style.setProperty('--tile-label-progress', labelProgress)
+        entry.labelProgress = labelProgress
+      }
       if (entry.labelRevealed !== revealLabel) {
         entry.tile.classList.toggle('is-label-revealed', revealLabel)
         entry.labelRevealed = revealLabel
