@@ -23,7 +23,7 @@ body { margin: 0; min-height: 100svh; display: grid; place-items: center; }
   width: 89.333333cqw;
   overflow: hidden;
   border: 1px solid #aaa;
-  border-radius: .833333cqw;
+  border-radius: 8px;
 }
 .sharing-row { display: grid; margin: 0; }
 .sharing-row + .sharing-row { border-top: 1px solid #aaa; }
