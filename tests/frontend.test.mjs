@@ -1602,7 +1602,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await movie.evaluate(el => !!el.closest('.case-below')), true, 'movie stays in the gallery')
       await page.keyboard.press('p')
       assert.equal(await page.locator('.case-below .portfolio-asset img').count(), 1, 'presentation keeps the original image before the movie')
-      assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'), 'https://orca.andersdrage.com/images/sharing-image-1.png')
+      assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'), 'https://orca.andersdrage.com/images/sharing-image-2.png')
       await page.keyboard.press('ArrowLeft')
       await page.waitForURL('**/off-market/')
       await page.keyboard.press('ArrowRight')
