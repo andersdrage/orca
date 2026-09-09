@@ -21,6 +21,7 @@ export const portfolioCases = [
     id: 'houeland',
     year: '2026',
     title: 'Houeland',
+    keepCoverInPresentation: true,
     layout: 'split',
     intro: 'Houeland sells Norway’s most extraordinary homes. I helped them going from 0 to 1 – shaping the name, strategy, visual identity, imagery and copy.',
     credits: [
@@ -31,6 +32,7 @@ export const portfolioCases = [
     ],
     items: [
       { file: 'new-covers/cover-ratio-houeland.webp', span: 'full', alt: 'Houeland — embossed seal for selected properties' },
+      { file: 'houeland-web.mp4', span: 'full', alt: 'Houeland website walkthrough' },
     ],
   },
   {

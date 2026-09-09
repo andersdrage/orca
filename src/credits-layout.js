@@ -10,6 +10,8 @@ export function initCreditsLayout(root) {
   const hero = lead.querySelector('.case-cover-hero')
   const content = lead.nextElementSibling
   const onlyCover = hero?.children.length > 0 && content?.children.length === 0
+  const moveCover = onlyCover || lead.hasAttribute('data-keep-cover')
+  const coverItems = [...(hero?.children ?? [])]
   const layouts = ['original', 'columns', 'below']
   const saved = sessionState.getItem('credits:layout')
   let selected = layouts.includes(saved) ? saved : 'original'
@@ -25,9 +27,9 @@ export function initCreditsLayout(root) {
     const layout = presentation ? 'presentation' : selected
     lead.dataset.layout = layout
     if (credits) credits.dataset.layout = layout
-    if (onlyCover) {
-      if (presentation) content.append(...hero.children)
-      else hero.append(...content.children)
+    if (moveCover) {
+      if (presentation) content.prepend(...coverItems)
+      else hero.append(...coverItems)
     }
     if (lead.classList.contains('case-legacy-lead')) lead.classList.toggle('work-media', layout === 'below' || presentation)
     else if (hero) {

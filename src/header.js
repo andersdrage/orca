@@ -29,7 +29,7 @@ function initCaseWarmup() {
     cases.add(project.id)
     // The text-first case reveals the next media row, not its hidden cover.
     // Decode that still/poster on intent; never download a speculative video.
-    const first = sessionState.getItem('case:presentation') !== 'false' && project.items.length > 1 ? 1 : 0
+    const first = sessionState.getItem('case:presentation') !== 'false' && project.items.length > 1 && !project.keepCoverInPresentation ? 1 : 0
     const item = project.items[first]
     const row = item?.span === 'half' ? project.items.slice(first, first + 2) : [item]
     row.forEach(item => {

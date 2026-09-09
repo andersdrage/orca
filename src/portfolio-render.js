@@ -294,7 +294,7 @@ function caseSection(singleCase) {
 
   if (singleCase.layout === 'split') {
     return `<section id="${singleCase.id}" class="case-layout-split scroll-mt-24 pt-8" aria-labelledby="title-${singleCase.id}">
-      <div class="work-media case-lead">
+      <div class="work-media case-lead"${singleCase.keepCoverInPresentation ? ' data-keep-cover' : ''}>
         <div class="case-lead__copy case-below">
           <h1 id="title-${singleCase.id}" class="case-lead__title">${escapeHtmlText(singleCase.displayTitle ?? singleCase.title)}</h1>
           <p class="case-lead__intro">${escapeHtmlText(singleCase.intro)}</p>
