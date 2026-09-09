@@ -256,7 +256,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           assert.ok(result.nameFont.includes('DragePlantin'))
           assert.equal(result.nameSize, '14px')
           assert.equal(result.tracking, '-0.28px')
-          assert.equal(result.firstHeight, 55)
+          assert.equal(result.firstHeight, 64)
           assert.equal(result.overflow, false, path)
           assert.equal(result.fits, true, path)
         }

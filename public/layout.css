@@ -896,7 +896,7 @@ body.world-mode {
   font-size: clamp(18.2px, 2.1vw, 28px);
   line-height: 1.35;
   text-align: left;
-  color: var(--color-zinc-600, #52525b);
+  color: #18181b;
 }
 
 .case-story p { margin: 0; }
@@ -1015,7 +1015,7 @@ body.world-mode {
   height: 30px;
   padding: 4px 12px;
   color: rgba(15, 15, 15, 0.8);
-  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-family: PPSupplyMono, ui-monospace, monospace;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0;
@@ -1177,30 +1177,6 @@ body.world-mode {
   text-wrap: pretty;
 }
 
-/* Prikke-ornament til venstre for teksten: liten rutenett-kolonne,
-   oransje øverst, lys grå videre ned. */
-.timeline-intro::before,
-.timeline-intro::after {
-  content: '';
-  position: absolute;
-  left: -34px;
-  width: 18px;
-  background-image: radial-gradient(circle, var(--intro-dot) 1.1px, transparent 1.2px);
-  background-size: 5px 5px;
-}
-
-.timeline-intro::before {
-  top: 0.4em;
-  height: 20px;
-  --intro-dot: #e0862b;
-}
-
-.timeline-intro::after {
-  top: calc(0.4em + 20px);
-  height: 66px;
-  --intro-dot: #d6d6d9;
-}
-
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
    Fase 1: introteksten linje for linje (90ms mellom linjene).
    Fase 2: tilene i stigende rekkefølge fra ~480ms.
@@ -1235,11 +1211,6 @@ body.world-mode {
 .is-entering-home .timeline-intro__word {
   animation: entrance-rise 0.5s ease both;
   animation-delay: calc(var(--line, 0) * 90ms);
-}
-
-.is-entering-home .timeline-intro::before,
-.is-entering-home .timeline-intro::after {
-  animation: entrance-fade 0.5s ease both;
 }
 
 /* Tilene: animasjonen ligger på BILDET, ikke tilen — elastikk-scrollen skriver
@@ -2983,7 +2954,7 @@ body.world-map-intro .archived-card {
   overflow: hidden;
   border: 1px solid #aaa;
   border-radius: var(--site-radius);
-  text-align: center;
+  text-align: left;
 }
 .case-title-block dl, .case-title-block dd { margin: 0; }
 .title-block__header {
@@ -2995,11 +2966,11 @@ body.world-map-intro .archived-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 40px;
-  padding: 5px 8px 4px;
+  min-height: 52px;
+  padding: 9px 8px;
   border-right: 1px solid #aaa;
 }
-.title-block__header > .title-block__cell { min-height: 55px; }
+.title-block__header > .title-block__cell { min-height: 64px; }
 .case-title-block dt {
   flex: none;
   text-align: left;
@@ -3015,11 +2986,11 @@ body.world-map-intro .archived-card {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-content: center;
   align-items: center;
   column-gap: 12px;
-  padding-top: 2px;
+  padding-top: 6px;
   font-family: DragePlantin, Georgia, serif;
   font-size: 14px;
   font-weight: 400;
@@ -3063,7 +3034,7 @@ body.world-map-intro .archived-card {
   .title-block__project { grid-column: 1 / 3; }
   .title-block__signature { grid-column: 3; grid-row: 1; }
   .title-block__header > :is(.title-block__year, .title-block__role) {
-    min-height: 40px;
+    min-height: 52px;
     border-top: 1px solid #aaa;
   }
   .title-block__year { grid-row: 2; }
@@ -3096,6 +3067,9 @@ body.world-map-intro .archived-card {
 }
 @media (max-height: 500px) {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
+  .title-block__cell { min-height: 40px; padding-block: 5px; }
+  .title-block__header > .title-block__cell { min-height: 52px; }
+  .case-title-block dd { padding-top: 4px; }
 }
 
 /* Press feedback is immediate and independent of the horizontal scroll spring. */
