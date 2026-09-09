@@ -495,6 +495,7 @@ export function initTimeline(scrollerEl) {
     if (reducedMotionQuery.matches) scroller.scrollTo({ left: scroller.scrollLeft, behavior: 'instant' })
   })
   const finePointer = window.matchMedia('(pointer: fine)')
+  const touchLabels = window.matchMedia('(hover: none)')
 
   let tileGeometry = []
   let elasticFrameId = 0
@@ -512,6 +513,7 @@ export function initTimeline(scrollerEl) {
       tile,
       contentLeft: tile.offsetLeft,
       width: tile.offsetWidth,
+      labelRevealed: tile.classList.contains('is-label-revealed'),
       /* De to siste tilene i hver kopi fader ut mot venstre kant — nest siste
          treffer kanten først og fader først, så siste: runden ebber ut i rekkefølge. */
       fades: !tile.nextElementSibling || !tile.nextElementSibling.nextElementSibling,
@@ -534,6 +536,13 @@ export function initTimeline(scrollerEl) {
       const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
       const center = entry.contentLeft + entry.width / 2 - elasticCurrent + tension * lag
       const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
+      // Reveal the name as the thumbnail grows near centre. A small difference
+      // between entry/exit thresholds keeps slow reversals from flickering.
+      const revealLabel = touchLabels.matches && distance < (entry.labelRevealed ? .55 : .45)
+      if (entry.labelRevealed !== revealLabel) {
+        entry.tile.classList.toggle('is-label-revealed', revealLabel)
+        entry.labelRevealed = revealLabel
+      }
       const scale = reducedMotionQuery.matches ? '1' : (1 + 0.1 * (1 + Math.cos(distance * Math.PI))).toFixed(4)
       if (entry.magnification !== scale) {
         entry.tile.style.setProperty('--tile-magnification', scale)
@@ -662,6 +671,7 @@ export function initTimeline(scrollerEl) {
   document.addEventListener('visibilitychange', scheduleElastic)
   reducedMotionQuery.addEventListener('change', scheduleElastic)
   finePointer.addEventListener('change', scheduleElastic)
+  touchLabels.addEventListener('change', scheduleElastic)
 
   let uniformApplied = sameSizeThumbnails()
   const updateThumbnails = () => {

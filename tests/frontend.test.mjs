@@ -990,6 +990,45 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('touch project names emerge near centre and tuck away after passing in either direction', async (t) => {
+      const page = await visit(t, '/', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' })
+      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+      await page.locator('[data-timeline]').dispatchEvent('pointerdown', { pointerType: 'touch' })
+      const tile = page.locator('[data-copy="1"] [data-tile-id="hjemla"]')
+      const label = tile.locator('.timeline-tile__hover-label')
+      const move = async center => {
+        await tile.evaluate((el, center) => { el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - center }, center)
+        await page.waitForTimeout(380)
+      }
+      const offset = () => label.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42)
+      await move(380)
+      assert.ok(await offset() < -20, 'approaching thumbnail keeps its name tucked behind the image')
+      await move(195)
+      assert.ok(Math.abs(await offset()) < 1, 'the centred thumbnail reveals its name without hover')
+      assert.equal(await page.locator('.is-label-revealed').count(), 1)
+      assert.ok(await tile.evaluate(el => {
+        const text = document.createRange()
+        text.selectNodeContents(el.querySelector('.timeline-tile__hover-label'))
+        return text.getBoundingClientRect().top - el.querySelector('img').getBoundingClientRect().bottom >= 20
+      }), 'revealed text has clear space beneath the enlarged image')
+      await move(-30)
+      assert.ok(await offset() < -20, 'passing the centre hides the name again')
+      await move(195)
+      assert.ok(Math.abs(await offset()) < 1, 'reverse scrolling reveals it again')
+      await tile.tap()
+      await page.waitForURL('**/hjemla/')
+      await page.waitForFunction(() => !document.body.classList.contains('case-entering'))
+      await page.locator('.case-close').tap()
+      await ready(page, '/')
+      await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-out'))
+      await page.waitForTimeout(380)
+      assert.ok(Math.abs(await offset()) < 1, 'return restores the centred thumbnail name')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      assert.equal(await label.evaluate(el => getComputedStyle(el).transitionDuration), '0s')
+      await move(380)
+      assert.ok(await offset() < -20, 'touch hover does not leave a name stuck open after tapping')
+    })
+
     test('mobile case return preserves the clicked wide thumbnail position', async (t) => {
       const page = await visit(t, '/', { viewport: { width: 390, height: 844 } })
       await ready(page, '/')

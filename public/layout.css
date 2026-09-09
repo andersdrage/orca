@@ -1285,7 +1285,9 @@ body.world-mode {
   transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
 }
 
-a.timeline-tile:hover .timeline-tile__image,
+@media (hover: hover) {
+  a.timeline-tile:hover .timeline-tile__image { transform: scale(1.03); }
+}
 a.timeline-tile:focus-visible .timeline-tile__image {
   transform: scale(1.03);
 }
@@ -1325,9 +1327,20 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   );
 }
 
-a.timeline-tile:hover .timeline-tile__hover-label,
+@media (hover: hover) {
+  a.timeline-tile:hover .timeline-tile__hover-label { transform: translate(-50%, 0); }
+}
 a.timeline-tile:focus-visible .timeline-tile__hover-label {
   transform: translate(-50%, 0);
+}
+
+@media (hover: none) {
+  .timeline-tile__hover-label {
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  a.timeline-tile.is-label-revealed .timeline-tile__hover-label {
+    transform: translate(-50%, 0);
+  }
 }
 
 /* Ved klikk: etiketten skal ikke inn i morph-snapshotet. */
