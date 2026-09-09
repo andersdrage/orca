@@ -258,7 +258,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
             }
           })
           assert.ok(result.labelFont.includes('PPSupplyMono'), path)
-          assert.equal(result.labelSize, '9px')
+          // WebKit preserves its 9px minimum rendered label size at 75% zoom.
+          assert.equal(result.labelSize, width <= 600 && engine === 'webkit' ? '12px' : '9px')
           assert.ok(result.nameFont.includes('DragePlantin'))
           assert.equal(result.nameSize, '14px')
           assert.equal(result.tracking, '-0.28px')
