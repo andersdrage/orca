@@ -3,7 +3,7 @@ import { isCasePath } from './case-navigation.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { prepareProjectPage } from './project-page.js'
 import { mountCase } from './case-view.js'
-import { revealProject } from './project-reveal.js'
+import { revealProject, returnProjectThumbnail } from './project-reveal.js'
 import { syncVisibleMedia } from './visible-media.js'
 
 const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
@@ -30,6 +30,7 @@ export function initProjectNavigation() {
   let layout = document.querySelector('[data-case-root]')?.closest('#site-layout')
   let disposeCase = null
   let transition = null
+  let returningThumbnail = null
   let revision = 0
   let returnFocus = null
   let pendingLink = null
@@ -42,6 +43,8 @@ export function initProjectNavigation() {
   }
 
   function stopTransition() {
+    returningThumbnail?.cancel()
+    returningThumbnail = null
     transition?.skipTransition()
     transition = null
   }
@@ -73,7 +76,19 @@ export function initProjectNavigation() {
     layout = null
     document.querySelector('[data-project-skip]')?.remove()
   }
-  function restoreOverview() {
+  function restoreOverview({ animate = false } = {}) {
+    let fromTop
+    if (document.documentElement.classList.contains('project-reveal-active')) {
+      const transform = getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform
+      if (transform !== 'none') {
+        const groupStyle = getComputedStyle(document.documentElement, '::view-transition-group(project-thumbnail)')
+        const group = new DOMMatrixReadOnly(groupStyle.transform)
+        const image = new DOMMatrixReadOnly(transform)
+        const [originX, originY] = groupStyle.transformOrigin.split(' ').map(value => parseFloat(value) || 0)
+        // Native snapshots preserve the tile's magnification around its origin.
+        fromTop = group.m42 + group.b * (image.m41 - originX) + group.d * (image.m42 - originY) + originY
+      }
+    }
     ++revision
     stopTransition()
     clearPending()
@@ -87,7 +102,7 @@ export function initProjectNavigation() {
     document.body.classList.add('world-mode')
     document.body.classList.toggle('page-home', location.pathname === '/')
     overviewScroll.forEach(({ node, left, top }) => node.scrollTo({ left, top, behavior: 'instant' }))
-    window.dispatchEvent(new Event('project:navigation-settled'))
+    window.dispatchEvent(new Event('project:overview-restored'))
     document.title = overviewTitle
     replaceMetadata(overviewMetadata)
     window.scrollTo({ top: 0, behavior: 'instant' })
@@ -95,6 +110,9 @@ export function initProjectNavigation() {
     syncVisibleMedia()
     if (location.pathname === overview && returnFocus?.isConnected) returnFocus.focus({ preventScroll: true })
     else document.querySelector(`.world-page[data-path="${location.pathname}"] main`)?.focus({ preventScroll: true })
+    if (animate && location.pathname === '/' && returnFocus?.matches('a.timeline-tile')) {
+      returningThumbnail = returnProjectThumbnail(returnFocus, { fromTop })
+    }
   }
   function close() {
     const entry = history.state?.projectView
@@ -197,7 +215,7 @@ export function initProjectNavigation() {
       navigate(location.href, { push: false })
     } else if (hasWorld && suspended) {
       if (layout) caseScroll.set(currentScrollKey, scrollY)
-      restoreOverview()
+      restoreOverview({ animate: true })
     } else if (pendingLink) {
       ++revision
       stopTransition()

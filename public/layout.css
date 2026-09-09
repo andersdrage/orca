@@ -2784,7 +2784,7 @@ html.project-reveal-active::view-transition-image-pair(project-thumbnail) { over
 html.project-reveal-active::view-transition-old(project-thumbnail) {
   opacity: 1;
   mix-blend-mode: normal;
-  animation: project-thumbnail-reveal 560ms 50ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: project-thumbnail-reveal 900ms 40ms cubic-bezier(.65, 0, .35, 1) both;
 }
 @keyframes project-thumbnail-reveal {
   from { transform: translateY(0); }

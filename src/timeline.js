@@ -719,6 +719,14 @@ export function initTimeline(scrollerEl) {
   }
   window.addEventListener('pageshow', resetPressState)
   window.addEventListener('project:navigation-settled', resetPressState)
+  window.addEventListener('project:overview-restored', () => {
+    // Reparenting the overview restores native scroll before its queued scroll
+    // events run. Align the spring now so a returning thumbnail keeps its size.
+    elasticCurrent = scroller.scrollLeft
+    clearElasticTransforms()
+    measureTiles()
+    resetPressState()
+  })
 
   const releasePress = () => {
     tilePressed = false

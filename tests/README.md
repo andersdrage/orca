@@ -94,3 +94,5 @@ The previous index/project morph, fallback animation, and staggered case entranc
 ## DRA-72: same-document thumbnail reveal
 
 The clicked thumbnail is captured with `document.startViewTransition()`, while the real case is mounted inside the current document. Tests verify persistent document identity and URL/history behavior as well as desktop/touch-mobile frames, painted image pixels, stationary case geometry, cancellation and skipped transitions. The overview retains its original DOM, focus and scroll offsets. Repeated case mounts check that keyboard handlers, dialogs and controls are cleaned up. Failed preparation retains the ordinary project-link fallback; unsupported animation and reduced motion keep same-document navigation.
+
+The return-motion iteration adds frame checks for the slower opening and for the thumbnail rising back into its original slot. Desktop mouse clicks and mobile touch taps cover completed and interrupted reveals; the case disappears immediately, image size and final position stay stable, and reduced motion skips the return.

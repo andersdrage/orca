@@ -18,7 +18,8 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const listeners = new AbortController()
   image.style.viewTransitionName = 'project-thumbnail'
   image.dataset.projectRevealSource = ''
-  html.style.setProperty('--project-reveal-distance', `${innerHeight - rect.top + 32}px`)
+  const snapshotScale = rect.height / image.offsetHeight
+  html.style.setProperty('--project-reveal-distance', `${(innerHeight - rect.top + 32) / snapshotScale}px`)
   html.classList.add('project-reveal-active')
   const clearSource = () => {
     image.style.viewTransitionName = ''
@@ -34,7 +35,13 @@ export function revealProject(tile, update, { animate = true } = {}) {
     html.style.removeProperty('--project-reveal-distance')
     listeners.abort()
   }
-  const cancel = () => { transition.skipTransition() }
+  const cancel = event => {
+    // Let Close sample the live displacement before stopping the opening,
+    // including a touch tap or Escape while the thumbnail is still moving.
+    if (event?.type === 'touchstart' && event.target.closest('.case-close')) return
+    if (event?.type === 'keydown' && event.key === 'Escape' && !document.querySelector('dialog[open]')) return
+    transition.skipTransition()
+  }
   const options = { passive: true, signal: listeners.signal }
   for (const name of ['pagehide', 'wheel', 'touchstart', 'keydown']) window.addEventListener(name, cancel, options)
   const viewport = [innerWidth, innerHeight]
@@ -46,4 +53,42 @@ export function revealProject(tile, update, { animate = true } = {}) {
   transition.ready.catch(() => {})
   transition.finished.then(cleanup, cleanup)
   return transition
+}
+
+// Closing restores the live index immediately. Animate its real image so the
+// rest of the page stays interactive, even when the opening was interrupted.
+export function returnProjectThumbnail(tile, { fromTop } = {}) {
+  const image = tile?.querySelector('img')
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  if (!image?.complete || !image.naturalWidth || reduced.matches) return null
+  const rect = image.getBoundingClientRect()
+  if (!rect.width || !rect.height || rect.right <= 0 || rect.left >= innerWidth) return null
+  const restingTransform = getComputedStyle(image).transform
+  const ownScale = Math.abs(new DOMMatrixReadOnly(restingTransform).d) || 1
+  // The timeline magnifies the parent tile. Convert viewport travel to local
+  // coordinates so the returning image lands exactly at its original size.
+  const parentScale = rect.height / image.offsetHeight / ownScale
+  const fullDistance = Math.max(0, innerHeight - rect.top + 32)
+  const distance = Number.isFinite(fromTop) ? Math.max(0, Math.min(fromTop - rect.top, fullDistance)) : fullDistance
+  if (distance < 1) return null
+  const duration = Math.max(180, 480 * Math.sqrt(distance / Math.max(1, fullDistance)))
+  const base = restingTransform === 'none' ? '' : ` ${restingTransform}`
+  const animation = image.animate([
+    { transform: `translateY(${distance / parentScale}px)${base}` },
+    { transform: restingTransform },
+  ], { duration, easing: 'cubic-bezier(0.32, 0.08, 0.24, 1)', fill: 'both' })
+  animation.id = 'project-thumbnail-return'
+  const listeners = new AbortController()
+  const cancel = () => animation.cancel()
+  const options = { passive: true, signal: listeners.signal }
+  for (const name of ['pagehide', 'wheel', 'touchstart', 'keydown']) window.addEventListener(name, cancel, options)
+  const viewport = [innerWidth, innerHeight]
+  window.addEventListener('resize', () => {
+    if (innerWidth !== viewport[0] || innerHeight !== viewport[1]) cancel()
+  }, options)
+  document.addEventListener('visibilitychange', () => { if (document.hidden) cancel() }, options)
+  reduced.addEventListener('change', cancel, options)
+  const cleanup = () => { listeners.abort(); animation.cancel() }
+  animation.finished.then(cleanup, cleanup)
+  return animation
 }

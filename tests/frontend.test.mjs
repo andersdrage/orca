@@ -925,6 +925,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const pixels = await sharp(await page.screenshot()).stats()
         assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 25), 'the held thumbnail is painted, not an empty layer')
         await page.evaluate(() => window.revealAnimations.forEach(animation => { animation.currentTime = 180 }))
+        const earlyTravel = await page.evaluate(() => new DOMMatrixReadOnly(getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform).m42)
+        assert.ok(earlyTravel < 50, 'the opening starts gently enough to read the reveal')
+        await page.evaluate(() => window.revealAnimations.forEach(animation => { animation.currentTime = 490 }))
         const middle = await frame()
         assert.equal(middle.opacity, '1')
         assert.equal(middle.width, start.width)
@@ -945,6 +948,81 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await page.locator('.case-close').click()
         await page.waitForURL(base + '/')
         assert.equal(await page.locator('[data-project-reveal-source]').count(), 0)
+      }
+    })
+
+    test('closing a project brings its thumbnail back up and reverses an interrupted opening', async (t) => {
+      for (const width of [1440, 390]) {
+        const height = width === 390 ? 844 : 900
+        const page = await visit(t, '/', { viewport: { width, height }, isMobile: width === 390, hasTouch: width === 390 }, () => {
+          const start = document.startViewTransition.bind(document)
+          document.startViewTransition = update => {
+            const transition = start(update)
+            transition.ready.then(() => {
+              window.openAnimations = document.getAnimations()
+              window.openAnimations.forEach(a => { a.pause(); a.currentTime = 0 })
+            }, () => {})
+            return transition
+          }
+          const animate = Element.prototype.animate
+          Element.prototype.animate = function (...args) {
+            const animation = animate.apply(this, args)
+            if (this.matches('.timeline-tile__image')) {
+              animation.pause()
+              animation.currentTime = 0
+              window.returnAnimation = animation
+            }
+            return animation
+          }
+          window.documentIdentity = 'persistent'
+        })
+        await ready(page, '/')
+        await page.emulateMedia({ reducedMotion: 'no-preference' })
+        await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+        for (const interrupted of [false, true]) {
+          const tile = page.locator('[data-copy="1"] [data-tile-id="micromilspec"]')
+          await tile.evaluate(el => { el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2 })
+          await page.waitForTimeout(600)
+          const resting = await tile.locator('img').boundingBox()
+          const imageScale = resting.height / await tile.locator('img').evaluate(el => el.offsetHeight)
+          // Coordinate input avoids automation's scrollIntoView moving a magnified tile.
+          if (width === 390) await page.touchscreen.tap(resting.x + resting.width / 2, resting.y + resting.height / 2)
+          else await page.mouse.click(resting.x + resting.width / 2, resting.y + resting.height / 2)
+          await page.waitForURL('**/micromilspec/')
+          await page.waitForFunction(() => window.openAnimations?.some(a => a.animationName === 'project-thumbnail-reveal'))
+          let displacement
+          if (interrupted) {
+            await page.evaluate(() => window.openAnimations.forEach(a => { a.currentTime = 490 }))
+            displacement = await page.evaluate(() => new DOMMatrixReadOnly(getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform).m42)
+          } else {
+            await page.evaluate(() => window.openAnimations.forEach(a => a.finish()))
+            await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
+          }
+          if (width === 390) await page.locator('.case-close').tap()
+          else await page.locator('.case-close').click()
+          await page.waitForURL(base + '/')
+          await page.waitForFunction(() => window.returnAnimation?.id === 'project-thumbnail-return' && window.returnAnimation.playState === 'paused')
+          assert.equal(await page.locator('[data-case-root], .case-close').count(), 0, 'the case closes without waiting for the thumbnail')
+          assert.equal(await page.evaluate(() => window.documentIdentity), 'persistent')
+          const start = await tile.locator('img').boundingBox()
+          if (interrupted) assert.ok(Math.abs(start.y - resting.y - displacement * imageScale) < 3, 'quick close reverses from the opening position')
+          else assert.ok(start.y >= height, 'the completed reveal returns from below the viewport')
+          assert.ok(Math.abs(start.width - resting.width) < 2, `${width}px: the returning thumbnail preserves its size`)
+          await page.evaluate(() => { window.returnAnimation.currentTime = window.returnAnimation.effect.getTiming().duration / 2 })
+          const middle = await tile.locator('img').boundingBox()
+          assert.ok(middle.y < start.y && middle.y > resting.y, 'thumbnail visibly moves upward toward its slot')
+          await page.evaluate(() => window.returnAnimation.finish())
+          await page.waitForFunction(() => !document.getAnimations().some(a => a.id === 'project-thumbnail-return'))
+          const end = await tile.locator('img').boundingBox()
+          assert.ok(Math.abs(end.x - resting.x) < 2 && Math.abs(end.y - resting.y) < 2, 'return lands without a position jump')
+          assert.equal(await tile.locator('img').evaluate(el => el.style.transform), '')
+        }
+        await page.emulateMedia({ reducedMotion: 'reduce' })
+        await page.locator('[data-copy="1"] [data-tile-id="micromilspec"]').click()
+        await page.waitForURL('**/micromilspec/')
+        await page.locator('.case-close').click()
+        await page.waitForURL(base + '/')
+        assert.equal(await page.evaluate(() => document.getAnimations().some(a => a.id === 'project-thumbnail-return')), false)
       }
     })
 
