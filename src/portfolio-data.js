@@ -22,7 +22,13 @@ export const portfolioCases = [
     year: '2026',
     title: 'Houeland',
     layout: 'split',
-    intro: 'Brand and UX design for Houeland.',
+    intro: 'My good friend Hans Houeland sells some of Norway’s most extraordinary homes. When he started his own real estate company, he asked me to help build it from scratch. From naming and strategy to visual identity, imagery and copy, I did a little bit of everything—taking Houeland from an idea to a brand ready to open its doors.',
+    credits: [
+      { role: 'Creative director', names: 'Anders Drage' },
+      { role: 'Website', names: 'Thomas Larsen' },
+      { role: 'Founder', names: 'Hans Houeland' },
+      { role: 'Advisor', names: 'Tove Spetalen' },
+    ],
     items: [
       { file: 'new-covers/cover-ratio-houeland.webp', span: 'full', alt: 'Houeland — embossed seal for selected properties' },
     ],

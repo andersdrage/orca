@@ -10,7 +10,7 @@ const showreelSlides = (first, last = first) =>
   Array.from({ length: last - first + 1 }, (_, index) => `showreel/${first + index}.jpg`)
 
 const ARCHIVED = [
-  { id: 'agens', title: 'AGENS', year: 2025, files: ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg'] },
+  { id: 'agens', title: 'AGENS', year: 2025, files: ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg'] },
   { id: 'aprila', title: 'Aprila Bank', year: 2018, files: ['misc-aprila.jpg', 'aprilabank-website.jpg', 'aprilabank-website-2.jpg', 'aprilabank-website-3.jpg', 'aprilabank-website-4.jpg'] },
   { id: 'brevio', title: 'Brevio', service: 'Brand + UX design', year: 2017, files: [
     'misc-brevio.jpg', 'brevio-logo-animation.mp4',
