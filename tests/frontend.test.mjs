@@ -737,6 +737,36 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
     })
 
+    test('intro stays clear of the enlarged first thumbnail during forward and reverse scrolling', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
+      const result = await page.evaluate(async () => {
+        const scroller = document.querySelector('[data-timeline]')
+        const intro = document.querySelector('.timeline-intro')
+        const tile = document.querySelector('.timeline-copy[data-copy="1"] .timeline-tile')
+        const start = tile.offsetLeft - innerWidth * 0.7
+        let gap = Infinity
+        let samples = 0
+        for (const offset of [0, 300, 450, 200, 400, 0]) {
+          scroller.scrollTo({ left: start + offset, behavior: 'instant' })
+          for (let frame = 0; frame < 18; frame++) {
+            await new Promise(requestAnimationFrame)
+            const copy = intro.getBoundingClientRect()
+            const image = tile.querySelector('img').getBoundingClientRect()
+            if (!intro.hidden && copy.right > 0 && image.left < innerWidth) {
+              gap = Math.min(gap, image.left - copy.right)
+              samples++
+            }
+          }
+        }
+        return { gap, samples }
+      })
+      assert.ok(result.samples > 20, 'sample the visible intro throughout the scroll')
+      assert.ok(result.gap >= 55, `keep at least 55px clear: ${result.gap}px`)
+    })
+
     test('centre magnification follows scrolling without changing layout and respects reduced motion', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')

@@ -193,7 +193,9 @@ export function initTimeline(scrollerEl) {
        (getBoundingClientRect ville målt 4× feil mens kartet står på 0.25). */
     const firstTileContentLeft = firstTileEl.offsetLeft
     if (!firstTileContentLeft) return false
-    introContentLeft = firstTileContentLeft - width - 56
+    // Reserve the image's maximum overhang: 20% centre magnification plus 3% hover.
+    const imageOverhang = firstTileEl.offsetWidth * (1.2 * 1.03 - 1) / 2
+    introContentLeft = firstTileContentLeft - width - imageOverhang - 56
     introContentRight = introContentLeft + width
     intro.style.left = `${introContentLeft}px`
     introPlaced = true
@@ -549,6 +551,7 @@ export function initTimeline(scrollerEl) {
   })
 
   function clearElasticTransforms() {
+    intro.style.translate = ''
     copies.forEach((copy) => {
       copy.style.transform = ''
     })
@@ -604,6 +607,8 @@ export function initTimeline(scrollerEl) {
     copies.forEach((copy) => {
       copy.style.transform = `translate3d(${tension}px, 0, 0)`
     })
+    // The intro and first image must follow the same spring during reversals.
+    if (!introDismissed) intro.style.translate = `${tension}px 0`
 
     const viewportWidth = window.innerWidth
     tileGeometry.forEach((entry) => {
@@ -617,6 +622,9 @@ export function initTimeline(scrollerEl) {
       }
       const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
       entry.tile.style.transform = `translate3d(${(tension * lag).toFixed(2)}px, 0, 0)`
+      if (entry.tile === firstTileEl && !introDismissed) {
+        intro.style.translate = `${(tension * (1 + lag)).toFixed(2)}px 0`
+      }
       entry.dirty = true
     })
   }
