@@ -15,6 +15,13 @@ const root = document.querySelector('[data-case-root]')
 const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
 const returnOverview = getReturnOverview()
 
+// Gate autoplay before any media initializer runs. Waiting until pagereveal
+// lets the first video start decoding while the new snapshot is being made.
+if ('onpagereveal' in window && previousUrl()?.pathname === '/' && sessionState.getItem('case:presentation') !== 'false' &&
+  !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.body.classList.add('case-entering', 'case-transition-entrance')
+}
+
 function previousUrl() {
   try {
     const url = new URL(window.navigation?.activation?.from?.url ?? document.referrer)

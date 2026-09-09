@@ -1,0 +1,154 @@
+[
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 155,
+        "p95": 18.5,
+        "worst": 50.2,
+        "over25ms": 2
+      },
+      "opening-tiles": {
+        "frames": 155,
+        "p95": 18.600000000000364,
+        "worst": 18.700000000000273,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 30,
+        "p95": 18.5,
+        "worst": 18.600000000000364,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 158,
+        "p95": 18.699999999999818,
+        "worst": 18.700000000000273,
+        "over25ms": 0
+      },
+      "opening-tiles": {
+        "frames": 155,
+        "p95": 18.59999999999991,
+        "worst": 18.699999999999818,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 27,
+        "p95": 18.100000000000364,
+        "worst": 18.100000000000364,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 1440,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 148,
+        "p95": 22,
+        "worst": 88,
+        "over25ms": 3
+      },
+      "opening-tiles": {
+        "frames": 153,
+        "p95": 20,
+        "worst": 24,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 26,
+        "p95": 21,
+        "worst": 21,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 153,
+        "p95": 22,
+        "worst": 74,
+        "over25ms": 3
+      },
+      "opening-tiles": {
+        "frames": 154,
+        "p95": 20,
+        "worst": 31,
+        "over25ms": 1
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 25,
+        "p95": 20,
+        "worst": 22,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  }
+]

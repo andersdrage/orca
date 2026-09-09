@@ -67,6 +67,8 @@ export function initWorld(header) {
   const loads = PAGES.map((_, index) => ({ status: index === selfIndex ? 'ready' : 'idle', promise: null }))
   let cameraIndex = selfIndex
   let travelId = 0
+  let mapRasterScale = 1
+  const mapPreparationUntil = performance.now() + 200
 
   function prepareMain(main, index) {
     main.id = `world-${PAGES[index].path.split('/')[1] || 'home'}-content`
@@ -201,34 +203,47 @@ export function initWorld(header) {
 
     /* Kartet: hele 300vw × 300svh-verdenen skalert inn i viewporten, sentrert. */
     const MAP_SCALE = 0.25
+    // Lay out the overview at its displayed resolution, then composite the
+    // camera zoom. Six full-resolution page textures are wasteful at 25% size.
+    mapRasterScale = CSS.supports('zoom', String(MAP_SCALE)) ? MAP_SCALE : 1
+    if (mapRasterScale !== 1) world.style.zoom = String(mapRasterScale)
     world.style.transformOrigin = '0 0'
-    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2}vw, ${(100 - 300 * MAP_SCALE) / 2}svh, 0) scale(${MAP_SCALE})`
+    world.style.transform = `translate3d(${(100 - 300 * MAP_SCALE) / 2 / mapRasterScale}vw, ${(100 - 300 * MAP_SCALE) / 2 / mapRasterScale}svh, 0) scale(${MAP_SCALE / mapRasterScale})`
 
-    const HOLD_MS = 1000
+    const HOLD_MS = 1200
     const ZOOM_MS = 1400
     setTimeout(() => {
       if (introJourney !== travelId) return
       const from = getComputedStyle(world).transform
       world.classList.remove('is-map')
       const zoom = world.animate(
-        [{ transform: from }, { transform: 'translate3d(0, 0, 0) scale(1)' }],
-        { duration: ZOOM_MS, easing: EASING, fill: 'backwards' },
+        [{ transform: from }, { transform: `translate3d(0, 0, 0) scale(${1 / mapRasterScale})` }],
+        { duration: ZOOM_MS, delay: 80, easing: EASING, fill: 'backwards' },
       )
+      zoom.id = 'world-camera-zoom'
       /* Kortet folder seg ut UNDERVEIS i flighten — samme varighet og kurve
          som zoomen, så hele ankomsten leses som én bevegelse. */
       const arriving = sections[cameraIndex]
       arriving.style.transform = ''
       const unfold = arriving.animate(
         [{ transform: `scale(${TRAVEL_SCALE})` }, { transform: 'scale(1)' }],
-        { duration: ZOOM_MS, easing: EASING },
+        { duration: ZOOM_MS, delay: 80, easing: EASING, fill: 'backwards' },
       )
+      unfold.id = 'world-card-unfold'
       const land = () => {
         if (introJourney !== travelId) return
         world.style.transformOrigin = ''
+        world.style.zoom = ''
+        mapRasterScale = 1
         setTransform(cameraIndex)
         world.classList.remove('is-travelling')
-        document.body.classList.remove('world-map-intro')
-        document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+        // Let the full-resolution layout settle at rest before starting the
+        // word/thumbnail entrance; otherwise Safari pays that cost mid-motion.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (introJourney !== travelId) return
+          document.body.classList.remove('world-map-intro')
+          document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+        }))
       }
       Promise.all([zoom.finished, unfold.finished]).then(land, land)
     }, HOLD_MS)
@@ -260,7 +275,9 @@ export function initWorld(header) {
 
     // Sample every visible transform before canceling; cancel restores the CSS
     // destination, which is not necessarily where the camera/card is on screen.
-    const from = getComputedStyle(world).transform
+    const from = new DOMMatrix().scale(mapRasterScale).multiply(new DOMMatrix(getComputedStyle(world).transform)).toString()
+    world.style.zoom = ''
+    mapRasterScale = 1
     const sectionTransforms = sections.map((section) => getComputedStyle(section).transform)
     if (document.body.classList.contains('world-map-intro')) {
       world.classList.remove('is-map')
@@ -370,6 +387,17 @@ export function initWorld(header) {
     syncAccessibility(cameraIndex, { focus: hadFocus && index === cameraIndex })
   }
 
+  // Fetch in parallel, but don't insert entire sibling pages while the camera
+  // or a project snapshot is animating. A selected destination always wins.
+  async function waitForMount(index) {
+    await new Promise(resolve => setTimeout(resolve, 0))
+    while (index !== cameraIndex && ((document.body.classList.contains('world-map-intro') && performance.now() >= mapPreparationUntil) ||
+      document.body.classList.contains('is-entering-home') ||
+      document.documentElement.matches('.vt-presentation-in, .vt-presentation-out'))) {
+      await new Promise(resolve => setTimeout(resolve, 80))
+    }
+  }
+
   function loadPage(index) {
     const state = loads[index]
     if (state.status === 'ready' || state.status === 'loading') return state.promise
@@ -382,7 +410,9 @@ export function initWorld(header) {
       try {
         const response = await fetch(PAGES[index].path, { signal: controller.signal })
         if (!response.ok) throw new Error(`Page request failed: ${response.status}`)
-        const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
+        const text = await response.text()
+        await waitForMount(index)
+        const doc = new DOMParser().parseFromString(text, 'text/html')
         const sourceMain = doc.querySelector('#site-layout main')
         if (!sourceMain) throw new Error('Page content is missing')
         const main = document.importNode(sourceMain, true)
@@ -399,7 +429,8 @@ export function initWorld(header) {
         state.status = 'ready'
         sections[index].dataset.loadState = 'ready'
         if (index === cameraIndex) document.title = titles[index]
-        syncAccessibility(cameraIndex, { focus: hadFocus && index === cameraIndex })
+        if (index === cameraIndex) syncAccessibility(cameraIndex, { focus: hadFocus })
+        else syncVisibleMedia(slots[index])
         watchFooters()
       } catch {
         state.status = 'error'

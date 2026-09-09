@@ -1,0 +1,159 @@
+[
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 154,
+        "p95": 18.59999999999991,
+        "worst": 49.400000000000006,
+        "over25ms": 1
+      },
+      "opening-tiles": {
+        "frames": 156,
+        "p95": 18.200000000000728,
+        "worst": 18.699999999999818,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 31,
+        "p95": 18.5,
+        "worst": 18.599999999999454,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [
+      {
+        "start": 129.30000001192093,
+        "duration": 59
+      }
+    ],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 157,
+        "p95": 18.399999999999864,
+        "worst": 18.799999999999955,
+        "over25ms": 0
+      },
+      "opening-tiles": {
+        "frames": 156,
+        "p95": 18.59999999999991,
+        "worst": 18.699999999999818,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 29,
+        "p95": 18.799999999999272,
+        "worst": 19,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 1440,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 148,
+        "p95": 22,
+        "worst": 76,
+        "over25ms": 4
+      },
+      "opening-tiles": {
+        "frames": 150,
+        "p95": 20,
+        "worst": 111,
+        "over25ms": 1
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 29,
+        "p95": 19,
+        "worst": 19,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "dpr": 2,
+    "headed": true,
+    "phases": {
+      "opening-map": {
+        "frames": 151,
+        "p95": 19,
+        "worst": 42,
+        "over25ms": 2
+      },
+      "opening-tiles": {
+        "frames": 153,
+        "p95": 20,
+        "worst": 80,
+        "over25ms": 2
+      },
+      "entry": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "return": {
+        "frames": 0,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 30,
+        "p95": 20,
+        "worst": 22,
+        "over25ms": 0
+      }
+    },
+    "clicks": [],
+    "longTasks": [],
+    "transitions": [],
+    "errors": []
+  }
+]

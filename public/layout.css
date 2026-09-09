@@ -1214,9 +1214,9 @@ body.world-mode {
   display: flex;
   align-items: center;
   gap: calc(clamp(2.5rem, 5.5vw, 5.5rem) + 100px);
-  /* Text width + 56px to first tile + 84px entrance inset. Reserve this
-     geometry at every loop seam so the preceding tile stays off screen. */
-  padding-right: max(clamp(240px, 45vw, 600px), calc(var(--intro-width) + 140px));
+  /* Text width, entrance inset and a seam cushion keep the preceding enlarged
+     thumbnail clear of the intro at narrow widths too. */
+  padding-right: max(clamp(240px, 45vw, 600px), calc(var(--intro-width) + 160px));
 }
 
 .timeline-tile {
@@ -2247,6 +2247,7 @@ body.world-map-intro .timeline-tile__hover-label {
 .world.is-map .world-page {
   border-radius: 48px;
   animation: map-card-in 0.6s cubic-bezier(0.32, 0.08, 0.24, 1) both;
+  animation-delay: 200ms;
 }
 
 /* Kortene stiger inn ett og ett når kartet vises. Slutter i scale(0.85) —
@@ -2264,27 +2265,29 @@ body.world-map-intro .timeline-tile__hover-label {
 }
 
 .world.is-map .world-page:nth-child(2) {
-  animation-delay: 80ms;
+  animation-delay: 280ms;
 }
 
 .world.is-map .world-page:nth-child(3) {
-  animation-delay: 160ms;
+  animation-delay: 360ms;
 }
 
 .world.is-map .world-page:nth-child(4) {
-  animation-delay: 240ms;
+  animation-delay: 440ms;
 }
 
 .world.is-map .world-page:nth-child(5) {
-  animation-delay: 320ms;
+  animation-delay: 520ms;
 }
 
 .world.is-map .world-page:nth-child(6) {
-  animation-delay: 400ms;
+  animation-delay: 600ms;
 }
 
 body.world-map-intro .world-page {
-  transition: border-radius 600ms cubic-bezier(0.32, 0.08, 0.24, 1);
+  /* Keep the clip stable while six viewport-sized cards scale. Animating
+     their radius forces Safari to repaint the cards throughout the zoom. */
+  border-radius: 48px;
 }
 /* Kart-viewet skal ikke avsløre kjellerens innhold: bilder/video/kort vises
    som grå skjelettflater til zoomen har landet. */
@@ -2969,7 +2972,8 @@ body.world-map-intro .archived-card {
   }
 }
 @media (max-width: 360px) and (max-height: 620px) {
-  [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) { font-size: 18px; }
+  [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) { font-size: 16px; }
+  #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
   .page-case:has([data-layout="presentation"]) .case-close { top: 8px; }
 }
 @media (max-height: 500px) {
@@ -2994,27 +2998,27 @@ html.vt-presentation-in::view-transition-group(case-close) { z-index: 6; }
 
 html.vt-presentation-in::view-transition-old(case-cover) {
   display: block;
-  animation: project-thumbnail-away 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: project-thumbnail-away 220ms 80ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 html.vt-presentation-in::view-transition-old(root) {
   transform-origin: var(--vt-origin, 50% 50%);
-  animation: project-world-away 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-world-away 220ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html.vt-presentation-in::view-transition-new(root) {
   transform-origin: 50% 40%;
-  animation: project-intro-arrive 380ms 40ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-intro-arrive 380ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html.vt-presentation-in::view-transition-old(push-l1),
 html.vt-presentation-in::view-transition-old(push-l2),
 html.vt-presentation-in::view-transition-old(push-l3),
 html.vt-presentation-in::view-transition-old(push-l4) {
-  animation: project-neighbor-away 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-neighbor-away 260ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html.vt-presentation-in::view-transition-old(push-r1),
 html.vt-presentation-in::view-transition-old(push-r2),
 html.vt-presentation-in::view-transition-old(push-r3),
 html.vt-presentation-in::view-transition-old(push-r4) {
-  animation: project-neighbor-away 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-neighbor-away 260ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes project-thumbnail-away {
   0% { opacity: 1; transform: translateY(0) scale(1); }
@@ -3043,8 +3047,11 @@ html.vt-presentation-in::view-transition-group(push-r4) { z-index: 4; }
 html.vt-presentation-in::view-transition { background: #fafafa; }
 
 /* Close immediately clears the case; its thumbnail rises into the saved spot. */
-html.vt-presentation-in::view-transition-group(*) { animation-duration: 420ms; }
-html.vt-presentation-out::view-transition-group(*) { animation-duration: 360ms; z-index: 1; }
+/* Native snapshots need a short raster/upload window. The pointer press
+   responds immediately; only the prepared layers start after this hold. */
+html.vt-presentation-in::view-transition-group(*) { animation-duration: 500ms; }
+html.vt-presentation-in::view-transition-new(case-close) { animation-delay: 200ms; }
+html.vt-presentation-out::view-transition-group(*) { animation-duration: 400ms; z-index: 1; }
 html.vt-presentation-out::view-transition { background: #fafafa; }
 html.vt-presentation-out::view-transition-group(root) { z-index: 0; }
 html.vt-presentation-out::view-transition-group(case-cover) { z-index: 5; }
@@ -3054,15 +3061,15 @@ html.vt-presentation-out::view-transition-old(case-close) {
   animation: project-case-away 100ms ease-out both;
 }
 html.vt-presentation-out::view-transition-new(root) {
-  animation: project-work-arrive 180ms 50ms ease-out both;
+  animation: project-work-arrive 180ms 90ms ease-out both;
 }
 html.vt-presentation-out::view-transition-new(case-cover) {
-  animation: project-thumbnail-return 300ms 60ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: project-thumbnail-return 300ms 100ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 html.vt-presentation-in::view-transition-old(site-brand),
 html.vt-presentation-in::view-transition-old(site-nav),
 html.vt-presentation-in::view-transition-old(site-work) {
-  animation: project-case-away 180ms ease-out both;
+  animation: project-case-away 180ms 80ms ease-out both;
 }
 @keyframes project-case-away { to { opacity: 0; } }
 @keyframes project-work-arrive { from { opacity: 0; } }

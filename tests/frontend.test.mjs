@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { after, before, describe, test } from 'node:test'
 import { preview } from 'vite'
 import { chromium, webkit } from 'playwright'
+import sharp from 'sharp'
 import { FEATURED_ORDER } from '../src/case-navigation.js'
 import { loadLazyMedia } from '../scripts/screenshot-media.mjs'
 
@@ -329,7 +330,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await page.setViewportSize({ width, height: 900 })
         for (const [path, selector, hover] of [
           ['/history/', '.archive-year, .archive-type', '.archive-list li'],
-          ['/finn/', '.case-credits__label, .case-credits__role, .case-credits__names', '.case-credits__row'],
+          ['/finn/', '.case-title-block dt, .case-title-block dd', '.title-block__cell'],
           ['/about/', '.employments-table td', '.employments-table tr'],
           ['/praise/', '.text-secondary', null],
           ['/people/', '.text-secondary, .archive-name.is-met', null],
@@ -661,9 +662,53 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           for (let repeat = 0; repeat < 2; repeat++) el.querySelectorAll('a').forEach((link) => link.dispatchEvent(new PointerEvent('pointerover', { bubbles: true })))
         })
         await page.waitForTimeout(300)
-        assert.equal(documents.length, saveData ? 0 : 3)
+        assert.equal(documents.length, saveData ? 0 : casePaths.length)
         assert.equal(documents.length, new Set(documents).size)
       }
+    })
+
+    test('settled thumbnails stop writing styles and wake again after navigation', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' })
+      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+      const idleWrites = async () => page.locator('[data-timeline]').evaluate(el => new Promise(resolve => {
+        let writes = 0
+        const observer = new MutationObserver(records => { writes += records.length })
+        observer.observe(el, { subtree: true, attributes: true, attributeFilter: ['style'] })
+        setTimeout(() => { observer.disconnect(); resolve(writes) }, 250)
+      }))
+      await page.waitForTimeout(500)
+      assert.equal(await idleWrites(), 0)
+      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+      await page.waitForTimeout(1000)
+      assert.ok(Number(await tile.evaluate(el => getComputedStyle(el).scale)) > 1.19)
+      await tile.click()
+      await page.waitForURL('**/hjemla/')
+      await page.waitForTimeout(600)
+      await page.locator('.case-close').click()
+      await page.waitForURL(base + '/')
+      await page.waitForTimeout(1200)
+      assert.equal(await idleWrites(), 0)
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 250 })
+      await page.waitForTimeout(90)
+      assert.ok(await page.locator('.timeline-copy').first().evaluate(el => Boolean(el.style.transform)), 'scroll wakes the spring after return')
+    })
+
+    test('case autoplay waits until the project entrance has finished', async (t) => {
+      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
+        addEventListener('pagereveal', e => {
+          if (location.pathname !== '/micromilspec/') return
+          window.videoBeforeReveal = [...document.querySelectorAll('video[data-media-src]')].map(v => v.getAttribute('src'))
+        })
+      })
+      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+      await page.locator('.timeline-copy[data-copy="1"] [data-tile-id="micromilspec"]').click()
+      await page.waitForURL('**/micromilspec/')
+      assert.ok((await page.evaluate(() => window.videoBeforeReveal)).every(src => src === null))
+      const video = page.locator('.case-below video').first()
+      await video.scrollIntoViewIfNeeded()
+      await page.waitForFunction(() => !document.body.classList.contains('case-entering'))
+      await page.waitForFunction(() => document.querySelector('.case-below video').currentTime > 0)
     })
 
     test('project transition gives immediate press feedback and reveals text behind the departing thumbnail', async (t) => {
@@ -689,8 +734,13 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await tile.click()
       await page.waitForURL('**/hjemla/', { waitUntil: 'domcontentloaded' })
       await page.waitForFunction(() => window.transitionProbe?.length > 0)
+      const preparing = await page.evaluate(() => {
+        window.transitionProbe.forEach(animation => { animation.currentTime = 60 })
+        return Number(getComputedStyle(document.documentElement, '::view-transition-old(case-cover)').opacity)
+      })
+      assert.equal(preparing, 1, 'the thumbnail stays solid while native layers are prepared')
       const frame = await page.evaluate(() => {
-        window.transitionProbe.forEach(animation => { animation.currentTime = 100 })
+        window.transitionProbe.forEach(animation => { animation.currentTime = 180 })
         const style = name => getComputedStyle(document.documentElement, name)
         const thumbnail = style('::view-transition-old(case-cover)')
         const intro = style('::view-transition-new(root)')
@@ -731,6 +781,20 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(returnFrame.caseOpacity, 0, 'case disappears almost immediately')
       assert.ok(returnFrame.tileOpacity > 0 && returnFrame.tileOpacity < 1)
       assert.ok(returnFrame.tileY > 0 && returnFrame.tileY < 110, 'thumbnail rises back into its saved position')
+      await page.evaluate(() => window.transitionProbe.forEach(animation => { animation.currentTime = 200 }))
+      const pixels = await sharp(await page.screenshot({ clip: { x: 360, y: 315, width: 600, height: 240 } })).stats()
+      assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 8), 'the returning snapshot contains photo pixels, not an empty animated box')
+      const neighbourClip = await page.evaluate(() => {
+        const tile = [...document.querySelectorAll('.timeline-tile')].find(el => {
+          const r = el.getBoundingClientRect()
+          return el.dataset.tileId !== 'hjemla' && Math.min(r.right, innerWidth) - Math.max(r.left, 0) > 80
+        })
+        const r = tile.getBoundingClientRect()
+        const left = Math.max(r.left, 0), right = Math.min(r.right, innerWidth)
+        return { x: left + 20, y: r.top + r.height * .3, width: right - left - 40, height: r.height * .4 }
+      })
+      const neighbourPixels = await sharp(await page.screenshot({ clip: neighbourClip })).stats()
+      assert.ok(neighbourPixels.channels.slice(0, 3).some(channel => channel.stdev > 8), 'neighbouring photos are painted during the return, too')
       await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
       await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-out'))
       await ready(page, '/')
@@ -1131,7 +1195,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('new archive films have posters and open as playable videos', async (t) => {
       const page = await visit(t, '/archived-work/')
       await ready(page, '/archived-work/')
-      for (const [id, count] of [['klp', 2], ['kindly', 3], ['abelee', 2], ['brevio', 3], ['just', 4]]) {
+      for (const [id, count] of [['klp', 2], ['kindly', 3], ['abelee', 2], ['brevio', 3], ['just', 2]]) {
         const block = page.locator(`[data-project="${id}"]`)
         const previews = block.locator('video')
         assert.equal(await previews.count(), count)

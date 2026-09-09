@@ -152,6 +152,10 @@ export function initTimeline(scrollerEl) {
     return copy
   })
 
+  // Decode each unique cover during the opening hold, before it is animated.
+  // Copies share the same resource; don't request three separate decodes.
+  copies[1].querySelectorAll('img').forEach(image => image.decode().catch(() => {}))
+
   let copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
   /* Den visuelle (myke) scrollposisjonen — jager scrollLeft i elasticFrame. */
   let elasticCurrent = 0
@@ -479,6 +483,14 @@ export function initTimeline(scrollerEl) {
   const finePointer = window.matchMedia('(pointer: fine)')
 
   let tileGeometry = []
+  let elasticFrameId = 0
+  let lastFrameTime = performance.now()
+  const scheduleElastic = () => {
+    if (!elasticFrameId && !document.hidden) {
+      lastFrameTime = performance.now()
+      elasticFrameId = requestAnimationFrame(elasticFrame)
+    }
+  }
   function measureTiles() {
     /* offsetLeft/offsetWidth: layout-koordinater — upåvirket av elastikk-
        transforms og kart-introens verdens-skalering (se placeIntro). */
@@ -492,6 +504,7 @@ export function initTimeline(scrollerEl) {
       dirty: false,
       fadeDirty: false,
     }))
+    scheduleElastic()
   }
   measureTiles()
 
@@ -540,11 +553,12 @@ export function initTimeline(scrollerEl) {
 
   let elasticActive = false
   let tilePressed = false
-  let lastFrameTime = performance.now()
 
   /* Idet en case-navigasjon tar snapshot: slipp fjæren helt til ro, så
      avreisebildet fanges uten strekk og ingenting muterer under overgangen. */
   window.addEventListener('pageswap', () => {
+    cancelAnimationFrame(elasticFrameId)
+    elasticFrameId = 0
     elasticCurrent = scroller.scrollLeft
     clearElasticTransforms()
     elasticActive = false
@@ -564,7 +578,7 @@ export function initTimeline(scrollerEl) {
   }
 
   function elasticFrame(now) {
-    requestAnimationFrame(elasticFrame)
+    elasticFrameId = 0
     const dt = Math.min((now - lastFrameTime) / 16.667, 3)
     lastFrameTime = now
     // Keep the hit target still between pointerdown and click. Otherwise the
@@ -627,8 +641,13 @@ export function initTimeline(scrollerEl) {
       }
       entry.dirty = true
     })
+    scheduleElastic()
   }
-  requestAnimationFrame(elasticFrame)
+  scroller.addEventListener('scroll', scheduleElastic, { passive: true })
+  window.addEventListener('pageshow', scheduleElastic)
+  document.addEventListener('visibilitychange', scheduleElastic)
+  reducedMotionQuery.addEventListener('change', scheduleElastic)
+  finePointer.addEventListener('change', scheduleElastic)
 
   let uniformApplied = sameSizeThumbnails()
   const updateThumbnails = () => {
@@ -709,6 +728,7 @@ export function initTimeline(scrollerEl) {
   const releasePress = () => {
     tilePressed = false
     scroller.querySelectorAll('.is-pressed').forEach(tile => tile.classList.remove('is-pressed'))
+    scheduleElastic()
   }
   scroller.addEventListener('pointerdown', event => {
     const tile = event.target.closest('a.timeline-tile')
@@ -775,6 +795,13 @@ export function initTimeline(scrollerEl) {
         return r.right > 0 && r.left < window.innerWidth
       }) ?? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`)
     if (!tile) return
+
+    // The snapshot needs all visible photos in its first paint, including the
+    // neighbours in the root layer. Async painting can leave those layers blank.
+    scroller.querySelectorAll('.timeline-tile img').forEach(image => {
+      const bounds = image.getBoundingClientRect()
+      if (bounds.right > 0 && bounds.left < innerWidth) image.decoding = 'sync'
+    })
 
     /* Naboene får push-navnene sine igjen, så de glir tilbake på plass fra sidene
        (reversen av at de flyttet seg ut av veien ved åpning). */

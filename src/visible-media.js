@@ -16,6 +16,12 @@ function near(el, inset = 0) {
 
 function update(el) {
   const available = active(el)
+  // Inactive pages can contain hundreds of items. They need neither layout
+  // queries nor repeated pause() calls during the active page's animation.
+  if (!available) {
+    if (el.tagName === 'VIDEO' && !el.paused) el.pause()
+    return
+  }
   const nearby = available && near(el, margin)
   if (nearby && el.dataset.mediaPoster) {
     el.poster = el.dataset.mediaPoster
@@ -37,7 +43,7 @@ function update(el) {
   const choice = playback.get(el)
   const permitted = choice?.intent === 'play' || (!reduced.matches && choice?.intent !== 'pause')
   const play = available && near(el) && revealed && permitted && !document.body.classList.contains('case-entering')
-  if (!play) { el.pause(); return }
+  if (!play) { if (!el.paused) el.pause(); return }
   if (!el.hasAttribute('src')) {
     el.muted = true
     el.src = el.dataset.mediaSrc

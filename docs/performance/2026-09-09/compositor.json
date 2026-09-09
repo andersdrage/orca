@@ -1,0 +1,42 @@
+{
+  "opening-map": {
+    "windows": 1,
+    "drawn": 145,
+    "fullyDropped": 0,
+    "partialUpdates": 3,
+    "measuredAnimationRanges": 8,
+    "fullyDroppedWhileAnimating": 0
+  },
+  "opening-tiles": {
+    "windows": 1,
+    "drawn": 100,
+    "fullyDropped": 0,
+    "partialUpdates": 0,
+    "measuredAnimationRanges": 52,
+    "fullyDroppedWhileAnimating": 0
+  },
+  "idle": {
+    "windows": 20,
+    "drawn": 612,
+    "fullyDropped": 19,
+    "partialUpdates": 6,
+    "measuredAnimationRanges": 0,
+    "fullyDroppedWhileAnimating": 0
+  },
+  "entry": {
+    "windows": 10,
+    "drawn": 284,
+    "fullyDropped": 0,
+    "partialUpdates": 8,
+    "measuredAnimationRanges": 78,
+    "fullyDroppedWhileAnimating": 0
+  },
+  "return": {
+    "windows": 10,
+    "drawn": 247,
+    "fullyDropped": 0,
+    "partialUpdates": 6,
+    "measuredAnimationRanges": 40,
+    "fullyDroppedWhileAnimating": 0
+  }
+}

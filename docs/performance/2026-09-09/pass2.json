@@ -1,0 +1,575 @@
+[
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "phases": {
+      "opening-map": {
+        "frames": 141,
+        "p95": 18.600000000000023,
+        "worst": 34.900000000000006,
+        "over25ms": 2
+      },
+      "opening-tiles": {
+        "frames": 156,
+        "p95": 18.5,
+        "worst": 18.800000000000182,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 262,
+        "p95": 18.69999999999999,
+        "worst": 50,
+        "over25ms": 5
+      },
+      "return": {
+        "frames": 229,
+        "p95": 18.599999999999966,
+        "worst": 18.700000000000017,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 1165,
+        "p95": 18.600000000000023,
+        "worst": 18.800000000000068,
+        "over25ms": 0
+      }
+    },
+    "clicks": [
+      {
+        "id": "micromilspec",
+        "ms": 180
+      },
+      {
+        "id": "hjemla",
+        "ms": 195
+      },
+      {
+        "id": "boligmappa",
+        "ms": 172
+      },
+      {
+        "id": "finn",
+        "ms": 196
+      },
+      {
+        "id": "uber",
+        "ms": 188
+      },
+      {
+        "id": "off-market",
+        "ms": 181
+      },
+      {
+        "id": "houeland",
+        "ms": 182
+      },
+      {
+        "id": "nettavisen",
+        "ms": 231
+      },
+      {
+        "id": "hjemla",
+        "ms": 176
+      },
+      {
+        "id": "boligmappa",
+        "ms": 181
+      }
+    ],
+    "longTasks": [],
+    "transitions": [
+      {
+        "ready": 3.799999952316284
+      },
+      {
+        "ready": 3.299999952316284
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 3.899999976158142
+      },
+      {
+        "ready": 2.5
+      },
+      {
+        "ready": 4.100000023841858
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 4.600000023841858
+      },
+      {
+        "ready": 2.5
+      },
+      {
+        "ready": 1.699999988079071
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 3.199999988079071
+      },
+      {
+        "ready": 2.5
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 21.100000023841858
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 2.600000023841858
+      }
+    ],
+    "errors": []
+  },
+  {
+    "engine": "chromium",
+    "width": 390,
+    "phases": {
+      "opening-map": {
+        "frames": 143,
+        "p95": 18.59999999999991,
+        "worst": 18.799999999999955,
+        "over25ms": 0
+      },
+      "opening-tiles": {
+        "frames": 156,
+        "p95": 18.5,
+        "worst": 18.700000000000273,
+        "over25ms": 0
+      },
+      "entry": {
+        "frames": 259,
+        "p95": 18.69999999999999,
+        "worst": 34.70000000000002,
+        "over25ms": 6
+      },
+      "return": {
+        "frames": 228,
+        "p95": 18,
+        "worst": 18.700000000000003,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 1149,
+        "p95": 18.600000000000023,
+        "worst": 50.099999999999454,
+        "over25ms": 1
+      }
+    },
+    "clicks": [
+      {
+        "id": "micromilspec",
+        "ms": 162
+      },
+      {
+        "id": "hjemla",
+        "ms": 152
+      },
+      {
+        "id": "boligmappa",
+        "ms": 176
+      },
+      {
+        "id": "finn",
+        "ms": 188
+      },
+      {
+        "id": "uber",
+        "ms": 153
+      },
+      {
+        "id": "off-market",
+        "ms": 162
+      },
+      {
+        "id": "houeland",
+        "ms": 189
+      },
+      {
+        "id": "nettavisen",
+        "ms": 171
+      },
+      {
+        "id": "hjemla",
+        "ms": 132
+      },
+      {
+        "id": "boligmappa",
+        "ms": 140
+      }
+    ],
+    "longTasks": [
+      {
+        "start": 6635.100000023842,
+        "duration": 59
+      }
+    ],
+    "transitions": [
+      {
+        "ready": 3.100000023841858
+      },
+      {
+        "ready": 2.600000023841858
+      },
+      {
+        "ready": 2.100000023841858
+      },
+      {
+        "ready": 2.699999988079071
+      },
+      {
+        "ready": 1.5
+      },
+      {
+        "ready": 3.100000023841858
+      },
+      {
+        "ready": 2.799999952316284
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 2.5
+      },
+      {
+        "ready": 2.399999976158142
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 2
+      },
+      {
+        "ready": 1.399999976158142
+      },
+      {
+        "ready": 2.699999988079071
+      },
+      {
+        "ready": 2.099999964237213
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 2.199999988079071
+      },
+      {
+        "ready": 2.100000023841858
+      },
+      {
+        "ready": 2.699999988079071
+      },
+      {
+        "ready": 2.700000047683716
+      }
+    ],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 1440,
+    "phases": {
+      "opening-map": {
+        "frames": 129,
+        "p95": 19,
+        "worst": 111,
+        "over25ms": 3
+      },
+      "opening-tiles": {
+        "frames": 155,
+        "p95": 20,
+        "worst": 51,
+        "over25ms": 2
+      },
+      "entry": {
+        "frames": 260,
+        "p95": 19,
+        "worst": 50,
+        "over25ms": 4
+      },
+      "return": {
+        "frames": 226,
+        "p95": 19,
+        "worst": 31,
+        "over25ms": 2
+      },
+      "idle": {
+        "frames": 1065,
+        "p95": 20,
+        "worst": 48,
+        "over25ms": 15
+      }
+    },
+    "clicks": [
+      {
+        "id": "micromilspec",
+        "ms": 73
+      },
+      {
+        "id": "hjemla",
+        "ms": 47
+      },
+      {
+        "id": "boligmappa",
+        "ms": 57
+      },
+      {
+        "id": "finn",
+        "ms": 54
+      },
+      {
+        "id": "uber",
+        "ms": 57
+      },
+      {
+        "id": "off-market",
+        "ms": 58
+      },
+      {
+        "id": "houeland",
+        "ms": 51
+      },
+      {
+        "id": "nettavisen",
+        "ms": 59
+      },
+      {
+        "id": "hjemla",
+        "ms": 63
+      },
+      {
+        "id": "boligmappa",
+        "ms": 53
+      }
+    ],
+    "longTasks": [],
+    "transitions": [
+      {
+        "ready": 6
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 17
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 6
+      },
+      {
+        "ready": 32
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 9
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 16
+      },
+      {
+        "ready": 7
+      }
+    ],
+    "errors": []
+  },
+  {
+    "engine": "webkit",
+    "width": 390,
+    "phases": {
+      "opening-map": {
+        "frames": 137,
+        "p95": 20,
+        "worst": 47,
+        "over25ms": 3
+      },
+      "opening-tiles": {
+        "frames": 155,
+        "p95": 21,
+        "worst": 45,
+        "over25ms": 2
+      },
+      "entry": {
+        "frames": 260,
+        "p95": 19,
+        "worst": 51,
+        "over25ms": 4
+      },
+      "return": {
+        "frames": 228,
+        "p95": 19,
+        "worst": 20,
+        "over25ms": 0
+      },
+      "idle": {
+        "frames": 1057,
+        "p95": 20,
+        "worst": 52,
+        "over25ms": 11
+      }
+    },
+    "clicks": [
+      {
+        "id": "micromilspec",
+        "ms": 55
+      },
+      {
+        "id": "hjemla",
+        "ms": 49
+      },
+      {
+        "id": "boligmappa",
+        "ms": 50
+      },
+      {
+        "id": "finn",
+        "ms": 58
+      },
+      {
+        "id": "uber",
+        "ms": 63
+      },
+      {
+        "id": "off-market",
+        "ms": 52
+      },
+      {
+        "id": "houeland",
+        "ms": 42
+      },
+      {
+        "id": "nettavisen",
+        "ms": 58
+      },
+      {
+        "id": "hjemla",
+        "ms": 56
+      },
+      {
+        "id": "boligmappa",
+        "ms": 50
+      }
+    ],
+    "longTasks": [],
+    "transitions": [
+      {
+        "ready": 4
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 18
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 4
+      },
+      {
+        "ready": 6
+      },
+      {
+        "ready": 35
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 3
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 10
+      },
+      {
+        "ready": 5
+      },
+      {
+        "ready": 17
+      },
+      {
+        "ready": 4
+      }
+    ],
+    "errors": []
+  }
+]

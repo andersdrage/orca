@@ -4,13 +4,15 @@ import { portfolioCases } from './portfolio-data.js'
 import { initWorld } from './world.js'
 import { syncVisibleMedia } from './visible-media.js'
 import { isSameTabNavigation } from './link-navigation.js'
+import { sessionState } from './session-state.js'
 
 // Prepare only the case the visitor points to, focuses, or touches. Keep a
-// small per-document budget and deduplicate shared scripts/styles across cases.
+// finite featured-case budget and deduplicate shared scripts/styles across cases.
 function initCaseWarmup() {
   const paths = new Map(portfolioCases.map((project) => [`/${project.id}/`, project]))
   const cases = new Set()
   const assets = new Set()
+  const images = new Map()
   const savingData = () => navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType ?? '')
   const fetchOnce = (url) => {
     const absolute = new URL(url, location.href)
@@ -23,14 +25,28 @@ function initCaseWarmup() {
     const link = event.target.closest('a[href]')
     if (!link || link.origin !== location.origin || link.pathname === location.pathname) return
     const project = paths.get(link.pathname)
-    if (!project || cases.has(project.id) || cases.size >= 3) return
+    if (!project || cases.has(project.id) || cases.size >= portfolioCases.length) return
     cases.add(project.id)
-    const file = project.items[0]?.file
-    if (file) fetchOnce(`/images/${file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}`)
+    // The text-first case reveals the next media row, not its hidden cover.
+    // Decode that still/poster on intent; never download a speculative video.
+    const first = sessionState.getItem('case:presentation') !== 'false' && project.items.length > 1 ? 1 : 0
+    const item = project.items[first]
+    const row = item?.span === 'half' ? project.items.slice(first, first + 2) : [item]
+    row.forEach(item => {
+      if (!item?.file) return
+      const src = `/images/${item.file.replace(/\.(mp4|webm|mov)$/i, '-poster.jpg')}`
+      if (images.has(src)) return
+      const image = new Image()
+      image.decoding = 'async'
+      image.fetchPriority = 'low'
+      image.src = src
+      images.set(src, image)
+      image.decode().catch(() => {})
+    })
     fetchOnce(link.href).then(async (response) => {
       if (!response?.ok) return
       const doc = new DOMParser().parseFromString(await response.text(), 'text/html')
-      doc.querySelectorAll('script[src], link[rel="stylesheet"][href]').forEach((el) => {
+      doc.querySelectorAll('script[src], link[rel="stylesheet"][href], link[rel="modulepreload"][href], link[as="font"][href]').forEach((el) => {
         const asset = el.getAttribute('src') || el.getAttribute('href')
         if (asset) fetchOnce(new URL(asset, link.href).href)
       })
