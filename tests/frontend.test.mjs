@@ -1038,6 +1038,13 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await page.waitForTimeout(900)
       }
       const offset = () => label.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42)
+      await move(1120)
+      assert.ok(await tile.evaluate(el => {
+        const text = document.createRange()
+        text.selectNodeContents(el.querySelector('.timeline-tile__hover-label'))
+        return Number(el.style.getPropertyValue('--tile-magnification')) < 1.13
+          && text.getBoundingClientRect().bottom > el.querySelector('img').getBoundingClientRect().bottom + 3
+      }), 'name emerges before thumbnail growth reaches 13%')
       await move(720)
       assert.equal(await tile.evaluate(el => el.matches(':hover')), false)
       assert.ok(Math.abs(await offset()) < 1, 'name emerges as the image grows, without a pointer over it')
@@ -1058,7 +1065,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(await scale() < centredScale, 'name and image shrink together')
       await move(144)
       const hiddenOffset = await offset()
-      assert.ok(hiddenOffset > 40)
+      assert.ok(hiddenOffset > 20)
       assert.equal(await label.evaluate(el => getComputedStyle(el).opacity), '0')
       const r = await tile.boundingBox()
       await page.mouse.move(144, r.y + r.height / 2)
@@ -1083,6 +1090,13 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const offset = () => label.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42)
       await move(380)
       assert.ok(await offset() < -20, 'approaching thumbnail keeps its name tucked behind the image')
+      await move(300)
+      assert.ok(await tile.evaluate(el => {
+        const text = document.createRange()
+        text.selectNodeContents(el.querySelector('.timeline-tile__hover-label'))
+        return Number(el.style.getPropertyValue('--tile-magnification')) < 1.13
+          && text.getBoundingClientRect().bottom > el.querySelector('img').getBoundingClientRect().bottom + 3
+      }), 'touch name emerges early in thumbnail growth')
       await move(195)
       assert.ok(Math.abs(await offset()) < 1, 'the centred thumbnail reveals its name without hover')
       assert.equal(await page.locator('.is-label-revealed').count(), 1)

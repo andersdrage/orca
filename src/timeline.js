@@ -545,12 +545,13 @@ export function initTimeline(scrollerEl) {
       }
       const firstArrival = entry.tile === firstTileEl && showFirstArrivalName
       const anchor = firstArrival ? firstNameAnchor : viewportWidth / 2
-      // One signed ramp through centre: no fully-revealed interval that would
-      // pause vertical movement while the thumbnail keeps travelling sideways.
-      const position = Math.max(-1, Math.min(1, (anchor - center) / (radius * .6)))
+      // Start the name's continuous downward travel with thumbnail growth,
+      // rather than keeping it behind the image until it is almost centred.
+      const position = Math.max(-1, Math.min(1, (anchor - center) / radius))
       const travel = reducedMotionQuery.matches ? 0 : position
+      // Keep the existing departure fade distance despite the earlier reveal.
       const opacity = reducedMotionQuery.matches
-        ? Number(Math.abs(anchor - center) / radius < .45) : 1 - Math.max(0, position)
+        ? Number(Math.abs(anchor - center) / radius < .45) : 1 - Math.min(1, Math.max(0, position / .6))
       const revealLabel = position > -1 && opacity > 0
       const labelProgress = `${travel.toFixed(4)},${opacity.toFixed(4)}`
       if (entry.labelProgress !== labelProgress) {
