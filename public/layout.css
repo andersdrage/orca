@@ -2393,6 +2393,13 @@ body.world-map-intro .world-page {
   /* Keep the clip stable while six viewport-sized cards scale. Animating
      their radius forces Safari to repaint the cards throughout the zoom. */
   border-radius: var(--site-radius);
+  scrollbar-width: none;
+}
+/* Safari can paint each card's native scrollbar during the camera zoom. */
+body.world-map-intro .world-page::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 /* Kart-viewet skal ikke avsløre kjellerens innhold: bilder/video/kort vises
    som grå skjelettflater til zoomen har landet. */
