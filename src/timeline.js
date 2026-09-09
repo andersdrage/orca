@@ -515,9 +515,8 @@ export function initTimeline(scrollerEl) {
       contentLeft: tile.offsetLeft,
       width: tile.offsetWidth,
       labelRevealed: tile.classList.contains('is-label-revealed'),
-      /* De to siste tilene i hver kopi fader ut mot venstre kant — nest siste
-         treffer kanten først og fader først, så siste: runden ebber ut i rekkefølge. */
-      fades: !tile.nextElementSibling || !tile.nextElementSibling.nextElementSibling,
+      // Only the final thumbnail fades as the next loop comes into view.
+      fades: !tile.nextElementSibling,
       dirty: false,
       fadeDirty: false,
     }))
