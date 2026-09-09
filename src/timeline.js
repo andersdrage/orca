@@ -498,6 +498,7 @@ export function initTimeline(scrollerEl) {
 
   let tileGeometry = []
   let showFirstArrivalName = useIntroEntry
+  let firstNameAnchor = null
   let elasticFrameId = 0
   let lastFrameTime = performance.now()
   const scheduleElastic = () => {
@@ -536,18 +537,21 @@ export function initTimeline(scrollerEl) {
       const lag = LAG_MIN + (LAG_MAX - LAG_MIN) * Math.min(Math.max(xNorm, 0), 1)
       const center = entry.contentLeft + entry.width / 2 - elasticCurrent + tension * lag
       const distance = Math.min(Math.abs(center - viewportWidth / 2) / radius, 1)
-      // The first cover sits beside the introduction, outside the centre zone.
-      // Keep its name open until scrolling carries it through the centre.
-      if (entry.tile === firstTileEl && userInteracted && center <= viewportWidth / 2) showFirstArrivalName = false
+      // The first name starts visible beside the introduction, then moves from
+      // that position as soon as scrolling begins, without waiting for centre.
+      if (entry.tile === firstTileEl && showFirstArrivalName) {
+        if (firstNameAnchor === null || !userInteracted) firstNameAnchor = center
+        if (userInteracted && center < -entry.width / 2) showFirstArrivalName = false
+      }
       const firstArrival = entry.tile === firstTileEl && showFirstArrivalName
-      const progress = firstArrival ? 1 : reducedMotionQuery.matches
-        ? Number(distance < .45) : Math.min(1, Math.max(0, (.6 - distance) / .45))
-      // Enter from behind the cover, then continue downward and fade after
-      // passing the centre. Reverse scrolling retraces the same continuous path.
-      const leaving = center < viewportWidth / 2
-      const travel = reducedMotionQuery.matches ? 0 : (1 - progress) * (leaving ? 1 : -1)
-      const opacity = reducedMotionQuery.matches || leaving ? progress : 1
-      const revealLabel = progress > 0
+      const anchor = firstArrival ? firstNameAnchor : viewportWidth / 2
+      // One signed ramp through centre: no fully-revealed interval that would
+      // pause vertical movement while the thumbnail keeps travelling sideways.
+      const position = Math.max(-1, Math.min(1, (anchor - center) / (radius * .6)))
+      const travel = reducedMotionQuery.matches ? 0 : position
+      const opacity = reducedMotionQuery.matches
+        ? Number(Math.abs(anchor - center) / radius < .45) : 1 - Math.max(0, position)
+      const revealLabel = position > -1 && opacity > 0
       const labelProgress = `${travel.toFixed(4)},${opacity.toFixed(4)}`
       if (entry.labelProgress !== labelProgress) {
         entry.tile.style.setProperty('--tile-label-travel', travel.toFixed(4))

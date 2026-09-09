@@ -1028,6 +1028,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(await firstLabel.evaluate(el => Math.abs(new DOMMatrixReadOnly(getComputedStyle(el).transform).m42) < 1 && getComputedStyle(el).opacity === '1'), 'first arrival shows MICROMILSPEC below its image')
       await page.mouse.move(5, 5)
       await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+      await page.locator('[data-timeline]').evaluate(el => { el.scrollLeft += 40 })
+      await page.waitForTimeout(900)
+      assert.ok(await firstLabel.evaluate(el => new DOMMatrixReadOnly(getComputedStyle(el).transform).m42 > 1), 'first arrival name moves immediately instead of holding until centre')
       const tile = page.locator('[data-copy="1"] [data-tile-id="hjemla"]')
       const label = tile.locator('.timeline-tile__hover-label')
       const move = async center => {
@@ -1038,6 +1041,15 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await move(720)
       assert.equal(await tile.evaluate(el => el.matches(':hover')), false)
       assert.ok(Math.abs(await offset()) < 1, 'name emerges as the image grows, without a pointer over it')
+      const centreOffsets = []
+      for (const center of [780, 750, 720, 690, 660]) {
+        await move(center)
+        centreOffsets.push(await offset())
+      }
+      const steps = centreOffsets.slice(1).map((value, i) => value - centreOffsets[i])
+      assert.ok(steps.every(step => step > 1), 'every scroll step continues down through the centre without holding')
+      assert.ok(Math.max(...steps) - Math.min(...steps) < .5, 'vertical travel stays linear across the centre')
+      await move(720)
       const scale = () => tile.evaluate(el => Number(el.style.getPropertyValue('--tile-magnification')))
       const centredScale = await scale()
       await move(432)
@@ -1079,6 +1091,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         text.selectNodeContents(el.querySelector('.timeline-tile__hover-label'))
         return text.getBoundingClientRect().top - el.querySelector('img').getBoundingClientRect().bottom >= 20
       }), 'revealed text has clear space beneath the enlarged image')
+      for (const center of [210, 200, 190, 180]) {
+        await move(center)
+        const current = await offset()
+        if (center === 210) assert.ok(current < -1)
+        if (center === 180) assert.ok(current > 1)
+      }
       await move(140)
       const retracting = await offset()
       assert.ok(retracting > 2 && retracting < 25, 'name visibly moves down before reaching the viewport edge')
