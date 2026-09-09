@@ -8,20 +8,11 @@ import { initCreditsLayout } from './credits-layout.js'
 import { initCaseGallery } from './case-gallery.js'
 import { initCaseComparisons } from './case-comparison.js'
 import { caseNeighbors, caseArrowDirection } from './case-navigation.js'
-import { syncVisibleMedia } from './visible-media.js'
-import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
 import closeIconUrl from './assets/icons/close.svg?url'
 
 const root = document.querySelector('[data-case-root]')
 const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
 const returnOverview = getReturnOverview()
-
-// Gate autoplay before any media initializer runs. Waiting until pagereveal
-// lets the first video start decoding while the new snapshot is being made.
-if ('onpagereveal' in window && previousUrl()?.pathname === '/' && sessionState.getItem('case:presentation') !== 'false' &&
-  !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  document.body.classList.add('case-entering', 'case-transition-entrance')
-}
 
 function previousUrl() {
   try {
@@ -46,7 +37,7 @@ function getReturnOverview() {
         overview = pending.overview
       }
     } catch {
-      // Missing or stale transition state uses the case's overview fallback.
+      // Missing or stale navigation state uses the case's overview fallback.
     }
   }
   history.replaceState({ ...history.state, caseOverview: overview }, '')
@@ -78,14 +69,13 @@ if (root) {
   const storyControls = root.querySelector('.project-audio')
   if (storyControls) document.body.append(storyControls)
   initCaseTabs(root)
-  /* Husk hvilken case vi står på — så «lukk» (og back) alltid kan morphe til riktig tile,
-     også etter direktebesøk på case-URL-en. */
+  // Remember the project so close and Back restore its index position.
   sessionState.setItem('timeline:last-case', root.dataset.caseId)
   initCoverCycle(root.dataset.caseId)
   initCaseNav(root.dataset.caseId)
 }
 
-/* All cases use the same hero-to-hero transition and preserve their entry overview. */
+/* Case navigation preserves the overview used to enter the project. */
 function initCaseNav(caseId) {
   const neighbors = caseNeighbors(caseId)
   if (!neighbors) return
@@ -104,9 +94,7 @@ function initCaseNav(caseId) {
   })
 }
 
-/* Case-heroen følger cover-varianten valgt med B på forsiden (sessionStorage) —
-   tilen man morpher fra og heroen man lander i er da samme bilde. Selve
-   B-syklingen bor KUN på forsiden (timeline.js). */
+// Keep the case cover consistent with the variant selected on the index.
 function initCoverCycle(caseId) {
   if (caseId !== 'micromilspec') return
   const hero = document.querySelector('.case-cover-hero img')
@@ -129,83 +117,9 @@ function initCoverCycle(caseId) {
 initProjectAudio()
 initProjectTranscript()
 
-/* Zoom-inn: forsiden (old root-snapshot) skaleres opp mot coverets posisjon,
-   lagret i sessionStorage ved klikk på tilen. */
-window.addEventListener('pagereveal', (event) => {
-  const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-  let fromHome = false
-  try {
-    fromHome = new URL(fromUrl).pathname === '/'
-  } catch {
-    fromHome = false
-  }
-  const presentation = root?.querySelector('[data-layout="presentation"]')
-  if (fromHome && presentation && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const html = document.documentElement
-    const origin = sessionState.getItem('timeline:zoom-origin')
-    // A small drift links an off-centre click to the centred intro, without
-    // spending time moving the thumbnail across the screen first.
-    const originX = Number.parseFloat(origin)
-    const entryX = Number.isFinite(originX)
-      ? Math.max(-72, Math.min(72, (originX - innerWidth / 2) * 0.16)) : 0
-    const finish = () => {
-      html.classList.remove('vt-zoom-in', 'vt-presentation-in')
-      html.style.removeProperty('--project-entry-x')
-      document.body.classList.remove('case-entering')
-      syncVisibleMedia()
-    }
-    playProjectTransition(event.viewTransition, {
-      start: () => {
-        html.classList.add('vt-zoom-in', 'vt-presentation-in')
-        document.body.classList.add('case-entering', 'case-transition-entrance')
-        if (origin) html.style.setProperty('--vt-origin', origin)
-        html.style.setProperty('--project-entry-x', `${entryX}px`)
-        root.querySelectorAll('video').forEach(video => video.pause())
-      },
-      cleanup: finish,
-      fallback: () => [root.animate([
-        { opacity: 0, transform: `translate(${entryX}px, 12px) scale(.97)` },
-        { opacity: 1, transform: 'translate(0, 0) scale(1)' },
-      ], { duration: 380, delay: 40, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' })],
-    })
-    return
-  }
-
-  if (!event.viewTransition) return
-
-  /* Innholdet under heroen holdes skjult under morphen og stiger inn nedenfra
-     (opacity + translateY) først når overgangen er ferdig. Klassene settes kun
-     når en view transition faktisk kjører — direktebesøk viser alt statisk. */
-  document.body.classList.add('case-entering')
-  const revealBelow = () => {
-    document.body.classList.add('case-entered')
-    document.body.classList.remove('case-entering')
-    syncVisibleMedia()
-  }
-  event.viewTransition.finished.then(revealBelow, revealBelow)
-
-  /* Ytelse: autoplay-videoer begynner å dekode midt i overgangen og stjeler
-     frames. Pauses mens animasjonen kjører, gjenopptas når den er ferdig. */
-  const videos = [...document.querySelectorAll('#work video')]
-  videos.forEach((video) => video.pause())
-  const resumeVideos = () => syncVisibleMedia()
-  event.viewTransition.finished.then(resumeVideos, resumeVideos)
-
-  if (!fromHome) return
-
-  const origin = sessionState.getItem('timeline:zoom-origin')
-  const htmlRoot = document.documentElement
-  if (origin) htmlRoot.style.setProperty('--vt-origin', origin)
-  htmlRoot.classList.add('vt-zoom-in')
-
-  const cleanup = () => htmlRoot.classList.remove('vt-zoom-in')
-  event.viewTransition.finished.then(cleanup, cleanup)
-})
-
 /* Back preserves the timeline when it really is the preceding entry. After
    case-to-case arrows, close exits to the saved overview; browser Back is untouched. */
 function closeCase() {
-  cancelProjectTransition()
   if (previousUrl()?.pathname === returnOverview && history.length > 1) history.back()
   else location.href = returnOverview
 }

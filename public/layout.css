@@ -1686,18 +1686,6 @@ html[data-rounded-corners="false"] *::after {
   letter-spacing: 0;
 }
 
-/* ---- View transitions: cover ↔ case-side (morph) ---- */
-
-@view-transition {
-  navigation: auto;
-}
-
-/* Hero-bildet øverst på case-siden matcher den klikkede tilen (JS setter samme navn
-   på tilen ved klikk). Med samme bilde begge steder morpher coveret inn i seg selv. */
-.case-cover-hero {
-  view-transition-name: case-cover;
-}
-
 /* Case layout iteration: copy to the left of the cover, stacked on phones. */
 .case-lead {
   display: grid;
@@ -1711,15 +1699,6 @@ html[data-rounded-corners="false"] *::after {
 #work .work-media.case-lead {
   margin-left: calc((100% - min(1500px, calc(100vw - 3rem))) / 2);
   transform: none;
-}
-
-.case-entered .case-lead__copy.case-below {
-  animation-name: case-copy-in;
-}
-
-@keyframes case-copy-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .case-lead__copy {
@@ -2026,53 +2005,6 @@ html[data-rounded-corners="false"] *::after {
   }
 }
 
-/* Entré under heroen: holdes usynlig mens cover-morphen spiller, og stiger så
-   inn nedenfra med opacity. Tittel/intro først, mediene hakket etter. */
-.case-entering .case-below {
-  opacity: 0;
-}
-
-.case-entered .case-below {
-  animation: case-below-in 560ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-/* Media-blokken har translateX(-50%) som base (full-bleed-sentrering) — den MÅ
-   med i keyframene, ellers mister blokken sentreringen ved animasjonsstart og
-   ser ut som den glir inn fra høyre i stedet for nedenfra. */
-.case-entered .work-media.case-below {
-  animation-name: case-below-media-in;
-  animation-delay: 100ms;
-}
-
-@keyframes case-below-in {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-}
-
-@keyframes case-below-media-in {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .case-entering .case-below {
-    opacity: 1;
-  }
-
-  .case-entered .case-below,
-  .case-entered .work-media.case-below {
-    animation: none;
-  }
-}
-
 /* Hero 40% mindre enn full media-bredde, fortsatt sentrert. */
 #work .work-media.case-cover-hero {
   width: min(900px, calc((100vw - 3rem) * 0.6));
@@ -2081,219 +2013,6 @@ html[data-rounded-corners="false"] *::after {
 @media (max-width: 767px) {
   #work .work-media.case-cover-hero {
     width: calc(100vw - 4rem);
-  }
-}
-
-::view-transition-group(case-cover) {
-  animation-duration: 500ms;
-  animation-timing-function: cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
-/* Zoom-konseptet: kameraet dytter inn mot klikket cover (forover) og trekker ut igjen (tilbake).
-   JS setter --vt-origin til tilens senterpunkt + klassen vt-zoom-in/vt-zoom-out på <html>
-   i pagereveal, så skaleringen ankres i selve coveret. Resten (cover→side-morphen)
-   gjør ::view-transition-group(case-cover) over. */
-html.vt-zoom-in::view-transition-old(root) {
-  transform-origin: var(--vt-origin, 50% 50%);
-  animation: vt-zoom-in-old 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-zoom-in-old {
-  to {
-    transform: scale(1.8);
-    opacity: 0;
-  }
-}
-
-html.vt-zoom-out::view-transition-new(root) {
-  transform-origin: var(--vt-origin, 50% 50%);
-  animation: vt-zoom-out-new 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-zoom-out-new {
-  from {
-    transform: scale(1.8);
-    opacity: 0;
-  }
-}
-
-/* Neighbour snapshots stay in place and fade on entry. Legacy layouts retain
-   their return movement; the presentation return uses a single world snapshot. */
-html.vt-zoom-in::view-transition-old(push-l1),
-html.vt-zoom-in::view-transition-old(push-l2),
-html.vt-zoom-in::view-transition-old(push-l3),
-html.vt-zoom-in::view-transition-old(push-l4) {
-  animation: project-neighbor-away 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-in::view-transition-old(push-r1),
-html.vt-zoom-in::view-transition-old(push-r2),
-html.vt-zoom-in::view-transition-old(push-r3),
-html.vt-zoom-in::view-transition-old(push-r4) {
-  animation: project-neighbor-away 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-out::view-transition-new(push-l1),
-html.vt-zoom-out::view-transition-new(push-l2),
-html.vt-zoom-out::view-transition-new(push-l3),
-html.vt-zoom-out::view-transition-new(push-l4) {
-  animation: vt-push-left-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-out::view-transition-new(push-r1),
-html.vt-zoom-out::view-transition-new(push-r2),
-html.vt-zoom-out::view-transition-new(push-r3),
-html.vt-zoom-out::view-transition-new(push-r4) {
-  animation: vt-push-right-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-push-left-in {
-  from {
-    transform: translateX(-75vw);
-  }
-}
-
-@keyframes vt-push-right-in {
-  from {
-    transform: translateX(75vw);
-  }
-}
-
-/* Logo og meny er del av oversikts-verdenen: ved zoom-inn beveger de seg fysisk ut
-   av viewporten (logo opp-venstre, meny opp-høyre) i stedet for å klippes bort —
-   og glir tilbake på plass ved retur. Navnene ligger på alle sider, så vanlige
-   navigasjoner (f.eks. til About) morpher dem statisk i stedet. */
-.site-header__brand {
-  view-transition-name: site-brand;
-}
-
-.site-header nav:not(.site-header__work) {
-  view-transition-name: site-nav;
-}
-
-.site-header__work { view-transition-name: site-work; }
-
-html.vt-zoom-in::view-transition-old(site-brand) {
-  animation: vt-brand-out 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-in::view-transition-old(site-nav) {
-  animation: vt-nav-out 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-out::view-transition-new(site-brand) {
-  animation: vt-brand-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-html.vt-zoom-out::view-transition-new(site-nav) {
-  animation: vt-nav-in 450ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-brand-out {
-  to {
-    transform: translate(-140px, -140px);
-  }
-}
-
-@keyframes vt-nav-out {
-  to {
-    transform: translate(200px, -140px);
-  }
-}
-
-@keyframes vt-brand-in {
-  from {
-    transform: translate(-140px, -140px);
-  }
-}
-
-@keyframes vt-nav-in {
-  from {
-    transform: translate(200px, -140px);
-  }
-}
-
-/* Lukkeknappen er del av koreografien: den ankommer på skrå nedenfra-venstre mot
-   hjørnet sitt — skalerer opp fra liten og fader inn — først når zoomen nesten har
-   landet. Ved lukking spiller den samme bevegelsen baklengs før verden zoomer ut. */
-.case-close {
-  view-transition-name: case-close;
-}
-
-html.vt-zoom-in::view-transition-new(case-close) {
-  animation: vt-case-close-in 300ms cubic-bezier(0.32, 0.08, 0.24, 1) 120ms both;
-}
-
-html.vt-zoom-out::view-transition-old(case-close) {
-  animation: vt-case-close-out 260ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-case-close-in {
-  from {
-    transform: translate(-36px, 36px) scale(0.5);
-    opacity: 0;
-  }
-}
-
-@keyframes vt-case-close-out {
-  to {
-    transform: translate(-36px, 36px) scale(0.5);
-    opacity: 0;
-  }
-}
-
-/* Fargeblink-fiks: UA-standarden blander old/new root med plus-lighter (additivt).
-   Med ulikt innhold + skalering lysner komposittet synlig midtveis — oppleves som
-   at bakgrunnen skifter farge. Vanlig alfa-blanding fjerner det. */
-html.vt-zoom-in::view-transition-image-pair(root),
-html.vt-zoom-out::view-transition-image-pair(root) {
-  isolation: auto;
-}
-
-html.vt-zoom-in::view-transition-old(root),
-html.vt-zoom-in::view-transition-new(root),
-html.vt-zoom-out::view-transition-old(root),
-html.vt-zoom-out::view-transition-new(root) {
-  mix-blend-mode: normal;
-}
-
-/* Ny side fader inn over den zoomende gamle — full dekning hele veien. */
-html.vt-zoom-in::view-transition-new(root) {
-  animation: vt-fade-in 500ms cubic-bezier(0.32, 0.08, 0.24, 1) both;
-}
-
-@keyframes vt-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-::view-transition-old(case-cover),
-::view-transition-new(case-cover) {
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-  overflow: hidden;
-}
-
-/* Én og samme flate gjennom hele morphen: old-snapshotet (lavoppløselig raster av
-   tilen) skjules helt, og new-laget — samme bildefil i full oppløsning — står alene
-   fra første frame. Ingen crossfade, ingen skarphets-pop, bildet KAN ikke endre seg. */
-::view-transition-old(case-cover) {
-  display: none;
-}
-
-::view-transition-new(case-cover) {
-  animation: none;
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-image-pair(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation-duration: 0s !important;
   }
 }
 
@@ -2894,20 +2613,6 @@ body.world-map-intro .archived-card {
   text-align: center;
   text-transform: uppercase;
 }
-@keyframes case-presentation-in {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: no-preference) {
-  [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title, .case-lead__intro, .case-legacy-intro, .case-credits__row) {
-    animation: case-presentation-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) { animation-delay: 100ms; }
-  [data-layout="presentation"] .case-credits__row { animation-delay: var(--contributor-delay); }
-  .case-entering [data-layout="presentation"] :is(.case-lead__title, .case-legacy-title, .case-lead__intro, .case-legacy-intro, .case-credits__row) {
-    animation-play-state: paused;
-  }
-}
 @media (max-width: 767px) {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding: 24px 0; }
   .case-credits[data-layout="presentation"] dl { gap: 1rem 1.5rem; }
@@ -3012,17 +2717,6 @@ body.world-map-intro .archived-card {
 }
 .title-block__credit--wide { flex-basis: 100%; }
 .title-block__credit dd span { max-width: 100%; }
-@media (prefers-reduced-motion: no-preference) {
-  [data-layout="presentation"] .case-title-block {
-    animation: case-presentation-in 650ms 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  [data-layout="presentation"] .title-block__credit dd {
-    animation: case-copy-in 450ms 450ms ease-out both;
-  }
-  .case-entering [data-layout="presentation"] :is(.case-title-block, .title-block__credit dd) {
-    animation-play-state: paused;
-  }
-}
 @media (max-width: 600px) {
   [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro) { font-size: 26px; }
   [data-layout="presentation"] .case-title-block {
@@ -3079,97 +2773,6 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   translate: 0 1px;
   transition: none;
 }
-
-/* The presentation is captured fully drawn, then revealed by the page transition. */
-.case-transition-entrance [data-layout="presentation"] :is(.case-lead__intro, .case-legacy-intro, .case-title-block, .title-block__credit dd) {
-  animation: none;
-}
-.case-transition-entrance.case-entering .case-below { opacity: 1; }
-html.vt-presentation-in::view-transition-group(case-cover) { z-index: 5; }
-html.vt-presentation-in::view-transition-group(case-close) { z-index: 6; }
-
-html.vt-presentation-in::view-transition-old(case-cover) {
-  display: block;
-  animation: project-thumbnail-away 220ms 80ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-html.vt-presentation-in::view-transition-old(root) {
-  transform-origin: var(--vt-origin, 50% 50%);
-  animation: project-world-away 220ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-html.vt-presentation-in::view-transition-new(root) {
-  transform-origin: 50% 40%;
-  animation: project-intro-arrive 380ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-html.vt-presentation-in::view-transition-old(push-l1),
-html.vt-presentation-in::view-transition-old(push-l2),
-html.vt-presentation-in::view-transition-old(push-l3),
-html.vt-presentation-in::view-transition-old(push-l4) {
-  animation: project-neighbor-away 260ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-html.vt-presentation-in::view-transition-old(push-r1),
-html.vt-presentation-in::view-transition-old(push-r2),
-html.vt-presentation-in::view-transition-old(push-r3),
-html.vt-presentation-in::view-transition-old(push-r4) {
-  animation: project-neighbor-away 260ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-@keyframes project-thumbnail-away {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(160px) scale(0.96); }
-}
-@keyframes project-world-away {
-  to { opacity: 0; transform: scale(1.08); }
-}
-@keyframes project-intro-arrive {
-  from { opacity: 0; transform: translate(var(--project-entry-x, 0px), 12px) scale(0.97); }
-  to { opacity: 1; transform: translate(0, 0) scale(1); }
-}
-@keyframes project-neighbor-away {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-html.vt-presentation-in::view-transition-group(root) { z-index: 0; }
-html.vt-presentation-in::view-transition-group(push-l1),
-html.vt-presentation-in::view-transition-group(push-l2),
-html.vt-presentation-in::view-transition-group(push-l3),
-html.vt-presentation-in::view-transition-group(push-l4),
-html.vt-presentation-in::view-transition-group(push-r1),
-html.vt-presentation-in::view-transition-group(push-r2),
-html.vt-presentation-in::view-transition-group(push-r3),
-html.vt-presentation-in::view-transition-group(push-r4) { z-index: 4; }
-html.vt-presentation-in::view-transition { background: #fafafa; }
-
-/* Close immediately clears the case; its thumbnail rises into the saved spot. */
-/* Native snapshots need a short raster/upload window. The pointer press
-   responds immediately; only the prepared layers start after this hold. */
-html.vt-presentation-in::view-transition-group(*) { animation-duration: 500ms; }
-html.vt-presentation-in::view-transition-new(case-close) { animation-delay: 200ms; }
-html.vt-presentation-out::view-transition-group(*) { animation-duration: 400ms; z-index: 1; }
-html.vt-presentation-out::view-transition { background: #fafafa; }
-html.vt-presentation-out::view-transition-group(root) { z-index: 0; }
-html.vt-presentation-out::view-transition-group(case-cover) { z-index: 5; }
-html.vt-presentation-out :is(.site-header__brand, .site-header nav) { view-transition-name: none; }
-html.vt-presentation-out::view-transition-old(root),
-html.vt-presentation-out::view-transition-old(case-close) {
-  animation: project-case-away 100ms ease-out both;
-}
-html.vt-presentation-out::view-transition-new(root) {
-  animation: project-work-arrive 180ms 90ms ease-out both;
-}
-html.vt-presentation-out::view-transition-new(case-cover) {
-  animation: project-thumbnail-return 300ms 100ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-html.vt-presentation-in::view-transition-old(site-brand),
-html.vt-presentation-in::view-transition-old(site-nav),
-html.vt-presentation-in::view-transition-old(site-work) {
-  animation: project-case-away 180ms 80ms ease-out both;
-}
-@keyframes project-case-away { to { opacity: 0; } }
-@keyframes project-work-arrive { from { opacity: 0; } }
-@keyframes project-thumbnail-return {
-  from { opacity: 0; transform: translateY(110px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
 
 .page-case .case-below { background: #fafafa; }
 

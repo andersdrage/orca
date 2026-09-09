@@ -807,111 +807,74 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(await page.locator('.timeline-copy').first().evaluate(el => Boolean(el.style.transform)), 'scroll wakes the spring after return')
     })
 
-    test('case autoplay waits until the project entrance has finished', async (t) => {
-      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
-        addEventListener('pagereveal', e => {
-          if (location.pathname !== '/micromilspec/') return
-          window.videoBeforeReveal = [...document.querySelectorAll('video[data-media-src]')].map(v => v.getAttribute('src'))
-        })
-      })
-      await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
-      await page.locator('.timeline-copy[data-copy="1"] [data-tile-id="micromilspec"]').click()
+    test('case autoplay starts when visible after ordinary project navigation', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.locator('[data-copy="1"] [data-tile-id="micromilspec"]').click()
       await page.waitForURL('**/micromilspec/')
-      assert.ok((await page.evaluate(() => window.videoBeforeReveal)).every(src => src === null))
       const video = page.locator('.case-below video').first()
       await video.scrollIntoViewIfNeeded()
-      await page.waitForFunction(() => !document.body.classList.contains('case-entering'))
       await page.waitForFunction(() => document.querySelector('.case-below video').currentTime > 0)
     })
 
-    test('project transition gives immediate press feedback and reveals text behind the departing thumbnail', async (t) => {
-      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
-        addEventListener('pagereveal', event => {
-          if (!event.viewTransition || !['/', '/hjemla/'].includes(location.pathname)) return
-          event.viewTransition.ready.then(() => {
-            window.transitionProbe = document.getAnimations()
-            window.transitionProbe.forEach(animation => animation.pause())
-          }, () => {})
-        })
+    test('project navigation opens and returns without animation at desktop and mobile sizes', async (t) => {
+      const page = await visit(t, '/', {}, () => {
+        addEventListener('pagereveal', event => { window.hasNavigationTransition = Boolean(event.viewTransition) })
       })
-      await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
-      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="hjemla"]')
-      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
-      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - 60, behavior: 'instant' }))
-      await page.waitForTimeout(500)
-      await tile.hover()
-      await page.waitForTimeout(300)
-      await tile.dispatchEvent('pointerdown', { button: 0, pointerType: 'mouse' })
-      assert.equal(await tile.locator('img').evaluate(el => getComputedStyle(el).translate), '0px 1px')
-      await tile.dispatchEvent('pointercancel', { button: 0, pointerType: 'mouse' })
-      await tile.click()
-      await page.waitForURL('**/hjemla/', { waitUntil: 'domcontentloaded' })
-      await page.waitForFunction(() => window.transitionProbe?.length > 0)
-      const preparing = await page.evaluate(() => {
-        window.transitionProbe.forEach(animation => { animation.currentTime = 60 })
-        return Number(getComputedStyle(document.documentElement, '::view-transition-old(case-cover)').opacity)
-      })
-      assert.equal(preparing, 1, 'the thumbnail stays solid while native layers are prepared')
-      const frame = await page.evaluate(() => {
-        window.transitionProbe.forEach(animation => { animation.currentTime = 180 })
-        const style = name => getComputedStyle(document.documentElement, name)
-        const thumbnail = style('::view-transition-old(case-cover)')
-        const intro = style('::view-transition-new(root)')
-        return { imageDisplay: thumbnail.display, imageOpacity: Number(thumbnail.opacity),
-          imageY: new DOMMatrixReadOnly(thumbnail.transform).m42, introOpacity: Number(intro.opacity),
-          entryX: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--project-entry-x')),
-          origin: sessionStorage.getItem('timeline:zoom-origin'),
-          duration: parseFloat(thumbnail.animationDuration),
-          neighbours: window.transitionProbe.filter(animation => animation.animationName === 'project-neighbor-away').map(animation => {
-            const css = style(animation.effect.pseudoElement)
-            return { opacity: Number(css.opacity), transform: css.transform }
-          }),
-          names: window.transitionProbe.map(animation => animation.animationName) }
-      })
-      assert.equal(frame.imageDisplay, 'block')
-      assert.ok(frame.imageOpacity > 0 && frame.imageOpacity < 1)
-      assert.ok(frame.imageY > 3)
-      // Native scroll-into-view can reposition the tile before a synthetic click.
-      // The reveal must follow the actual clicked position on either side.
-      assert.equal(Math.sign(frame.entryX), Math.sign(parseFloat(frame.origin) - 720))
-      assert.ok(Math.abs(frame.entryX) > 0 && Math.abs(frame.entryX) <= 72, 'intro offset stays subtle')
-      assert.ok(frame.duration <= 0.22, 'thumbnail departs in at most 220 ms')
-      assert.ok(frame.introOpacity > 0, 'text is visible while the thumbnail departs')
-      assert.ok(frame.neighbours.length > 0)
-      assert.ok(frame.neighbours.every(neighbour => neighbour.opacity > 0 && neighbour.opacity < 1 && neighbour.transform === 'none'), 'neighbours fade without moving')
-      await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
-      await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-in'))
-      assert.equal(await page.locator('.case-lead__intro').evaluate(el => getComputedStyle(el).opacity), '1')
-      await page.goBack({ waitUntil: 'domcontentloaded' })
-      await page.waitForFunction(() => window.transitionProbe?.some(animation => animation.animationName === 'project-thumbnail-return'))
-      const returnFrame = await page.evaluate(() => {
-        window.transitionProbe.forEach(animation => { animation.currentTime = 110 })
-        const style = name => getComputedStyle(document.documentElement, name)
-        const tile = style('::view-transition-new(case-cover)')
-        return { caseOpacity: Number(style('::view-transition-old(root)').opacity),
-          tileOpacity: Number(tile.opacity), tileY: new DOMMatrixReadOnly(tile.transform).m42 }
-      })
-      assert.equal(returnFrame.caseOpacity, 0, 'case disappears almost immediately')
-      assert.ok(returnFrame.tileOpacity > 0 && returnFrame.tileOpacity < 1)
-      assert.ok(returnFrame.tileY > 0 && returnFrame.tileY < 110, 'thumbnail rises back into its saved position')
-      await page.evaluate(() => window.transitionProbe.forEach(animation => { animation.currentTime = 200 }))
-      const pixels = await sharp(await page.screenshot({ clip: { x: 360, y: 315, width: 600, height: 240 } })).stats()
-      assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 8), 'the returning snapshot contains photo pixels, not an empty animated box')
-      const neighbourClip = await page.evaluate(() => {
-        const tile = [...document.querySelectorAll('.timeline-tile')].find(el => {
-          const r = el.getBoundingClientRect()
-          return el.dataset.tileId !== 'hjemla' && Math.min(r.right, innerWidth) - Math.max(r.left, 0) > 80
-        })
-        const r = tile.getBoundingClientRect()
-        const left = Math.max(r.left, 0), right = Math.min(r.right, innerWidth)
-        return { x: left + 20, y: r.top + r.height * .3, width: right - left - 40, height: r.height * .4 }
-      })
-      const neighbourPixels = await sharp(await page.screenshot({ clip: neighbourClip })).stats()
-      assert.ok(neighbourPixels.channels.slice(0, 3).some(channel => channel.stdev > 8), 'neighbouring photos are painted during the return, too')
-      await page.evaluate(() => window.transitionProbe.forEach(animation => animation.finish()))
-      await page.waitForFunction(() => !document.documentElement.classList.contains('vt-presentation-out'))
       await ready(page, '/')
-      assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
+      for (const [width, height, reducedMotion] of [[1440, 900, 'no-preference'], [390, 844, 'no-preference'], [390, 844, 'reduce']]) {
+        await page.setViewportSize({ width, height })
+        await page.emulateMedia({ reducedMotion })
+        for (const id of ['micromilspec', 'uber']) {
+          const tile = page.locator(`[data-copy="1"] [data-tile-id="${id}"]`)
+          await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+          await tile.evaluate(el => {
+            el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2, behavior: 'instant' })
+          })
+          await page.waitForTimeout(500)
+          // Loop normalization may move the visible instance into another copy.
+          const visibleTile = page.locator(`[data-tile-id="${id}"]`).filter({ visible: true })
+          const clickTarget = await visibleTile.evaluateAll(els => els.findIndex(el => {
+            const rect = el.getBoundingClientRect()
+            return rect.left < innerWidth && rect.right > 0
+          }))
+          await visibleTile.nth(clickTarget).click()
+          await page.waitForURL(`**/${id}/`, { waitUntil: 'domcontentloaded' })
+          const entry = await page.locator('[data-case-root]').evaluate(async el => {
+            await new Promise(requestAnimationFrame)
+            return {
+              transition: window.hasNavigationTransition === true,
+              // Inspect page layers; controls inside the case may still animate.
+              animations: [el, ...el.querySelectorAll('.case-lead, .case-legacy-lead, .case-below, .case-lead__intro, .case-legacy-intro, .case-title-block, .title-block__credit dd')]
+                .flatMap(node => node.getAnimations()).map(a => a.animationName ?? 'scripted'),
+              opacity: getComputedStyle(el.querySelector('.case-lead__intro, .case-legacy-intro')).opacity,
+              hidden: el.getBoundingClientRect().height === 0,
+            }
+          })
+          assert.equal(entry.transition, false)
+          assert.deepEqual(entry.animations, [], `${id}: no native, fallback, or staggered case entrance`)
+          assert.equal(entry.opacity, '1')
+          assert.equal(entry.hidden, false)
+          if (id === 'uber') await page.goBack({ waitUntil: 'domcontentloaded' })
+          else await page.locator('.case-close').click()
+          await page.waitForURL(base + '/')
+          await ready(page, '/')
+          const returned = await page.evaluate(id => {
+            const tile = [...document.querySelectorAll(`[data-tile-id="${id}"]`)].find(el => {
+              const r = el.getBoundingClientRect()
+              return r.right > 0 && r.left < innerWidth
+            })
+            return { visible: Boolean(tile), animated: tile?.getAnimations().length,
+              transition: window.hasNavigationTransition === true,
+              navigating: document.querySelectorAll('.timeline-tile.is-navigating').length }
+          }, id)
+          assert.equal(returned.visible, true, `${id}: return keeps the selected project on screen`)
+          assert.equal(returned.animated, 0)
+          assert.equal(returned.transition, false)
+          assert.equal(returned.navigating, 0)
+        }
+      }
     })
 
     test('intro stays clear of the enlarged first thumbnail during forward and reverse scrolling', async (t) => {
@@ -1028,35 +991,6 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await toggle.isChecked(), true)
       await toggle.uncheck()
       assert.deepEqual(await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src'))), originals)
-    })
-
-    test('project entrance and thumbnail return replay when the browser skips its transition', async (t) => {
-      const page = await visit(t, '/', { reducedMotion: 'no-preference' }, () => {
-        window.fallbackAnimations = []
-        const animate = Element.prototype.animate
-        Element.prototype.animate = function (frames, options) {
-          if (this.matches('[data-case-root], a.timeline-tile')) window.fallbackAnimations.push({ caseId: this.dataset.caseId, tileId: this.dataset.tileId, duration: options.duration })
-          return animate.call(this, frames, options)
-        }
-        addEventListener('pagereveal', event => event.viewTransition?.skipTransition())
-      })
-      await page.waitForFunction(() => !document.body.classList.contains('world-map-intro') && !document.body.classList.contains('is-entering-home'))
-      for (const id of ['boligmappa', 'hjemla', 'boligmappa']) {
-        const tile = page.locator(`.timeline-copy[data-copy="1"] [data-tile-id="${id}"]`)
-        await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
-        await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
-        await page.waitForTimeout(300)
-        await tile.click()
-        await page.waitForURL(`**/${id}/`, { waitUntil: 'domcontentloaded' })
-        await page.waitForFunction(id => window.fallbackAnimations.some(animation => animation.caseId === id && animation.duration === 380), id)
-        await page.waitForFunction(() => document.querySelector('[data-case-root]').getAnimations().length === 0)
-        assert.equal(await page.locator('[data-case-root]').evaluate(el => getComputedStyle(el).opacity), '1')
-        await page.locator('.case-close').click()
-        await ready(page, '/')
-        await page.waitForFunction(id => window.fallbackAnimations.some(animation => animation.tileId === id && animation.duration === 300), id)
-        await page.waitForFunction(() => ![...document.querySelectorAll('.timeline-tile')].some(tile => tile.getAnimations().length))
-        assert.equal(await page.locator('.timeline-tile.is-navigating').count(), 0)
-      }
     })
 
     test('desktop project names follow magnification without hover', async (t) => {

@@ -38,7 +38,7 @@ function update(el) {
   }
   const choice = playback.get(el)
   const permitted = choice?.intent === 'play' || (!reduced.matches && choice?.intent !== 'pause')
-  const play = available && near(el) && permitted && !document.body.classList.contains('case-entering')
+  const play = available && near(el) && permitted
   if (!play) { if (!el.paused) el.pause(); return }
   if (!el.hasAttribute('src')) {
     el.muted = true

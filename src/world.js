@@ -396,12 +396,11 @@ export function initWorld(header) {
   }
 
   // Fetch in parallel, but don't insert entire sibling pages while the camera
-  // or a project snapshot is animating. A selected destination always wins.
+  // is animating. A selected destination always wins.
   async function waitForMount(index) {
     await new Promise(resolve => setTimeout(resolve, 0))
     while (index !== cameraIndex && ((document.body.classList.contains('world-map-intro') && performance.now() >= mapPreparationUntil) ||
-      document.body.classList.contains('is-entering-home') ||
-      document.documentElement.matches('.vt-presentation-in, .vt-presentation-out'))) {
+      document.body.classList.contains('is-entering-home'))) {
       await new Promise(resolve => setTimeout(resolve, 80))
     }
   }

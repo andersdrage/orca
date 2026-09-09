@@ -5,7 +5,6 @@
 import { micromilspecCovers } from './portfolio-data.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
-import { cancelProjectTransition, playProjectTransition } from './project-transition.js'
 import { FEATURED_ORDER, isCasePath } from './case-navigation.js'
 import { thumbnailAppearance, sameSizeThumbnails, THUMBNAIL_CHANGE } from './thumbnail-settings.js'
 
@@ -97,11 +96,9 @@ const TILES = [
 function tileHtml(tile) {
   tile = thumbnailAppearance(tile)
   const style = `--tile-bg: ${tile.color}; --tile-ratio: ${tile.ratio}; --tile-h: ${tile.h}`
-  /* Tiles med cover-bilde får verken tekstetikett eller bakgrunnsfarge — bildet ER
-     tilen. (Bakgrunnen lå bak bildet og dukket opp som svart flate i transition-
-     snapshots tatt før bildet var dekodet.) */
+  // Image tiles use their cover instead of a colored placeholder.
   const title = tile.title && !tile.image ? `<span class="timeline-tile__title">${tile.title}</span>` : ''
-  /* Cover images are ready for the cross-document transition. */
+  // Decode covers before they scroll into view.
   const image = tile.image
     ? `<img class="timeline-tile__image" src="${tile.image}" alt="" loading="eager" fetchpriority="high" decoding="async" />`
     : ''
@@ -123,9 +120,7 @@ export function initTimeline(scrollerEl) {
 
   const tiles = TILES.map(tile => ({ ...tile }))
 
-  /* MICROMILSPEC-tilen følger cover-varianten valgt med B på case-siden
-     (sessionStorage) — tilbake-morphen lander da i nøyaktig samme bilde.
-     Settes idempotent (indeks 0 = standard) siden TILES er modul-state. */
+  // Restore the selected MICROMILSPEC cover when the index mounts again.
   try {
     let coverIndex = Number(sessionState.getItem('micromilspec:cover')) || 0
     if (!micromilspecCovers[coverIndex]) coverIndex = 0
@@ -300,9 +295,7 @@ export function initTimeline(scrollerEl) {
         const center = saved?.id === id && Number.isFinite(saved.center)
           ? saved.center * innerWidth : edgeInset + tile.offsetWidth / 2
         initialScroll = tile.offsetLeft + tile.offsetWidth / 2 - center
-        /* Normaliser inn i wrap-sonen [0.6w, 1.4w] — siste tile (Mountain Milk)
-           kunne ellers lande forbi wrap-terskelen, som teleporterte scrollen
-           MIDT i tilbake-morphen og fikk zoomen til å fly mot feil sted. */
+        // Normalize into the loop range before the first paint on return.
         while (initialScroll > copyWidth * 1.4) initialScroll -= copyWidth
         while (initialScroll < copyWidth * 0.6) initialScroll += copyWidth
         useIntroEntry = false
@@ -360,8 +353,7 @@ export function initTimeline(scrollerEl) {
     const startEntrance = () => {
       document.body.classList.add('is-entering-home')
       const endEntrance = () => document.body.classList.remove('is-entering-home')
-      /* Ryddes når alt står i ro — og momentant hvis en morph starter før det,
-         så halvferdige fades aldri havner i view transition-snapshotet. */
+      // Finish the home entrance before leaving, including cached navigation.
       setTimeout(endEntrance, 2600)
       window.addEventListener('pageswap', endEntrance, { once: true })
     }
@@ -596,16 +588,6 @@ export function initTimeline(scrollerEl) {
   let elasticActive = false
   let tilePressed = false
 
-  /* Idet en case-navigasjon tar snapshot: slipp fjæren helt til ro, så
-     avreisebildet fanges uten strekk og ingenting muterer under overgangen. */
-  window.addEventListener('pageswap', () => {
-    cancelAnimationFrame(elasticFrameId)
-    elasticFrameId = 0
-    elasticCurrent = scroller.scrollLeft
-    clearElasticTransforms()
-    elasticActive = false
-  })
-
   function clearElasticTransforms() {
     intro.style.translate = ''
     copies.forEach((copy) => {
@@ -695,7 +677,6 @@ export function initTimeline(scrollerEl) {
   const updateThumbnails = () => {
     if (uniformApplied === sameSizeThumbnails()) return
     uniformApplied = sameSizeThumbnails()
-    cancelProjectTransition()
     clearElasticTransforms()
     const anchors = [...scroller.querySelectorAll('.timeline-tile')].map(tile => ({
       tile, center: tile.offsetLeft + tile.offsetWidth / 2 - scroller.scrollLeft,
@@ -727,36 +708,6 @@ export function initTimeline(scrollerEl) {
     scroller.scrollBy({ left: event.key === 'ArrowRight' ? 320 : -320, behavior: reducedMotionQuery.matches ? 'instant' : 'smooth' })
   })
 
-  /* Give visible neighbours their own snapshots so they fade in place, separate
-     from the departing thumbnail. Clear names first to avoid loop duplicates. */
-  function assignNeighborNames(targetTile) {
-    const tiles = [...scroller.querySelectorAll('.timeline-tile')]
-    tiles.forEach((tile) => {
-      tile.style.viewTransitionName = ''
-    })
-    const targetRect = targetTile.getBoundingClientRect()
-    let left = 0
-    let right = 0
-    tiles.forEach((tile) => {
-      if (tile === targetTile) return
-      const rect = tile.getBoundingClientRect()
-      if (rect.right < 0 || rect.left > window.innerWidth) return
-      if (rect.left < targetRect.left) {
-        left += 1
-        if (left <= 4) tile.style.viewTransitionName = `push-l${left}`
-      } else {
-        right += 1
-        if (right <= 4) tile.style.viewTransitionName = `push-r${right}`
-      }
-    })
-  }
-
-  function clearAllNames() {
-    scroller.querySelectorAll('.timeline-tile').forEach((tile) => {
-      tile.style.viewTransitionName = ''
-    })
-  }
-
   const resetPressState = () => {
     tilePressed = false
     scroller.querySelectorAll('.is-navigating, .is-pressed').forEach(tile => {
@@ -783,97 +734,18 @@ export function initTimeline(scrollerEl) {
   window.addEventListener('pointercancel', releasePress, { passive: true })
   window.addEventListener('blur', releasePress)
 
-  /* Morph (view transition): kun den klikkede tilen får cover-navnet.
-     Tilens senterpunkt lagres så case-siden kan ankre zoom-inn-skaleringen der. */
+  // Save the clicked position for ordinary navigation and browser Back.
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
     if (!isSameTabNavigation(event, tile)) return
-    cancelProjectTransition()
-    if (sessionState.getItem('case:presentation') !== 'false') {
-      // Transfer the hover enlargement to the snapshot's outer box. Keeping it
-      // on the image clips its rounded corners to the smaller tile bounds.
-      const magnification = parseFloat(getComputedStyle(tile).scale) || 1
-      tile.style.scale = String(magnification * new DOMMatrixReadOnly(getComputedStyle(tile.querySelector('img')).transform).a)
-    }
-    /* Skjul hover-etiketten momentant — den skal ikke bli med i morph-snapshotet. */
     tile.classList.add('is-navigating')
-    assignNeighborNames(tile)
-    tile.style.viewTransitionName = 'case-cover'
     sessionState.setItem('timeline:last-case', tile.dataset.tileId)
     const rect = tile.getBoundingClientRect()
     sessionState.setItem('timeline:return-position', JSON.stringify({
       id: tile.dataset.tileId,
       center: (rect.left + rect.width / 2) / innerWidth,
     }))
-    sessionState.setItem(
-      'timeline:zoom-origin',
-      `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`,
-    )
   })
 
-  /* Tilbake-navigasjon fra en case-side: gi navnet til riktig tile i midt-kopien før
-     første frame (case-siden morpher inn i tilen), og ankre zoom-ut i tilens posisjon. */
-  window.addEventListener('pagereveal', (event) => {
-    const fromUrl = window.navigation?.activation?.from?.url ?? document.referrer
-    let fromCase = false
-    try {
-      fromCase = isCasePath(new URL(fromUrl).pathname)
-    } catch {
-      fromCase = false
-    }
-    if (!fromCase) return
-    cancelProjectTransition()
-    resetPressState()
 
-    const id = sessionState.getItem('timeline:last-case')
-    if (!id) return
-    /* Sikt morphen mot instansen som faktisk er PÅ SKJERMEN — etter wrap-sikker
-       normalisering kan det være en annen loop-kopi enn midt-kopien (typisk for
-       siste prosjekt). En morph mot en offscreen-instans flyr ut av bildet. */
-    const instances = [...scroller.querySelectorAll(`[data-tile-id="${CSS.escape(id)}"]`)]
-    const tile =
-      instances.find((candidate) => {
-        const r = candidate.getBoundingClientRect()
-        return r.right > 0 && r.left < window.innerWidth
-      }) ?? copies[1].querySelector(`[data-tile-id="${CSS.escape(id)}"]`)
-    if (!tile) return
-
-    // The snapshot needs all visible photos in its first paint, including the
-    // neighbours in the root layer. Async painting can leave those layers blank.
-    scroller.querySelectorAll('.timeline-tile img').forEach(image => {
-      const bounds = image.getBoundingClientRect()
-      if (bounds.right > 0 && bounds.left < innerWidth) image.decoding = 'sync'
-    })
-
-    /* Naboene får push-navnene sine igjen, så de glir tilbake på plass fra sidene
-       (reversen av at de flyttet seg ut av veien ved åpning). */
-    const presentationReturn = sessionState.getItem('case:presentation') !== 'false'
-      && !matchMedia('(prefers-reduced-motion: reduce)').matches
-    // Keep the returning world in one snapshot. Safari otherwise drops some
-    // independently named new layers until the transition has finished.
-    if (presentationReturn) clearAllNames()
-    else assignNeighborNames(tile)
-    tile.style.viewTransitionName = 'case-cover'
-    const rect = tile.getBoundingClientRect()
-    const root = document.documentElement
-    root.style.setProperty('--vt-origin', `${Math.round(rect.left + rect.width / 2)}px ${Math.round(rect.top + rect.height / 2)}px`)
-    root.classList.add('vt-zoom-out')
-    if (presentationReturn) {
-      root.classList.add('vt-presentation-out')
-    }
-
-    /* finished rejecter når overgangen skippes (helt normalt) — rydd opp i begge utfall. */
-    const cleanup = () => {
-      clearAllNames()
-      root.classList.remove('vt-zoom-out', 'vt-presentation-out')
-    }
-    playProjectTransition(event.viewTransition, {
-      start: () => {},
-      cleanup,
-      fallback: () => presentationReturn ? [tile.animate([
-        { opacity: 0, transform: 'translateY(110px) scale(.96)' },
-        { opacity: 1, transform: 'translateY(0) scale(1)' },
-      ], { duration: 300, delay: 60, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' })] : [],
-    })
-  })
 }

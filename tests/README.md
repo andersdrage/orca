@@ -39,8 +39,7 @@ do not assert cover-morph fidelity, physical iOS behavior or full screen-reader 
 The September follow-up adds interrupted camera continuity, native modified-link behavior,
 mobile intro geometry at 320/390/430 px, delayed archive image sizing in WebKit,
 audio failure/retry, interrupted transcript transitions, inactive media deferral,
-and bounded/data-saving-aware case preparation. Chromium also verifies that a cold
-homepage-to-case transition captures a decoded hero without prerendering.
+and bounded/data-saving-aware case preparation. Case preparation remains bounded and does not prerender the destination.
 The screenshot script traverses the active world cell for lazy media as well as
 ordinary document scrolling on case pages.
 
@@ -87,3 +86,7 @@ command instead of silently writing a screenshot with missing media.
 `scripts/screenshot-media.mjs` is exercised against the real mobile Archived work route
 in both browsers. Tests verify all gallery images load, inactive cells stay untouched,
 scrolling returns to the top, and blocked images produce an actionable failure.
+
+## DRA-72: plain project navigation
+
+The previous index/project morph, fallback animation, and staggered case entrance are removed. Regression checks cover plain opening and return navigation on desktop and mobile with normal and reduced motion, including the last loop item, Close, browser Back, visible-media autoplay, and saved overview state. `tests/session-state.test.mjs` retains the cached-document storage check from the retired transition helper tests.

@@ -92,15 +92,5 @@ export function initAnimationInspector() {
   document.addEventListener('animationstart', slowOnStart, true)
   document.addEventListener('transitionstart', slowOnStart, true)
 
-  /* View transitions: når pseudo-treet er klart har alle gruppene sine animasjoner —
-     senk hastigheten på alt i ett jafs. */
-  window.addEventListener('pagereveal', (event) => {
-    if (!event.viewTransition || !isEnabled()) return
-    event.viewTransition.ready.then(
-      () => setAllPlaybackRates(RATE),
-      () => {},
-    )
-  })
-
   if (isEnabled()) setAllPlaybackRates(RATE)
 }
