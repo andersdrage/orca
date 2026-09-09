@@ -265,7 +265,7 @@ body.world-mode {
   outline: none;
 }
 
-/* Samme «kort over footer»-bakgrunn som #site-layout ga. */
+/* Full-width page surface behind the content column. */
 .world-column > main::before {
   position: absolute;
   left: calc(50% - 50vw);
@@ -273,10 +273,7 @@ body.world-mode {
   top: 0;
   bottom: 0;
   z-index: -1;
-  border-bottom-right-radius: var(--site-radius);
-  border-bottom-left-radius: var(--site-radius);
   background: #fafafa;
-  box-shadow: 0 22px 46px rgba(24, 24, 27, 0.12);
   clip-path: inset(0 -4rem -4rem -4rem);
   content: '';
   pointer-events: none;
@@ -700,10 +697,7 @@ body.world-mode {
   top: 0;
   bottom: 0;
   z-index: -1;
-  border-bottom-right-radius: var(--site-radius);
-  border-bottom-left-radius: var(--site-radius);
   background: #fafafa;
-  box-shadow: 0 22px 46px rgba(24, 24, 27, 0.12);
   clip-path: inset(0 -4rem -4rem -4rem);
   content: '';
   pointer-events: none;
@@ -714,30 +708,18 @@ body.world-mode {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-top: -4rem;
-  padding: clamp(7rem, 14vw, 10rem) 1.5rem clamp(4rem, 9vw, 7rem);
-  position: sticky;
-  bottom: 0;
+  margin-top: 0;
+  padding: clamp(4rem, 8vw, 7rem) 1.5rem clamp(4rem, 9vw, 7rem);
+  position: relative;
   z-index: 0;
-  /* Svart flate: den spinnende drage-videoens bakgrunn går i ett med footeren. */
-  background: #000;
-  color: #d4d4d8;
+  background: var(--page-bg, #fafafa);
+  color: #3f3f46;
 }
 
 .site-footer__inner {
   width: min(800px, 100%);
   margin: 0 auto;
   text-align: center;
-}
-
-/* Spinning dragon video; its black background blends into the footer. */
-.site-footer__logo-video {
-  aspect-ratio: 448 / 320;
-  object-fit: contain;
-  display: block;
-  width: clamp(110px, 11vw, 160px);
-  height: auto;
-  margin: 0 auto;
 }
 
 .site-footer__story,
@@ -753,17 +735,17 @@ body.world-mode {
 
 /* Hver av de tre lenkene er sin egen pille-knapp: avrundet omriss, ingen fyll. */
 .site-footer__contact {
-  --pill-color: #a1a1aa;
-  --pill-border: #3f3f46;
-  --pill-hover-color: #fafafa;
-  --pill-hover-border: #a1a1aa;
+  --pill-color: #52525b;
+  --pill-border: #b4b4ba;
+  --pill-hover-color: #18181b;
+  --pill-hover-border: #52525b;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 0.75rem;
   margin: 2rem 0 0;
-  color: #a1a1aa;
+  color: #52525b;
 }
 
 .site-footer__contact,
@@ -806,19 +788,101 @@ body.world-mode {
   }
 }
 
-@media (max-width: 767px) {
-  #site-layout > main::before {
-    border-bottom-right-radius: var(--site-radius);
-    border-bottom-left-radius: var(--site-radius);
-  }
-
-  .site-footer {
-    padding-top: 7rem;
-  }
-}
-
 /* Media dimensions reserve each image's real responsive height; lazy loading
    defers its bytes without substituting a generic 500px layout placeholder. */
+
+.case-comparison {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.case-comparison__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.case-comparison__before {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 50% 0 0);
+}
+
+.case-comparison__label {
+  position: absolute;
+  top: clamp(12px, 2vw, 24px);
+  padding: 6px 9px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  background: rgba(250, 250, 250, 0.94);
+  color: #18181b;
+  font: 10px MaisonNeueBook, 'Helvetica Neue', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+.case-comparison__label--before { left: clamp(12px, 2vw, 24px); }
+.case-comparison__label--after { right: clamp(12px, 2vw, 24px); }
+
+.case-comparison__slider {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+
+.case-comparison__divider {
+  position: absolute;
+  inset: 0;
+  transform: translateX(50%);
+  pointer-events: none;
+}
+
+.case-comparison__divider::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -1px;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.case-comparison__handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: #18181b;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+
+.case-comparison__slider:focus-visible ~ .case-comparison__divider .case-comparison__handle {
+  outline: 3px solid #18181b;
+  outline-offset: 4px;
+}
+
+.case-comparison__caption {
+  margin: 10px 0 0;
+  color: #52525b;
+  text-align: center;
+  font: 11px MaisonNeueBook, 'Helvetica Neue', sans-serif;
+}
 
 .portfolio-asset {
   border-radius: var(--site-radius);
@@ -1481,13 +1545,7 @@ a.timeline-tile:focus-visible {
   .corner-links a:hover::before { opacity: 1; }
 }
 
-/* Keep the corner navigation readable over the dark footer. */
-body.footer-in-view .corner-links a { color: #d4d4d8; }
-body.footer-in-view .corner-links a:hover { color: #fafafa; }
-body.footer-in-view .corner-links a::before { background-color: rgba(255, 255, 255, 0.14); }
-
 .corner-links a[aria-current='page'] { color: #c9363e; }
-body.footer-in-view .corner-links a[aria-current='page'] { color: #ff7c82; }
 
 /* Arkivlista: år | prosjekt | type. Nytt år får ekstra luft over —
    det binder gruppen til året sitt. */
@@ -2627,6 +2685,11 @@ body.world-map-intro .archived-card {
   content: none;
 }
 
+/* Loading neighbours stay plain in the overview; an opened page shows its status. */
+.world-page[inert][data-load-state="loading"] .page-state__content {
+  visibility: hidden;
+}
+
 .page-state__content {
   display: flex;
   flex-direction: column;
@@ -3124,4 +3187,39 @@ html.vt-presentation-in::view-transition-old(site-work) {
 @keyframes project-thumbnail-return {
   from { opacity: 0; transform: translateY(110px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+/* The page tint follows its project thumbnail, including the media gaps. */
+@property --page-bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fafafa;
+}
+body.page-case { background-color: var(--page-bg); }
+.page-case #site-layout > main::before,
+.page-case .case-below {
+  background: var(--page-bg);
+}
+html.vt-presentation-in::view-transition,
+html.vt-presentation-out::view-transition {
+  background: var(--page-bg);
+  animation: project-background-morph 650ms cubic-bezier(.45, .05, .55, .95) both;
+}
+@keyframes project-background-morph {
+  from { background-color: var(--previous-page-bg, #fafafa); }
+  to { background-color: var(--page-bg); }
+}
+
+.site-footer__story { color: #52525b; }
+.site-footer__dragon {
+  width: clamp(84px, 8.4vw, 120px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+.site-footer__dragon :is(img, canvas) { display: block; width: 100%; height: 100%; }
+.site-footer__dragon [hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  html.vt-presentation-in::view-transition,
+  html.vt-presentation-out::view-transition { animation: none; }
 }

@@ -1,11 +1,13 @@
 export function createPageStateContent(status, onRetry) {
   const content = document.createElement('div')
   content.className = 'page-state__content'
-  content.innerHTML = `
-    <div class="page-state__mark" aria-hidden="true">
-      <img src="/images/dragonmark.svg" alt="" width="77" height="57" />
-    </div>
-    <p class="page-state__story">HC SVNT DRACONES</p>`
+  if (status === 'error') {
+    content.innerHTML = `
+      <div class="page-state__mark" aria-hidden="true">
+        <img src="/images/dragonmark.svg" alt="" width="77" height="57" />
+      </div>
+      <p class="page-state__story">HC SVNT DRACONES</p>`
+  }
 
   const message = document.createElement('p')
   message.className = 'page-state__message'

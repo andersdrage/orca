@@ -36,13 +36,9 @@ function update(el) {
     }
     return
   }
-  // Sticky footers are geometrically visible before they are uncovered.
-  const footer = el.closest('.site-footer')
-  const scroller = el.closest('.world-page') ?? document.scrollingElement
-  const revealed = !footer || scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < footer.offsetHeight
   const choice = playback.get(el)
   const permitted = choice?.intent === 'play' || (!reduced.matches && choice?.intent !== 'pause')
-  const play = available && near(el) && revealed && permitted && !document.body.classList.contains('case-entering')
+  const play = available && near(el) && permitted && !document.body.classList.contains('case-entering')
   if (!play) { if (!el.paused) el.pause(); return }
   if (!el.hasAttribute('src')) {
     el.muted = true

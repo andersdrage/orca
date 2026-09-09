@@ -1,3 +1,5 @@
+import { initScrollDragons } from './scroll-dragon.js'
+import { initProjectBackground } from './project-background.js'
 import { initAnimationInspector } from './debug-panel.js'
 import { initDesignAudit } from './design-audit.js'
 import { portfolioCases } from './portfolio-data.js'
@@ -76,6 +78,7 @@ function initSamePageGuard(header) {
 }
 
 export function initHeader() {
+  initProjectBackground()
   initCaseWarmup()
   initAnimationInspector()
   initDesignAudit()
@@ -90,6 +93,7 @@ export function initHeader() {
      gjør initWorld ingenting, og scroll-lytteren under gjelder der i stedet
      (i world-mode scroller seksjonene internt — world.js har egen lytter). */
   initWorld(header)
+  initScrollDragons()
 
   function updateHeaderScrollState() {
     header.classList.toggle('is-scrolled', window.scrollY > 8)

@@ -31,7 +31,6 @@ export const portfolioCases = [
       { role: 'Advisor', names: 'Tove Spetalen' },
     ],
     items: [
-      { file: 'new-covers/cover-ratio-houeland.webp', span: 'full', alt: 'Houeland — embossed seal for selected properties' },
       { file: 'houeland-web.mp4', span: 'full', alt: 'Houeland website walkthrough' },
       { file: 'houeland-1.jpg', span: 'full', alt: 'Houeland — green and gold seal for selected properties' },
       { file: 'houeland-2.jpg', span: 'full', alt: 'Houeland — embossed seal on soap in a marble dish' },
@@ -283,6 +282,19 @@ export const portfolioCases = [
     items: [
       /* Hero = samme cover som tidslinje-tilen (duell-vinneren: to telefoner). */
       { file: 'boligmappa-cover-2.jpg', span: 'full', alt: 'Boligmappa' },
+      { file: 'boligmappa.000.jpeg', span: 'full', alt: 'Boligmappa — redesigned website on desktop and mobile' },
+      {
+        type: 'comparison', span: 'full', label: 'Boligmappa website before and after',
+        before: { file: 'boligmappa.005-before.jpeg', alt: 'Boligmappa website before the redesign' },
+        after: { file: 'boligmappa.006-after.jpeg', alt: 'Boligmappa website after the redesign' },
+      },
+      { file: 'boligmappa.001.jpeg', span: 'full', alt: 'Boligmappa — illustrated error page' },
+      { file: 'boligmappa.002.jpeg', span: 'full', alt: 'Boligmappa — evolution of the folder logo' },
+      { file: 'boligmappa.003.jpeg', span: 'full', alt: 'Boligmappa — visual identity across digital design, illustration and merchandise' },
+      { file: 'boligmappa.004.jpeg', span: 'full', alt: 'Boligmappa — visual identity guidelines' },
+      { file: 'boligmappa.007.webp', span: 'full', alt: 'Boligmappa — home documentation on a phone beside a cup of coffee' },
+      { file: 'boligmappa.008.webp', span: 'full', alt: 'Boligmappa — Norges vakreste bolig billboard' },
+      { file: 'boligmappa.010.webp', span: 'full', alt: 'Boligmappa — brand presentation on a conference screen' },
     ],
   },
 ]

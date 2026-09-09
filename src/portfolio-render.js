@@ -135,6 +135,22 @@ function galleryHtml(item) {
   </div>`
 }
 
+function comparisonHtml(item) {
+  return `<div class="portfolio-item w-full">
+    <figure class="portfolio-asset case-comparison" data-case-comparison aria-label="${escapeAttr(item.label)}">
+      <img class="case-comparison__image" src="/images/${escapeAttr(item.after.file)}" ${mediaSize(item.after.file)} alt="${escapeAttr(item.after.alt)}" loading="lazy" decoding="async" />
+      <img class="case-comparison__image case-comparison__before" src="/images/${escapeAttr(item.before.file)}" ${mediaSize(item.before.file)} alt="${escapeAttr(item.before.alt)}" loading="lazy" decoding="async" />
+      <span class="case-comparison__label case-comparison__label--before" aria-hidden="true">Before</span>
+      <span class="case-comparison__label case-comparison__label--after" aria-hidden="true">After</span>
+      <input class="case-comparison__slider" type="range" min="0" max="100" step="1" value="50" aria-label="${escapeAttr(item.label)}" aria-valuetext="50% before, 50% after" />
+      <div class="case-comparison__divider" aria-hidden="true">
+        <span class="case-comparison__handle"><svg width="24" height="20" viewBox="0 0 24 20" fill="none"><path d="m8 5-5 5 5 5m8-10 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+      </div>
+    </figure>
+    <p class="case-comparison__caption">Drag to compare</p>
+  </div>`
+}
+
 const projectAudio = {
   micromilspec: {
     src: micromilspecStoryUrl,
@@ -269,6 +285,7 @@ function caseSection(singleCase) {
     /* Første rad er LCP — lastes eagert med høy prioritet; resten forblir lazy. */
     const eager = rowIndex === 0
     if (row.kind === 'full') {
+      if (row.items[0].type === 'comparison') return comparisonHtml(row.items[0])
       if (row.items[0].type === 'gallery') return galleryHtml(row.items[0])
       if (row.items[0].type === 'text') return `<div class="case-story work-narrow"><p>${escapeHtmlText(row.items[0].text)}</p></div>`
       if (row.items[0].type === 'tabs') return tabsHtml(row.items[0])

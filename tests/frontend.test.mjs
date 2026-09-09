@@ -88,14 +88,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForFunction(() => !document.querySelector('video[data-media-controls]').paused)
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.waitForFunction(() => document.querySelector('video[data-media-controls]').paused)
-      await page.goto(base + '/about/', { waitUntil: 'domcontentloaded' })
-      await ready(page, '/about/')
-      await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTo(0, el.scrollHeight))
-      assert.equal(await page.locator('.world-page:not([inert]) .site-footer video').evaluate((el) => el.paused), true)
-      await page.emulateMedia({ reducedMotion: 'no-preference' })
-      await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .site-footer video').currentTime > 0)
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await page.waitForFunction(() => document.querySelector('.world-page:not([inert]) .site-footer video').paused)
+
     })
 
     test('case layout shortcut cycles three variants and keeps the image before the new text layout', async (t) => {
@@ -574,6 +567,45 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('opening map falls back when CSS zoom miscalculates viewport widths', async (t) => {
+      for (const width of [390, 1440]) {
+        const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, reducedMotion: 'no-preference' }, () => {
+          // Safari 26.3 reports support but resolves 100vw as 400vw at zoom .25.
+          const measure = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth').get
+          Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, get() {
+            const value = measure.call(this)
+            return this.matches('.world-page') && this.closest('.world')?.style.zoom === '0.25' ? value * 4 : value
+          } })
+          const animate = Element.prototype.animate
+          window.heldMapAnimations = []
+          Element.prototype.animate = function (...args) {
+            const animation = animate.apply(this, args)
+            if (document.body.classList.contains('world-map-intro') && this.matches('.world-map-camera, .world-page')) {
+              animation.pause()
+              animation.currentTime = 0
+              window.heldMapAnimations.push(animation)
+            }
+            return animation
+          }
+        })
+        for (let load = 0; load < 2; load++) {
+          if (load) await page.reload({ waitUntil: 'domcontentloaded' })
+          await page.waitForFunction(() => window.heldMapAnimations.length === 2)
+          assert.equal(await page.locator('.world').evaluate(el => el.style.zoom), '')
+          const cards = await page.locator('.world-page').evaluateAll(elements => elements.map(el => el.getBoundingClientRect().toJSON()))
+          assert.equal(cards.length, 6)
+          for (const card of cards) {
+            assert.ok(Math.abs(card.width / width - .2125) < .005, 'cards remain at quarter scale')
+            assert.ok(card.x >= 0 && card.y >= 0 && card.right <= width && card.bottom <= page.viewportSize().height)
+          }
+          await page.evaluate(() => window.heldMapAnimations.forEach(animation => animation.play()))
+          await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+          assert.equal(await page.locator('.world-map-camera').count(), 0)
+          assert.equal(await page.locator('.world-page:not([inert])').evaluate(el => Math.round(el.getBoundingClientRect().width)), width)
+        }
+      }
+    })
+
     test('opening map paints all six pages inside desktop and phone viewports on a slow connection', async (t) => {
       for (const width of [390, 1440]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390, reducedMotion: 'no-preference' }, () => {
@@ -595,6 +627,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           }
         })
         await page.waitForFunction(() => window.heldMapAnimations.length === 2)
+        const loading = page.locator('.world-page[data-load-state="loading"]')
+        assert.equal(await loading.count(), 5)
+        assert.equal(await loading.locator('.page-state__mark, .page-state__story').count(), 0, 'loading cards do not reuse the error branding')
+        assert.ok(await loading.locator('.page-state__content').evaluateAll(elements => elements.every(el => getComputedStyle(el).visibility === 'hidden')), 'inactive loading cards are plain')
         const cards = await page.locator('.world-page').evaluateAll(elements => elements.map(el => {
           const r = el.getBoundingClientRect()
           return { path: el.dataset.path, x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }
@@ -1206,7 +1242,65 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
-      assert.equal(await page.locator('.site-footer__logo-video').getAttribute('data-media-src'), '/images/drage-black-bg-preview-001.mp4')
+      assert.equal(await page.locator('.site-footer__dragon img').getAttribute('src'), '/images/dragon-scroll/frame-000.png')
+    })
+
+    test('Boligmappa shows 000 then its comparison and supports keyboard and pointer control', async (t) => {
+      for (const width of [1440, 390]) {
+        const page = await visit(t, '/boligmappa/', { viewport: { width, height: width === 390 ? 844 : 900 } })
+        const items = page.locator('.case-below.work-media > .portfolio-item')
+        assert.equal(await items.first().locator('img').getAttribute('src'), '/images/boligmappa.000.jpeg')
+        assert.equal(await items.nth(1).locator('[data-case-comparison]').count(), 1)
+        const frame = page.locator('[data-case-comparison]')
+        const slider = page.getByRole('slider', { name: 'Boligmappa website before and after' })
+        await frame.scrollIntoViewIfNeeded()
+        await frame.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())))
+        assert.equal(await frame.evaluate(el => el.getAnimations({ subtree: true }).length), 0, 'reduced motion skips the demonstration')
+        await slider.focus()
+        await page.keyboard.press('ArrowRight')
+        assert.equal(await slider.inputValue(), '51')
+        await page.keyboard.press('Home')
+        assert.equal(await slider.inputValue(), '0')
+        await page.keyboard.press('End')
+        assert.equal(await slider.inputValue(), '100')
+        assert.equal(new URL(page.url()).pathname, '/boligmappa/', 'slider arrows do not navigate between projects')
+        const box = await frame.boundingBox()
+        await page.mouse.move(box.x + box.width * .25, box.y + box.height / 2)
+        await page.mouse.down()
+        await page.mouse.move(box.x + box.width * .75, box.y + box.height / 2, { steps: 8 })
+        await page.mouse.up()
+        assert.ok(Math.abs(Number(await slider.inputValue()) - 75) <= 1)
+        assert.equal(await slider.getAttribute('aria-valuetext'), '75% before, 25% after')
+        const inset = await frame.locator('.case-comparison__before').evaluate(el => Number(el.style.clipPath.match(/inset\(\S+\s+([\d.]+)%/)[1]))
+        assert.ok(Math.abs(inset - 25) <= 1, 'reveal follows the dragged position within pointer rounding')
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
+      }
+    })
+
+    test('Boligmappa comparison demonstrates once when visible and yields immediately to interaction', async (t) => {
+      const page = await visit(t, '/boligmappa/', { reducedMotion: 'no-preference' })
+      const frame = page.locator('[data-case-comparison]')
+      const slider = frame.locator('input')
+      const demoCount = () => frame.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.id === 'comparison-demonstration').length)
+      assert.equal(await demoCount(), 0, 'offscreen comparison stays still')
+      await frame.scrollIntoViewIfNeeded()
+      await page.waitForFunction(() => document.querySelector('[data-case-comparison]').getAnimations({ subtree: true }).length === 2)
+      await page.waitForFunction(() => document.querySelector('[data-case-comparison]').getAnimations({ subtree: true }).length === 0)
+      assert.equal(await slider.inputValue(), '50', 'demonstration returns to the midpoint')
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+      await frame.scrollIntoViewIfNeeded()
+      await page.waitForTimeout(350)
+      assert.equal(await demoCount(), 0, 'returning to the comparison does not replay the hint')
+
+      await page.reload({ waitUntil: 'domcontentloaded' })
+      await frame.scrollIntoViewIfNeeded()
+      await page.waitForFunction(() => document.querySelector('[data-case-comparison]').getAnimations({ subtree: true }).length === 2)
+      const box = await frame.boundingBox()
+      await page.mouse.click(box.x + box.width * .75, box.y + box.height / 2)
+      assert.equal(await demoCount(), 0)
+      assert.ok(Math.abs(Number(await slider.inputValue()) - 75) <= 1)
+      await page.waitForTimeout(500)
+      assert.ok(Math.abs(Number(await slider.inputValue()) - 75) <= 1, 'cancelled hint cannot override the visitor')
     })
 
     test('Uber long-page gallery opens readable images and restores the case on close', async (t) => {
@@ -1351,6 +1445,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       assert.equal(await page.getByRole('status').filter({ hasText: 'Loading…' }).count(), 1)
+      assert.equal(await page.getByRole('status').filter({ hasText: 'Loading…' }).isVisible(), true)
+      assert.equal(await page.locator('.world-page[data-path="/praise/"] .page-state__mark, .world-page[data-path="/praise/"] .page-state__story').count(), 0)
       await activeWorld(page, '/praise/')
       await page.locator('.site-header a[href="/about/"]').click()
       release()
@@ -1492,10 +1588,11 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await main.getByRole('button').count(), 1)
       assert.equal(await main.getByRole('status').textContent(), 'We couldn’t load this page.Please try again.')
       assert.equal(await main.locator('.page-state__story').textContent(), 'HC SVNT DRACONES')
+      await main.locator('.page-state__mark img').evaluate(image => image.decode())
       const layout = await main.evaluate((main) => {
         const content = main.querySelector('.page-state__content').getBoundingClientRect()
         const mark = main.querySelector('.page-state__mark').getBoundingClientRect()
-        const video = main.querySelector('video')
+        const image = main.querySelector('.page-state__mark img')
         return {
           contentX: content.x + content.width / 2,
           contentY: content.y + content.height / 2,
@@ -1503,16 +1600,16 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           centerY: innerHeight / 2,
           markWidth: mark.width,
           before: getComputedStyle(main, '::before').content,
-          videoSrc: video.getAttribute('src'),
-          paused: video.paused,
+          imageSrc: image.getAttribute('src'),
+          imageLoaded: image.complete && image.naturalWidth > 0,
         }
       })
       assert.ok(Math.abs(layout.contentX - layout.centerX) < 2)
       assert.ok(Math.abs(layout.contentY - layout.centerY) < 2)
       assert.equal(layout.markWidth, 150)
       assert.equal(layout.before, 'none')
-      assert.equal(layout.videoSrc, null)
-      assert.equal(layout.paused, true)
+      assert.equal(layout.imageSrc, '/images/dragonmark.svg')
+      assert.equal(layout.imageLoaded, true)
     })
 
     test('page focus has no frame and retry uses the footer hover treatment with visible keyboard focus', async (t) => {
@@ -1586,7 +1683,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('Houeland joins the featured order with a visible cover and correct neighbours', async (t) => {
+    test('Houeland opens with its website video and retains its images and correct neighbours', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')
       assert.deepEqual(await page.locator('.timeline-copy[data-copy="1"] a').evaluateAll(links => links.map(link => new URL(link.href).pathname)), casePaths)
@@ -1600,11 +1697,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.ok(await image.isVisible())
       const movie = page.locator('video[data-media-src="/images/houeland-web.mp4"]')
       assert.equal(await movie.count(), 1)
+      assert.equal(await page.locator('[data-case-root] img[src="/images/new-covers/cover-ratio-houeland.webp"]').count(), 0)
       await page.keyboard.press('p')
-      assert.equal(await page.locator('.case-cover-hero img').count(), 1, 'alternate layout restores the cover')
-      assert.equal(await movie.evaluate(el => !!el.closest('.case-below')), true, 'movie stays in the gallery')
+      assert.equal(await movie.evaluate(el => !!el.closest('.case-cover-hero')), true, 'alternate layout uses the video as its lead')
       await page.keyboard.press('p')
-      assert.equal(await page.locator('.case-below .portfolio-asset img').count(), 1, 'presentation keeps the original image before the movie')
+      assert.equal(await page.locator('.case-below .portfolio-asset img').count(), 6, 'presentation retains all six case images')
+      assert.equal(await movie.evaluate(el => !!el.closest('.case-below')), true, 'presentation keeps the video before the images')
       assert.equal(await page.locator('meta[property="og:image"]').getAttribute('content'), 'https://orca.andersdrage.com/images/sharing-image-3.png?v=1ada1116b6b0')
       await page.keyboard.press('ArrowLeft')
       await page.waitForURL('**/off-market/')

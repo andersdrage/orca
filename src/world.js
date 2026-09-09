@@ -137,25 +137,9 @@ export function initWorld(header) {
     })
   })
 
-  /* Hjørnelenkene ligger over den SVARTE footeren når man scroller til bunns.
-     Footeren er sticky (alltid geometrisk i viewporten, bare dekket av
-     innholdskortet), så synligheten må regnes fra gjenstående scroll: den er
-     avdekket i lenkesonen når kolonna er nesten scrollet ut. */
-  const updateFooterContrast = () => {
-    const section = sections[cameraIndex]
-    const footer = section?.querySelector('.site-footer')
-    if (!footer) {
-      document.body.classList.remove('footer-in-view')
-      return
-    }
-    const remaining = section.scrollHeight - section.scrollTop - section.clientHeight
-    document.body.classList.toggle('footer-in-view', remaining < footer.offsetHeight - 80)
-  }
-  const watchFooters = updateFooterContrast
   function syncHeaderScrollState() {
     /* Ingen frostet toppbar noe sted i verdenen — logo/nav svever fritt over innholdet. */
     header.classList.remove('is-scrolled')
-    updateFooterContrast()
   }
   syncHeaderScrollState()
   sections.forEach((section, index) => {
@@ -206,7 +190,16 @@ export function initWorld(header) {
     // Lay out the overview at its displayed resolution, then composite the
     // camera zoom. Six full-resolution page textures are wasteful at 25% size.
     mapRasterScale = CSS.supports('zoom', String(MAP_SCALE)) ? MAP_SCALE : 1
-    if (mapRasterScale !== 1) world.style.zoom = String(mapRasterScale)
+    if (mapRasterScale !== 1) {
+      world.style.zoom = String(mapRasterScale)
+      // Safari 26.3 accepts zoom but expands nested viewport units by 1/zoom.
+      // Check actual layout, not just syntax support, before keeping this
+      // raster optimization. The camera transform works without CSS zoom.
+      if (Math.abs(sections[0].offsetWidth - innerWidth) > 1) {
+        world.style.zoom = ''
+        mapRasterScale = 1
+      }
+    }
     // Keep translation outside the zoomed layout. Safari versions disagree
     // about applying CSS zoom to transform offsets on the same element.
     mapCamera = document.createElement('div')
@@ -446,7 +439,6 @@ export function initWorld(header) {
         if (index === cameraIndex) document.title = titles[index]
         if (index === cameraIndex) syncAccessibility(cameraIndex, { focus: hadFocus })
         else syncVisibleMedia(slots[index])
-        watchFooters()
       } catch {
         state.status = 'error'
         showLoadState(index, 'error')

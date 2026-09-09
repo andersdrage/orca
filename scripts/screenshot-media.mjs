@@ -38,7 +38,7 @@ export async function loadLazyMedia(page, { timeoutMs = 10000 } = {}) {
       const step = scroller.clientHeight * 0.8
       let y = 0
       while (true) {
-        scroller.scrollTop = y
+        scroller.scrollTo({ top: y, behavior: 'instant' })
         await wait(120)
         await decodeVisible()
         const end = scroller.scrollHeight - scroller.clientHeight
@@ -46,7 +46,7 @@ export async function loadLazyMedia(page, { timeoutMs = 10000 } = {}) {
         y = Math.min(y + step, end)
       }
     } finally {
-      scroller.scrollTop = 0
+      scroller.scrollTo({ top: 0, behavior: 'instant' })
     }
     await wait(120)
     await decodeVisible()
