@@ -26,7 +26,7 @@ const PAGES = [
   { path: '/people/', title: 'People', x: 1, y: 1 },
   /* Kjelleren: arkivert arbeid ligger en etasje UNDER arkivet — kameraet
      stiger ned forbi arkivlisten for å nå det. */
-  { path: '/archived-work/', title: 'Archived work', x: 0, y: 2 },
+  { path: '/archived-work/', title: 'Work archive', x: 0, y: 2 },
 ]
 const EASING = 'cubic-bezier(0.32, 0.08, 0.24, 1)'
 
