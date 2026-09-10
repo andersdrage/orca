@@ -20,8 +20,16 @@
     }
   ],
   "redirects": [
-    { "source": "/history", "destination": "/timeline/", "permanent": true },
-    { "source": "/history/", "destination": "/timeline/", "permanent": true },
+    {
+      "source": "/history",
+      "destination": "/timeline/",
+      "permanent": true
+    },
+    {
+      "source": "/history/",
+      "destination": "/timeline/",
+      "permanent": true
+    },
     {
       "source": "/hmkg",
       "destination": "/archived-work/",
@@ -42,5 +50,8 @@
       "destination": "/archived-work/",
       "permanent": true
     }
-  ]
+  ],
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }
