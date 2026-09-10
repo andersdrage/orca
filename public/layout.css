@@ -2812,6 +2812,7 @@ body.world-map-intro .archived-card {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-width: 0;
   min-height: var(--detail-row-height);
   padding: 9px 8px;
@@ -2831,13 +2832,12 @@ body.world-map-intro .archived-card {
 }
 .case-title-block dd {
   display: flex;
-  flex: 1;
+  flex: none;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-content: center;
   align-items: center;
   column-gap: 12px;
-  /* Centered values move up 2px when their top padding shrinks by 4px. */
   padding-top: 2px;
   font-family: DragePlantin, Georgia, serif;
   font-size: 14px;
@@ -2913,7 +2913,6 @@ body.world-map-intro .archived-card {
 @media (max-height: 500px) {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
   .title-block__cell { padding-block: 5px; }
-  .case-title-block dd { padding-top: 0; }
 }
 
 /* Press feedback is immediate and independent of the horizontal scroll spring. */
