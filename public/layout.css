@@ -1533,10 +1533,9 @@ a.timeline-tile.is-returning:focus { outline: none; }
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1px solid rgba(24, 24, 27, 0.1);
-  border-radius: var(--site-radius);
+  border: 0;
+  border-radius: 50%;
   background: var(--page-surface);
-  box-shadow: 0 2px 8px rgba(24, 24, 27, 0.08);
   cursor: pointer;
   transition: transform 160ms ease;
 }
