@@ -6,6 +6,7 @@ import headphonesIconUrl from './assets/icons/headphones.svg?url'
 import closeIconUrl from './assets/icons/close.svg?url'
 import pauseIconUrl from './assets/icons/pause.svg?url'
 import readIconUrl from './assets/icons/read.svg?url'
+import finnLogoSource from '../public/images/finn-logo-morph.svg?raw'
 
 function isVideo(file) {
   return /\.(mp4|webm|mov)$/i.test(file)
@@ -128,6 +129,27 @@ function tabsHtml(item) {
       <span class="t-tabs-pill" aria-hidden="true"></span>${tabs}
     </div></div>
     ${panels}
+  </div>`
+}
+
+function logoMorphHtml() {
+  const labels = ['Original logo', 'New logo', 'Mobile logo']
+  return `<div class="portfolio-item w-full">
+    <div class="finn-logo-morph" data-logo-morph role="group" aria-label="FINN logo evolution">
+      <div id="finn-logo-panel" role="tabpanel" aria-labelledby="finn-logo-tab-0">
+        <svg class="finn-logo-morph__art" viewBox="-150 -84.375 300 168.75" role="img" aria-label="Original FINN logo">
+          <g data-logo-drawing></g>
+        </svg>
+      </div>
+      <div class="finn-logo-morph__controls">
+        <div class="t-tabs" role="tablist" aria-label="FINN logo versions">
+          <span class="t-tabs-pill" aria-hidden="true"></span>
+          ${labels.map((label, i) => `<button class="t-tab" type="button" role="tab" id="finn-logo-tab-${i}"
+            aria-controls="finn-logo-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${label}</button>`).join('')}
+        </div>
+      </div>
+      <template data-logo-source>${finnLogoSource.replace(/<\?xml[^>]*\?>/, '')}</template>
+    </div>
   </div>`
 }
 
@@ -311,6 +333,7 @@ function caseSection(singleCase) {
       if (row.items[0].type === 'gallery') return galleryHtml(row.items[0])
       if (row.items[0].type === 'text') return `<div class="case-story work-narrow"><p>${escapeHtmlText(row.items[0].text)}</p></div>`
       if (row.items[0].type === 'tabs') return tabsHtml(row.items[0])
+      if (row.items[0].type === 'logo-morph') return logoMorphHtml()
       return wrapFigure(row.items[0], eager)
     }
     if (row.kind === 'third-row') {

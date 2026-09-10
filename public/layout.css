@@ -1126,6 +1126,35 @@ body.world-mode {
   .t-tabs-pill, .t-tab { transition: none !important; }
 }
 
+.finn-logo-morph {
+  --tabs-dur: 250ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--site-radius);
+  background: #4195f7;
+}
+.finn-logo-morph [role="tabpanel"],
+.finn-logo-morph__art { width: 100%; height: 100%; }
+.finn-logo-morph__art { display: block; }
+.finn-logo-morph__controls {
+  position: absolute;
+  bottom: 12%;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+}
+.finn-logo-morph .t-tabs { background: rgba(255, 255, 255, .35); }
+.finn-logo-morph .t-tab { text-transform: uppercase; }
+.finn-logo-morph .t-tab:active { transform: scale(.97); }
+@media (max-width: 600px) {
+  .finn-logo-morph__controls { bottom: 8%; }
+  .finn-logo-morph .t-tabs { gap: 0; }
+  .finn-logo-morph .t-tab { padding-inline: 8px; font-size: 10px; }
+}
+
 /* Covers fit the viewport; case content keeps one width and its natural height. */
 #work .case-cover-hero.work-media > .portfolio-item .portfolio-asset {
   width: fit-content;

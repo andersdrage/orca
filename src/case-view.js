@@ -3,6 +3,7 @@ import { sessionState } from './session-state.js'
 import { buildCaseHtml } from './portfolio-render.js'
 import { initProjectAudio, initProjectTranscript } from './project-audio.js'
 import { initCaseTabs } from './case-tabs.js'
+import { initLogoMorph } from './logo-morph.js'
 import { initCreditsLayout } from './credits-layout.js'
 import { initCaseGallery } from './case-gallery.js'
 import { initCaseComparisons } from './case-comparison.js'
@@ -29,6 +30,7 @@ export function mountCase(root, { navigate, close }) {
       })
     }
     cleanups.push(initCaseTabs(root))
+    cleanups.push(initLogoMorph(root))
     // Remember the project so close and Back restore its index position.
     sessionState.setItem('timeline:last-case', root.dataset.caseId)
     initCoverCycle(root.dataset.caseId)

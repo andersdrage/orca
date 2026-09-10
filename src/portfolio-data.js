@@ -172,8 +172,10 @@ export const portfolioCases = [
       { role: 'Custom typeface', names: 'Letters from Sweden' },
     ],
     items: [
-      /* Hero = tile-cover; filmen som nr. 2 (autoplay, muted, loop). */
+      /* Index cover stays hidden in presentation; case media starts with the iMac. */
       { file: 'finn-5.jpg', span: 'full', alt: 'FINN.no' },
+      { file: 'finn-home-imac-v1.jpg', span: 'full', alt: 'FINN.no homepage concept on an iMac' },
+      { type: 'logo-morph', span: 'full' },
       { file: 'finn-film.mp4', span: 'full', alt: 'FINN.no case film' },
       /* Bilde 1–4 fra runde to høyt oppe. */
       { file: 'finn-10.jpg', span: 'full', alt: 'FINN.no' },
@@ -194,9 +196,6 @@ export const portfolioCases = [
       { file: 'finn-15.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-16.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-17.jpg', span: 'full', alt: 'FINN.no' },
-      { file: 'finn-18.jpg', span: 'full', alt: 'FINN.no' },
-      { file: 'finn-home-imac-v1.jpg', span: 'full', alt: 'FINN.no homepage concept on an iMac' },
-      { file: 'finn-property-viewing-v1.jpg', span: 'full', alt: 'FINN.no property viewing concept on a laptop' },
       { file: 'finn-chat-ipad-v1.jpg', span: 'full', alt: 'FINN.no mobile chat and iPad editorial concepts' },
       { file: 'finn-digital-overview-v1.jpg', span: 'full', alt: 'FINN.no visual identity across desktop, tablet and mobile' },
       /* Office photographs close the case, in the original 1–6 order. */
