@@ -198,10 +198,10 @@ const projectAudio = {
   },
   micromilspec: {
     src: micromilspecStoryUrl,
-    fallbackDuration: 141,
-    durationLabel: '02:21',
+    fallbackDuration: 167,
+    durationLabel: '02:47',
     ariaName: 'MICROMILSPEC',
-    title: 'My personal notes on the project',
+    title: 'My personal notes on Micromilspec',
     body: [
       'I’m really into watches, and it was kind of funny — I had just sold my entire collection because it was taking up too much time. And then, as fate would have it, three months later I’m co-founding a watch company and designing watches.',
       'Henrik Rye is one of the best founders I know. He has a rare ability to understand product, design, business, marketing, and sales. I’d worked with him on and off for about five years, so when he asked if I wanted to start this with him, it was a no-brainer. I don’t think I’ve ever said yes to anything that fast.',
@@ -216,6 +216,7 @@ const projectAudio = {
       'By around the tenth project, we had a fully automated CMS and a 3D pipeline, where we could spin up a new landing page with a click. A lot of that came from Kim Ellefsen — my partner in crime on the tech side for more than 30 projects. The 3D work is done by Alexander Kadim, and the fluid 3D web experiences are built by wizard Mark Larat.',
       'I’ve included both version one and two of the marketing site. What’s interesting is that version one is actually what we wanted to launch from day one — we just didn’t have the capability yet. There’s about a year between them, and you can really see the progression.',
       'This company was honestly a dream. I had to step away because I promised my family I’d work less. But I loved every part of it — from the mechanical details of the watches to packaging and all the small accessories around it.',
+      'Hope you like it.',
     ],
   },
   'off-market': {
