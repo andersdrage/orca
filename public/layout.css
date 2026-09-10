@@ -2957,7 +2957,8 @@ body.world-map-intro .archived-card {
   .page-case:has([data-layout="presentation"]) .case-close { top: 8px; }
 }
 @media (max-height: 500px) {
-  #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
+  #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 8px; }
+  [data-layout="presentation"] .case-title-block { margin-top: 8px; }
   .title-block__cell { padding-block: 5px; }
 }
 

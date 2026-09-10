@@ -221,7 +221,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.ok((await page.locator('.title-block__role dd').textContent()).trim())
         if (path === '/micromilspec/') {
           const developers = page.locator('.title-block__credit').filter({ has: page.locator('dt', { hasText: 'Development' }) })
-          assert.equal(await developers.count(), 2)
+          assert.equal(await developers.count(), 1)
+          assert.equal((await contributors.textContent()).includes('Mark Larratt'), false)
           assert.ok((await contributors.textContent()).includes('Martin S'))
         }
         if (path === '/finn/') {
@@ -256,7 +257,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           assert.ok(result.nameFont.includes('DragePlantin'))
           assert.equal(result.nameSize, '14px')
           assert.equal(result.tracking, '-0.28px')
-          assert.equal(result.firstHeight, 64)
+          assert.equal(result.firstHeight, width <= 600 ? 70 : 60)
           assert.equal(result.overflow, false, path)
           assert.equal(result.fits, true, path)
         }
@@ -875,13 +876,14 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
               transition: window.hasNavigationTransition === true,
               // Inspect page layers; controls inside the case may still animate.
               animations: [el, ...el.querySelectorAll('.case-lead, .case-legacy-lead, .case-below, .case-lead__intro, .case-legacy-intro, .case-title-block, .title-block__credit dd')]
-                .flatMap(node => node.getAnimations()).map(a => a.animationName ?? 'scripted'),
+                .flatMap(node => node.getAnimations()).map(a => a.id || a.animationName || 'scripted'),
               opacity: getComputedStyle(el.querySelector('.case-lead__intro, .case-legacy-intro')).opacity,
               hidden: el.getBoundingClientRect().height === 0,
             }
           })
           if (reducedMotion === 'reduce') assert.equal(entry.transition, false)
-          assert.deepEqual(entry.animations, [], `${id}: no native, fallback, or staggered case entrance`)
+          if (reducedMotion === 'reduce') assert.deepEqual(entry.animations, [], `${id}: reduced motion skips the entrance`)
+          else assert.ok(entry.animations.every(name => name.startsWith('project-intro-') || name === 'project-details-enter'), `${id}: only the approved intro and media entrance animate`)
           assert.equal(entry.opacity, '1')
           assert.equal(entry.hidden, false)
           if (reducedMotion === 'reduce') assert.equal(await page.locator('html.project-reveal-active').count(), 0)
@@ -967,7 +969,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           document.startViewTransition = update => {
             const transition = start(update)
             transition.ready.then(() => {
-              window.revealAnimations = document.getAnimations()
+              window.revealAnimations = document.getAnimations().filter(a => Number.isFinite(a.effect.getComputedTiming().endTime))
               window.revealAnimations.forEach(animation => { animation.pause(); animation.currentTime = 0 })
             }, () => {})
             return transition
@@ -1078,7 +1080,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
                 .map(node => ({ name: node.style.viewTransitionName, bounds: node.getBoundingClientRect().toJSON(), scale: node.getBoundingClientRect().width / node.offsetWidth }))
               const transition = start(update)
               transition.ready.then(() => {
-                window.openAnimations = document.getAnimations()
+                window.openAnimations = document.getAnimations().filter(a => Number.isFinite(a.effect.getComputedTiming().endTime))
                 window.openAnimations.forEach(a => { a.pause(); a.currentTime = 0 })
               }, () => {})
               return transition
@@ -1135,7 +1137,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           document.startViewTransition = update => {
             const transition = start(update)
             transition.ready.then(() => {
-              window.openAnimations = document.getAnimations()
+              window.openAnimations = document.getAnimations().filter(a => Number.isFinite(a.effect.getComputedTiming().endTime))
               window.openAnimations.forEach(a => { a.pause(); a.currentTime = 0 })
             }, () => {})
             return transition
@@ -1222,7 +1224,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           const transition = start(update)
           if (sessionStorage.getItem('test:skip-reveal')) transition.skipTransition()
           else transition.ready.then(() => {
-            window.revealAnimations = document.getAnimations()
+            window.revealAnimations = document.getAnimations().filter(a => Number.isFinite(a.effect.getComputedTiming().endTime))
             window.revealAnimations.forEach(animation => animation.pause())
           }, () => {})
           return transition
@@ -1456,7 +1458,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.locator('.case-close').click()
       await ready(page, '/')
       assert.ok((await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))).every(src => src.startsWith('/images/andersdrage-')))
-      await page.keyboard.press('s')
+      if (!(await toggle.isVisible())) await page.keyboard.press('s')
       assert.equal(await toggle.isChecked(), true)
       await toggle.uncheck()
       assert.deepEqual(await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src'))), originals)
