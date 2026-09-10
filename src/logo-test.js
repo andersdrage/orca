@@ -36,16 +36,16 @@ const COLOR_STOPS = [
   [360, '#c8e83c'],
 ]
 
-/* Kuraterte arbeidsbilder (public/images/00 logo-test/) — legges på
+/* Kuraterte arbeidsbilder (public/images/andersdrage-logo-experiment-*) — legges på
    kortfrontene som duotone: gråtoneversjonen multipliseres med kortets
    spektrumfarge, så fargen beholdes og bildet blender inn i den. */
 const CARD_IMAGES = [
-  'andersdrage-hmkg-004.jpg',
-  'andersdrage-humming-people-005.jpg',
-  'andersdrage-micromilspec-cover-alternative-2.jpg',
-  'andersdrage-micromilspec-hero.jpg',
-  'andersdrage-mountain-milk-004.jpg',
-  'andersdrage-uber-hero.jpg',
+  "andersdrage-logo-experiment-extra-001.jpg",
+  "andersdrage-logo-experiment-extra-002.jpg",
+  "andersdrage-logo-experiment-extra-003.jpg",
+  "andersdrage-logo-experiment-extra-004.jpg",
+  "andersdrage-logo-experiment-extra-005.jpg",
+  "andersdrage-logo-experiment-extra-006.jpg"
 ]
 
 let cardTextures = []
@@ -74,7 +74,7 @@ function loadCardTextures() {
             resolve(t)
           }
           img.onerror = () => resolve(null)
-          img.src = encodeURI(`/images/00 logo-test/${file}`)
+          img.src = encodeURI(`/images/${file}`)
         }),
     ),
   )
