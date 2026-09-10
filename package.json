@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "npm run build && node --test tests/*.test.mjs",
     "optimize-media": "node scripts/optimize-media.mjs",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "prepare-footer-dragon": "node scripts/prepare-footer-dragon.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",
@@ -20,6 +21,8 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
+    "cdt2d": "^1.0.0",
+    "clipper-lib": "^6.4.2",
     "dialkit": "^1.4.3",
     "motion": "^13.1.1",
     "react": "^19.2.8",

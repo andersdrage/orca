@@ -45,7 +45,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(styles.shadow, 'none')
         assert.equal(styles.overflow, false)
         assert.equal(styles.text, 'rgb(82, 82, 91)')
-        assert.equal(await page.locator('.site-footer__dragon img').isVisible(), true)
+        await page.waitForSelector('.footer-dragon-canvas[data-ready="true"]')
+        assert.equal(await page.locator('.footer-dragon-canvas').isVisible(), true)
         assert.equal(await page.locator('.site-footer video').count(), 0)
         assert.equal(await page.locator('.site-footer__dragon').evaluate(el => el.getBoundingClientRect().width), width === 390 ? 84 : 120)
         const initial = await page.locator('.site-footer').evaluate(el => el.getBoundingClientRect().top)
@@ -55,37 +56,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
       }
     })
-    test('dragon retains momentum, wraps the sequence, reverses, and stops for reduced motion', async t => {
-      const page = await visit(t, '/boligmappa/', { reducedMotion: 'no-preference' })
-      await bottom(page)
-      const canvas = page.locator('.site-footer canvas')
-      await page.waitForFunction(() => document.querySelector('.site-footer canvas')?.dataset.frame)
-      await page.waitForTimeout(600)
-      await page.mouse.move(900, 700)
-      await page.mouse.wheel(0, 1200)
-      await page.mouse.wheel(0, 1200)
-      await page.mouse.wheel(0, 1200)
-      const positions = []
-      for (let i = 0; i < 24; i++) {
-        await page.waitForTimeout(80)
-        positions.push(Number(await canvas.getAttribute('data-frame')))
-      }
-      assert.ok(new Set(positions).size > 12, 'keeps spinning after the last wheel event')
-      assert.ok(positions.some((value, i) => i && value < positions[i - 1] - 40), 'loops from the last frame to the first')
-      await page.mouse.wheel(0, -180)
-      await page.waitForTimeout(40)
-      const a = Number(await canvas.getAttribute('data-frame'))
-      await page.waitForTimeout(100)
-      const b = Number(await canvas.getAttribute('data-frame'))
-      assert.ok((a - b + 120) % 120 > 0 && (a - b + 120) % 120 < 30, 'reverse scroll turns the other way')
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-      await page.waitForTimeout(100)
-      const stopped = await canvas.getAttribute('data-frame')
-      await page.mouse.wheel(0, 600)
-      await page.waitForTimeout(400)
-      assert.equal(await canvas.getAttribute('data-frame'), stopped)
-    })
-    test('neutral backgrounds persist through direct visits, thumbnail entry, Back, and sibling footer mounting', async t => {
+    test('case backgrounds persist through direct visits, thumbnail entry, Back, and sibling footer mounting', async t => {
       const page = await visit(t, '/')
       await page.waitForFunction(() => document.querySelectorAll('.timeline-tile img').length > 0)
       await page.evaluate(() => document.querySelector('[data-tile-id="finn"]').click())
@@ -96,8 +67,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(250, 250, 250)')
       for (const id of FEATURED_ORDER) {
         await page.goto(base + `/${id}/`)
-        assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(250, 250, 250)')
-        assert.equal(await page.locator('.site-footer').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(250, 250, 250)')
+        const surface = ['houeland', 'uber'].includes(id) ? 'rgb(233, 233, 233)' : ['boligmappa', 'nettavisen'].includes(id) ? 'rgb(218, 218, 218)' : 'rgb(250, 250, 250)'
+        assert.equal(await page.evaluate(() => getComputedStyle(document.body).backgroundColor), surface)
+        assert.equal(await page.locator('.site-footer').evaluate(el => getComputedStyle(el).backgroundColor), surface)
       }
       await page.goto(base + '/about/')
       await page.waitForFunction(() => document.querySelector('.world-page[data-path="/praise/"] .site-footer__dragon'))

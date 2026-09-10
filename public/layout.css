@@ -2964,6 +2964,7 @@ html.project-reveal-active::view-transition-old(project-thumbnail) {
 
 .site-footer__story { color: #52525b; }
 .site-footer__dragon {
+  position: relative;
   width: clamp(84px, 8.4vw, 120px);
   aspect-ratio: 1;
   margin: 0 auto;
@@ -2980,3 +2981,8 @@ html.project-reveal-active::view-transition-old(project-thumbnail) {
   pointer-events: none;
   contain: layout paint;
 }
+
+/* The material study, quietly embedded in the shared footer. */
+.footer-dragon-canvas { cursor: grab; touch-action: none; border-radius: 8px; }
+.footer-dragon-canvas:active { cursor: grabbing; }
+.footer-dragon-canvas:focus-visible { outline: 2px solid #71717a; outline-offset: 3px; }

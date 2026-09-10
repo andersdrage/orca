@@ -1,0 +1,62 @@
+{
+  "environment": {
+    "encoding": "rgbe",
+    "width": 384,
+    "height": 512,
+    "transferBytes": 93596
+  },
+  "attributes": {
+    "position": {
+      "offset": 0,
+      "length": 29898,
+      "itemSize": 3,
+      "type": "Int16Array",
+      "normalized": true
+    },
+    "uv": {
+      "offset": 59796,
+      "length": 19932,
+      "itemSize": 2,
+      "type": "Float32Array",
+      "normalized": false
+    },
+    "normal": {
+      "offset": 139524,
+      "length": 29898,
+      "itemSize": 3,
+      "type": "Int16Array",
+      "normalized": true
+    },
+    "index": {
+      "offset": 199320,
+      "length": 53484,
+      "itemSize": 1,
+      "type": "Uint16Array",
+      "normalized": false
+    }
+  },
+  "groups": [
+    {
+      "start": 0,
+      "count": 2844,
+      "materialIndex": 0
+    },
+    {
+      "start": 2844,
+      "count": 50640,
+      "materialIndex": 1
+    }
+  ],
+  "vertices": 9966,
+  "triangles": 17828,
+  "geometryBytes": 306288,
+  "transferBytes": 169256,
+  "hashes": {
+    "scripts/prepare-footer-dragon.mjs": "786516f7d21785dd5f1be06bb849628d7f7f894603eafefa80f77c4968276966",
+    "src/dragon-studio.js": "a50dfdf678beccc88c409a1570f451bf323a765b14ea24ffbfdf8dddc90372cb",
+    "public/images/dragonmark.svg": "fcaa1dd88253b2ef1e20af7aecd466fb5b32e99dfd929109409ffa7a4ebf1333",
+    "src/dragon-geometry.js": "5f752de783657bf4697b3a3ede0539ac89244cab86e281ad3f63a13c67465a9d",
+    "src/dragon-finish.js": "fdccb866c3d758e07f6de0f7b8d803980ae5f369a05527256c2cd7f09707eafd",
+    "src/footer-dragon-settings.js": "bc12207a08f2a95c7de39e8bb79aaa0f055e0e8f644c53b8a5cd71cb00722d16"
+  }
+}

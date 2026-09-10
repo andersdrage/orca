@@ -1,6 +1,6 @@
 import { initProjectNavigation } from './project-navigation.js'
 import { prepareProjectPage } from './project-page.js'
-import { initScrollDragons } from './scroll-dragon.js'
+import { initFooterDragons } from './init-footer-dragons.js'
 import { initAnimationInspector } from './debug-panel.js'
 import { initDesignAudit } from './design-audit.js'
 import { portfolioCases } from './portfolio-data.js'
@@ -92,7 +92,7 @@ export function initHeader() {
      (i world-mode scroller seksjonene internt — world.js har egen lytter). */
   initWorld(header)
   initProjectNavigation()
-  initScrollDragons()
+  initFooterDragons()
 
   function updateHeaderScrollState() {
     header.classList.toggle('is-scrolled', window.scrollY > 8)

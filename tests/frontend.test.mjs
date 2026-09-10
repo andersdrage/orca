@@ -1648,7 +1648,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
-      assert.equal(await page.locator('.site-footer__dragon img').getAttribute('src'), '/images/dragon-scroll/frame-000.png')
+      assert.equal(await page.locator('.site-footer__dragon img').getAttribute('src'), '/images/footer-dragon-still.png')
     })
 
     test('Boligmappa shows 000 then its comparison and supports keyboard and pointer control', async (t) => {
