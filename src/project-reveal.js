@@ -64,8 +64,13 @@ export function revealProject(tile, update, { animate = true } = {}) {
     // keeping the intro readable and the notes dock out of the reveal.
     if (!reduced.matches) {
       details.filter(node => node.isConnected).forEach(node => {
-        const fade = node.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+        const media = node.matches('.case-below')
+        // Individual translate preserves the media column's horizontal centring.
+        const frames = media
+          ? [{ opacity: 0, translate: '0 48px' }, { opacity: 1, translate: '0 0' }]
+          : [{ opacity: 0 }, { opacity: 1 }]
+        const fade = node.animate(frames, {
+          duration: media ? 480 : 300, easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
         })
         fade.id = 'project-details-enter'
       })
