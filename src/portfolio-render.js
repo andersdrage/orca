@@ -118,7 +118,12 @@ function tabsHtml(item) {
       alt="Uber website design — ${escapeAttr(tab.label)}" ${mediaSize(tab.file)}
       loading="lazy" decoding="async" /></figure>
   </div>`).join('')
-  return `<div class="case-tabs" data-case-tabs>
+  const introduction = item.heading ? `<header class="case-tabs__intro">
+    <h2 id="${item.id}-heading" class="case-tabs__heading">${escapeHtmlText(item.heading)}</h2>
+    <p class="case-tabs__description">${escapeHtmlText(item.description)}</p>
+  </header>` : ''
+  return `<div class="case-tabs${item.heading ? ' case-tabs--framed' : ''}" data-case-tabs${item.heading ? ` role="group" aria-labelledby="${item.id}-heading"` : ''}>
+    ${introduction}
     <div class="case-tabs__scroll"><div class="t-tabs" role="tablist" aria-label="${escapeAttr(item.label)}">
       <span class="t-tabs-pill" aria-hidden="true"></span>${tabs}
     </div></div>

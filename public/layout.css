@@ -1001,6 +1001,36 @@ body.world-mode {
   scrollbar-width: thin;
 }
 
+.case-tabs--framed {
+  padding: clamp(20px, 4vw, 64px);
+  background: #eeece6;
+  border-radius: var(--site-radius);
+}
+.case-tabs__intro {
+  max-width: 520px;
+  margin: 0 auto 24px;
+  text-align: center;
+}
+.case-tabs__heading {
+  margin: 0;
+  font-family: DragePlantin, Georgia, serif;
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: #18181b;
+}
+.case-tabs__description {
+  max-width: 380px;
+  margin: 12px auto 0;
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #52525b;
+}
+.case-tabs--framed .case-tabs__scroll { margin-bottom: 24px; }
+.case-tabs--framed .t-tabs { background: rgba(255, 255, 255, .55); }
+
 .t-tabs {
   position: relative;
   display: flex;

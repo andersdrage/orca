@@ -238,6 +238,8 @@ export const portfolioCases = [
       },
       {
         type: 'tabs', span: 'full', id: 'uber-countries', label: 'Uber around the world',
+        heading: 'One design. Many languages.',
+        description: 'Choose a country to explore the local version of Uber’s website.',
         width: 1290, height: 762,
         tabs: [
           { file: 'uber-ueno-china-full.jpg', label: 'China' },
