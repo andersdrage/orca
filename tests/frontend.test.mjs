@@ -879,7 +879,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('project reveal combines the thumbnail drop with an intro scale and fade', async (t) => {
+    test('project reveal staggers actual intro lines before media enters', async (t) => {
       for (const width of [1440, 390]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {
           const start = document.startViewTransition.bind(document)
@@ -926,8 +926,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.deepEqual(await details.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).visibility)), ['hidden', 'hidden'], 'notes and project imagery wait for the thumbnail')
         const start = await frame()
         assert.equal(start.rootSnapshot, 'none', 'the case remains live beneath the independent thumbnail snapshots')
-        assert.equal(start.caseOpacity, '0')
-        assert.equal(start.introScale, 0.95)
+        assert.equal(start.caseOpacity, '1')
+        assert.equal(start.introScale, 1)
+        const lines = page.locator('.project-intro-line')
+        assert.ok(await lines.count() >= 3)
+        const originalCopy = await page.locator('.case-lead__intro').textContent()
+        assert.ok((await lines.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).opacity))).every(opacity => opacity === '0'))
         assert.equal(start.caseTransform, 'none')
         const pixels = await sharp(await page.screenshot()).stats()
         assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 25), 'the held thumbnail is painted, not an empty layer')
@@ -940,10 +944,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(middle.opacity, '1')
         assert.equal(middle.width, start.width)
         assert.equal(middle.height, start.height)
-        assert.ok(middle.introScale > start.introScale && middle.introScale < 1)
-        assert.ok(Number(middle.caseOpacity) > 0 && Number(middle.caseOpacity) < 1)
-        assert.ok(middle.intro.width > start.intro.width)
-        assert.ok(middle.block.width > start.block.width)
+        const lineOpacities = await lines.evaluateAll(nodes => nodes.map(node => Number(getComputedStyle(node).opacity)))
+        assert.ok(lineOpacities[0] > lineOpacities[1] && lineOpacities[1] > lineOpacities[2], 'lines enter at a steady stagger')
+        assert.equal(lineOpacities[2], 0, 'later lines wait their turn')
+        assert.deepEqual(middle.intro, start.intro, 'line entrance preserves the paragraph layout')
         const travel = await page.evaluate(() => {
           const matrix = new DOMMatrixReadOnly(getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform)
           return { x: matrix.m41, y: matrix.m42, scale: matrix.a }
@@ -951,8 +955,13 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(travel.x, 0)
         assert.equal(travel.scale, 1)
         assert.ok(travel.y > 50)
-        await page.evaluate(() => window.revealAnimations.forEach(animation => animation.finish()))
+        await page.evaluate(() => window.revealAnimations.filter(a => !a.id.startsWith('project-intro-')).forEach(a => a.finish()))
+        assert.deepEqual(await details.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).visibility)), ['hidden', 'hidden'], 'media waits for the last line, even after the thumbnail finishes')
+        await page.evaluate(() => window.revealAnimations.filter(a => a.id.startsWith('project-intro-')).forEach(a => a.finish()))
         await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
+        assert.equal(await lines.count(), 0, 'plain text is restored for natural reflow and selection')
+        assert.equal(await page.locator('.case-lead__intro').textContent(), originalCopy)
+        assert.deepEqual((await frame()).intro, start.intro, 'restoring text does not change its wrapping or height')
         await page.evaluate(() => document.getAnimations().filter(a => a.id === 'project-details-enter').forEach(a => { a.pause(); a.currentTime = 100 }))
         const settled = await frame()
         assert.equal(settled.introScale, 1)
@@ -1092,7 +1101,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           assert.equal(await page.evaluate(() => window.documentIdentity), 'persistent')
           const start = await tile.locator('img').boundingBox()
           if (interrupted) assert.ok(Math.abs(start.y - resting.y - displacement * imageScale) < 3, 'quick close reverses from the opening position')
-          else assert.ok(start.y >= height, 'the completed reveal returns from below the viewport')
+          else {
+            assert.ok(Math.abs(start.y - resting.y - (height - resting.y + 32) * .6) < 3, 'return travel is 40% shorter')
+            assert.ok(await page.evaluate(() => window.returnAnimation.effect.getTiming().duration) < 350, 'the shorter return completes more quickly')
+          }
           assert.ok(Math.abs(start.width - resting.width) < 2, `${width}px: the returning thumbnail preserves its size`)
           await page.evaluate(() => { window.returnAnimation.currentTime = window.returnAnimation.effect.getTiming().duration / 2 })
           const middle = await tile.locator('img').boundingBox()

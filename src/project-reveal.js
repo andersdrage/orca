@@ -1,4 +1,5 @@
 import { sessionState } from './session-state.js'
+import { animateProjectIntro } from './project-intro.js'
 
 // Capture the selected image and visible neighbours independently. The update
 // mounts the real case beneath them; the root never becomes a snapshot.
@@ -17,6 +18,8 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const html = document.documentElement
   const listeners = new AbortController()
   let details = []
+  let intro = { finished: Promise.resolve(), finish() {} }
+  let skipped = false
   const neighbours = [...tile.closest('[data-timeline]').querySelectorAll('a.timeline-tile')]
     .filter(node => node !== tile)
     .map(node => ({ node, bounds: node.getBoundingClientRect() }))
@@ -52,6 +55,7 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const transition = document.startViewTransition(() => {
     clearSource()
     update()
+    if (!skipped) intro = animateProjectIntro(document.querySelector('[data-case-root]'))
     details = [...document.querySelectorAll('[data-layout="presentation"] + .case-below, body > .project-audio')]
   })
   const cleanup = () => {
@@ -76,12 +80,13 @@ export function revealProject(tile, update, { animate = true } = {}) {
       })
     }
   }
+  const skip = () => { skipped = true; intro.finish(); transition.skipTransition() }
   const cancel = event => {
     // Let Close sample the live displacement before stopping the opening,
     // including a touch tap or Escape while the thumbnail is still moving.
     if (event?.type === 'touchstart' && event.target.closest('.case-close')) return
     if (event?.type === 'keydown' && event.key === 'Escape' && !document.querySelector('dialog[open]')) return
-    transition.skipTransition()
+    skip()
   }
   const options = { passive: true, signal: listeners.signal }
   for (const name of ['pagehide', 'wheel', 'touchstart', 'keydown']) window.addEventListener(name, cancel, options)
@@ -91,9 +96,9 @@ export function revealProject(tile, update, { animate = true } = {}) {
   }, options)
   document.addEventListener('visibilitychange', () => { if (document.hidden) cancel() }, options)
   reduced.addEventListener('change', cancel, options)
-  transition.ready.catch(() => {})
-  transition.finished.then(cleanup, cleanup)
-  return transition
+  transition.ready.catch(skip)
+  const finished = transition.finished.then(() => intro.finished, () => intro.finish()).then(cleanup)
+  return { ready: transition.ready, updateCallbackDone: transition.updateCallbackDone, finished, skipTransition: skip }
 }
 
 // Closing restores the live index immediately. Animate its real image so the
@@ -110,9 +115,9 @@ export function returnProjectThumbnail(tile, { fromTop } = {}) {
   // coordinates so the returning image lands exactly at its original size.
   const parentScale = rect.height / image.offsetHeight / ownScale
   const fullDistance = Math.max(0, innerHeight - rect.top + 32)
-  const distance = Number.isFinite(fromTop) ? Math.max(0, Math.min(fromTop - rect.top, fullDistance)) : fullDistance
+  const distance = Number.isFinite(fromTop) ? Math.max(0, Math.min(fromTop - rect.top, fullDistance)) : fullDistance * .6
   if (distance < 1) return null
-  const duration = Math.max(180, 480 * Math.sqrt(distance / Math.max(1, fullDistance)))
+  const duration = Math.max(160, 420 * Math.sqrt(distance / Math.max(1, fullDistance)))
   const base = restingTransform === 'none' ? '' : ` ${restingTransform}`
   const animation = image.animate([
     { transform: `translateY(${distance / parentScale}px)${base}` },

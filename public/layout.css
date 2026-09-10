@@ -2772,7 +2772,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
 .page-case .case-below { background: #fafafa; }
 
 /* The selected thumbnail drops while its visible neighbours clear sideways.
-   The live intro scales and fades behind these independent snapshots. */
+   The live intro enters line by line behind these independent snapshots. */
 @view-transition { navigation: none; }
 :root { view-transition-name: none; }
 html.project-reveal-active :is([data-layout="presentation"] + .case-below, body > .project-audio) {
@@ -2780,13 +2780,9 @@ html.project-reveal-active :is([data-layout="presentation"] + .case-below, body 
   visibility: hidden;
 }
 html.project-reveal-active::view-transition { pointer-events: none; }
-html.project-reveal-active #work [data-layout="presentation"] > :is(.case-lead__copy, .case-legacy-copy) {
-  transform-origin: center center;
-  animation: project-intro-enter 660ms 80ms cubic-bezier(.22, 1, .36, 1) both;
-}
-@keyframes project-intro-enter {
-  from { transform: scale(.95); opacity: 0; }
-  to { transform: scale(1); opacity: var(--intro-opacity, 1); }
+.project-intro-line {
+  display: block;
+  white-space: nowrap;
 }
 @keyframes project-neighbour-exit {
   from { transform: translateX(0); }
