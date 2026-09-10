@@ -168,7 +168,6 @@ export const portfolioCases = [
       { role: 'Designers', names: 'Anders Drage, Ludvig Bruneau Rossow and Truong Vu Pham' },
       { role: 'Strategy', names: 'Monna Nordhagen, Kirsti Rogne, Jonas Feiring' },
       { role: 'Project management', names: 'Caroline Hanssen' },
-      { role: 'Reel', names: 'Lars Hoel' },
       { role: 'Custom typeface', names: 'Letters from Sweden' },
     ],
     items: [
@@ -177,10 +176,6 @@ export const portfolioCases = [
       { file: 'finn-home-imac-v1.jpg', span: 'full', alt: 'FINN.no homepage concept on an iMac' },
       { type: 'logo-morph', span: 'full' },
       { file: 'finn-film.mp4', span: 'full', alt: 'FINN.no case film' },
-      /* Bilde 1–4 fra runde to høyt oppe. */
-      { file: 'finn-10.jpg', span: 'full', alt: 'FINN.no' },
-      { file: 'finn-11.jpg', span: 'half', alt: 'FINN.no' },
-      { file: 'finn-12.jpg', span: 'half', alt: 'FINN.no' },
       { file: 'finn-13.jpg', span: 'full', alt: 'FINN.no' },
       /* Kort type-vekt-animasjon (0,75s) — looper som syklende specimen. */
       { file: 'finn-type-weights.mp4', span: 'full', alt: 'FINN.no typography weights' },
