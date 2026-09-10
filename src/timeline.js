@@ -163,7 +163,13 @@ export function initTimeline(scrollerEl) {
   const INTRO_LINE_2 = 'I design identities, interfaces, and the connections between them.'
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
-  intro.append(document.createTextNode(INTRO_LINE_1), document.createElement('br'), document.createTextNode(INTRO_LINE_2))
+  const introParagraphs = [INTRO_LINE_1, INTRO_LINE_2].map(text => {
+    const paragraph = document.createElement('span')
+    paragraph.className = 'timeline-intro__paragraph'
+    paragraph.textContent = text
+    intro.append(paragraph)
+    return paragraph
+  })
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -320,20 +326,19 @@ export function initTimeline(scrollerEl) {
     document.body.classList.contains('page-home') &&
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   ) {
-    intro.textContent = ''
+    introParagraphs.forEach(paragraph => { paragraph.textContent = '' })
     const wordSpans = []
-    const appendWords = (text) => {
+    const appendWords = (text, paragraph) => {
       text.split(' ').forEach((word) => {
         const span = document.createElement('span')
         span.className = 'timeline-intro__word'
         span.textContent = word
-        intro.append(span, document.createTextNode(' '))
+        paragraph.append(span, document.createTextNode(' '))
         wordSpans.push(span)
       })
     }
-    appendWords(INTRO_LINE_1)
-    intro.append(document.createElement('br'))
-    appendWords(INTRO_LINE_2)
+    appendWords(INTRO_LINE_1, introParagraphs[0])
+    appendWords(INTRO_LINE_2, introParagraphs[1])
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {

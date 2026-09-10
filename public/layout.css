@@ -1272,10 +1272,13 @@ body.world-mode {
   margin: 0;
   color: #3f3f46;
   font-family: DragePlantin, Georgia, 'Times New Roman', serif;
-  font-size: 1.0625rem;
-  line-height: 1.6;
+  font-size: 28px;
+  line-height: 29px;
   text-wrap: pretty;
 }
+
+.timeline-intro__paragraph { display: block; }
+.timeline-intro__paragraph + .timeline-intro__paragraph { margin-top: 29px; }
 
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
    Fase 1: introteksten linje for linje (90ms mellom linjene).
