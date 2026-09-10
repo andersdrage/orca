@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#050505" />
+    <link rel="icon" href="/images/favicon-dragon-light.svg" type="image/svg+xml" />
+    <title>Dragon — Material study · Anders Drage</title>
+    <link rel="stylesheet" href="/src/dragon.css" />
+  </head>
+  <body>
+    <main class="workspace">
+      <section class="specimen" aria-label="Interactive dragon">
+        <div class="specimen-heading"><h1>Dragon</h1><p>Brushed titanium · Orthographic</p></div>
+        <canvas id="dragon-canvas" tabindex="0" role="img" aria-label="3D dragon. Drag to rotate, drag near the edges to roll. Arrow keys rotate; Q and E roll; Home resets." aria-describedby="gesture-help"></canvas>
+        <div class="stage-status" role="status">Preparing the metal…</div>
+        <div class="size-switch" role="group" aria-label="Dragon size">
+          <button type="button" data-size="280" aria-pressed="false">Original <span>280 px</span></button>
+          <button type="button" data-size="620" aria-pressed="true">Study <span>620 px</span></button>
+        </div>
+        <div class="specimen-footer"><p id="gesture-help">Drag to rotate · Flick to spin<br><span>Drag the perimeter to roll · Double-click to center</span></p><button type="button" id="center-view">Center view <span>↺</span></button></div>
+      </section>
+      <aside class="controls" aria-label="Material controls">
+        <div class="panel-heading"><h2>The finish</h2><button id="reset-material" type="button">Reset</button></div>
+        <div class="presets" role="group" aria-label="Material presets"><button type="button" data-preset="titanium" aria-pressed="true">Titanium</button><button type="button" data-preset="silver" aria-pressed="false">Silver</button><button type="button" data-preset="worn" aria-pressed="false">Worn</button></div>
+        <div class="brush-pattern" role="group" aria-label="Brushing pattern"><button type="button" data-pattern="linear" aria-pressed="false">Linear</button><button type="button" data-pattern="sunburst" aria-pressed="true">Sunburst</button></div>
+        <div class="view-controls">
+          <div class="motion-controls"><label for="project-background">Project background</label><input type="checkbox" id="project-background" role="switch" /></div>
+          <div class="motion-controls"><label for="loop-spin">Loop 360° spin</label><input type="checkbox" id="loop-spin" role="switch" aria-describedby="loop-help" /></div>
+          <p id="loop-help">12 seconds per turn. Drag to take over.</p>
+        </div>
+        <div id="material-sliders"></div>
+        <div class="motion-controls"><label for="momentum">Carry momentum</label><input type="checkbox" id="momentum" role="switch" checked /></div>
+        <button type="button" id="stop-spin" class="stop-spin">Stop motion</button>
+        <div class="small-study"><div id="small-viewport" aria-hidden="true"></div><div><span>At a smaller scale</span><p>Same finish. Same rotation.</p></div></div>
+        <p class="panel-note">Brushed faces, polished edges.<br>Turn the dragon to catch the light.</p>
+      </aside>
+    </main>
+    <noscript>This material study needs JavaScript to display the interactive dragon.</noscript>
+    <script type="module" src="/src/dragon.js"></script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Centered glass button</title>
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        background: #eaeaee;
+      }
+
+      .glass-pill {
+        display: flex;
+        padding: 7px;
+        border-radius: 21px;
+        background: rgba(246, 246, 250, 0.8);
+        -webkit-backdrop-filter: blur(20px) saturate(1.8);
+        backdrop-filter: blur(20px) saturate(1.8);
+        box-shadow:
+          inset 1px 1px 1px rgba(255, 255, 255, 0.5),
+          inset 0 1px 0.5px rgba(255, 255, 255, 0.5),
+          inset -1px -1px 0.5px rgba(255, 255, 255, 0.5),
+          0 3px 15px rgba(0, 0, 0, 0.04);
+      }
+
+      .glass-button {
+        appearance: none;
+        display: grid;
+        place-items: center;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 12px;
+        font: 500 12px/1 system-ui, sans-serif;
+        letter-spacing: 0.02em;
+        border: 0;
+        border-radius: 14px;
+        color: rgba(14, 14, 24, 0.7);
+        background: rgba(248, 248, 250, 0.9);
+        box-shadow:
+          inset 1px 1px 1px rgba(255, 255, 255, 0.5),
+          inset 0 1px 0.5px rgba(255, 255, 255, 0.5),
+          inset -1px -1px 0.5px rgba(255, 255, 255, 0.5),
+          0 0 0 0.5px rgba(0, 0, 0, 0.1),
+          0 1px 3px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: background-color 0.2s ease, filter 0.2s ease;
+      }
+
+      .glass-button:hover { background: rgba(240, 240, 240, 0.5); }
+      .glass-button:active { filter: brightness(0.9); }
+      .glass-button:focus-visible {
+        outline: 2px solid rgb(42, 116, 245);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .glass-button { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="glass-pill">
+      <button class="glass-button" type="button">ABOUT</button>
+    </main>
+  </body>
+</html>
