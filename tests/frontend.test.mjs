@@ -1638,7 +1638,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       for (const [id, year] of [['agens', '2025'], ['kaos', '2016'], ['hellstrom', '2015'], ['aprila', '2018'], ['brevio', '2017'], ['abelee', '2017'], ['humming-people', '2018'], ['hmkg', '2014'], ['pelp', '2014'], ['godt-levert', '2015'], ['klp', '2017'], ['just', '2017'], ['kindly', '2016'], ['changemaker', '2016'], ['tone', '2015'], ['lego', '2012'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
         assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
       }
-      for (const file of ['andersdrage-agens-001.png', 'andersdrage-agens-002.jpg', 'andersdrage-agens-003.jpg', 'andersdrage-agens-004.jpg', 'andersdrage-agens-extra-001.jpg', 'andersdrage-aprila-001.jpg', 'andersdrage-brevio-001.jpg', 'andersdrage-logos-001.jpg', 'andersdrage-nike-001.jpg', 'andersdrage-pressworks-001.jpg', 'andersdrage-pressworks-002.jpg']) {
+      for (const file of ['andersdrage-agens-001.png', 'andersdrage-agens-002.jpg', 'andersdrage-agens-003.jpg', 'andersdrage-agens-004.jpg', 'andersdrage-aprila-001.jpg', 'andersdrage-brevio-001.jpg', 'andersdrage-logos-001.jpg', 'andersdrage-nike-001.jpg', 'andersdrage-pressworks-001.jpg', 'andersdrage-pressworks-002.jpg']) {
         assert.equal(await grid.locator(`img[data-media-src="/images/${file}"]`).count(), 1)
       }
       assert.equal(await grid.locator('img[src="/images/andersdrage-nettavisen-001.jpg"]').count(), 0)
@@ -1884,7 +1884,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/archived-work/')
-      assert.equal(await page.locator('.archived-grid__item').count(), 164)
+      assert.equal(await page.locator('.archived-grid__item').count(), 163)
       await page.locator('.world-page:not([inert]) [data-project="hmkg"] button').first().click()
       assert.equal(await page.getByRole('dialog').count(), 1)
     })
@@ -1950,12 +1950,12 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
 
     test('archived projects have separate blocks and retain every image and lightbox position', async (t) => {
       const page = await visit(t, '/archived-work/')
-      const expected = [['intro', 2], ['agens', 5], ['aprila', 5], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 4], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['kaos', 14], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hellstrom', 2], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['daccord', 9], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
+      const expected = [['intro', 2], ['agens', 4], ['aprila', 5], ['humming-people', 11], ['brevio', 17], ['klp', 4], ['just', 4], ['abelee', 2], ['pressworks', 2], ['kindly', 3], ['changemaker', 8], ['nike', 1], ['houelandek', 16], ['kaos', 14], ['brathwait', 23], ['tone', 4], ['godt-levert', 6], ['hellstrom', 2], ['hmkg', 4], ['pelp', 10], ['lego', 3], ['mountain-milk', 6], ['daccord', 9], ['poster', 1], ['yearly-report', 1], ['lettering', 1]]
       const blocks = page.locator('.archived-project')
       assert.deepEqual(await blocks.evaluateAll((blocks) => blocks.map((block) => [block.dataset.project, block.querySelectorAll('button').length])), expected)
       assert.equal(await page.locator('.archived-card').count(), 1)
       const indices = await blocks.locator('button').evaluateAll((buttons) => buttons.map((button) => Number(button.dataset.index)).sort((a, b) => a - b))
-      assert.deepEqual(indices, Array.from({ length: 164 }, (_, i) => i))
+      assert.deepEqual(indices, Array.from({ length: 163 }, (_, i) => i))
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
         await page.waitForFunction((count) => document.querySelector('.archived-project__grid')?.children.length === count, width > 900 ? 4 : 2)
