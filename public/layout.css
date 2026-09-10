@@ -261,7 +261,8 @@ body.world-mode {
 }
 
 /* Navigation and skip links focus the main landmark, not a visible control. */
-.world-column > main[tabindex='-1']:focus {
+.world-column > main[tabindex='-1']:focus,
+.page-case main.case-main[tabindex='-1']:focus {
   outline: none;
 }
 
