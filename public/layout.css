@@ -1761,7 +1761,7 @@ a.timeline-tile.is-returning:focus { outline: none; }
 .timeline-meta-section {
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
 }
-.timeline-meta-section + .timeline-meta-section { margin-top: 5rem; }
+.timeline-meta-section + .timeline-meta-section { margin-top: 8rem; }
 .timeline-meta-section > h2 {
   padding-bottom: .5rem;
   border-bottom: 1px solid #e4e4e7;
