@@ -14,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 function notFoundPage() {
   const install = (server, built) => () => {
     server.middlewares.use(async (request, response, next) => {
-      if (!['GET', 'HEAD'].includes(request.method) || !request.headers.accept?.includes('text/html')) return next()
+      if (!['GET', 'HEAD'].includes(request.method)) return next()
       try {
         const root = built ? resolve(server.config.root, server.config.build.outDir) : server.config.root
         const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname)
@@ -24,6 +24,7 @@ function notFoundPage() {
           response.writeHead(redirect.permanent ? 308 : 307, { location: redirect.destination + search })
           return response.end()
         }
+        if (!request.headers.accept?.includes('text/html')) return next()
         const candidate = resolve(root, `.${pathname}`)
         if (candidate.startsWith(root + sep) && existsSync(candidate)) return next()
         let html = await readFile(resolve(root, '404.html'), 'utf8')
