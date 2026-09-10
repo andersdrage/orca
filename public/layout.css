@@ -668,6 +668,14 @@ body.world-mode {
   .content-page--spacious > header > div:first-child { margin-top: 0; }
 }
 
+.about-portrait {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 2rem;
+}
+
 .people-thanks { white-space: nowrap; }
 
 .praise-invitation {
