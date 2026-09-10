@@ -413,6 +413,10 @@ body.world-mode {
   background: #f4f4f5;
 }
 
+.project-audio--text-only { width: min(180px, calc(100vw - 32px)); }
+.project-audio--text-only .project-audio__actions { grid-template-columns: minmax(0, 1fr); }
+.project-audio--text-only .project-audio__transcript-trigger { border-radius: var(--site-radius); }
+
 .project-audio__action {
   display: flex;
   align-items: center;

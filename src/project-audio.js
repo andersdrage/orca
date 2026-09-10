@@ -17,8 +17,8 @@ export function initProjectAudio() {
     const time = container.querySelector('[data-audio-time]')
     const status = container.querySelector('[data-audio-status]')
     const label = container.querySelector('[data-audio-label]')
+    if (!button || !audio || !time || !label) return
     const idleLabel = label.textContent
-    if (!button || !audio || !time) return
 
     const fallbackDuration = Number(audio.dataset.audioFallbackDuration) || 141
     const audioTitle = audio.dataset.audioTitle || 'this project'

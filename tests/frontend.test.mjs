@@ -726,6 +726,23 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await play.getAttribute('aria-pressed'), 'true')
     })
 
+    test('Uber written story opens without an audio source and returns focus on close', async (t) => {
+      const page = await visit(t, '/uber/')
+      const read = page.getByRole('button', { name: 'Read the personal story about Uber' })
+      assert.equal(await page.locator('[data-project-audio-button], audio[data-project-audio]').count(), 0)
+      await read.click()
+      const dialog = page.getByRole('dialog')
+      assert.equal(await dialog.isVisible(), true)
+      assert.match(await dialog.textContent(), /Are you still in SF/)
+      assert.match(await dialog.textContent(), /long after the project is finished/)
+      await page.keyboard.press('Escape')
+      assert.equal(await dialog.isVisible(), false)
+      assert.equal(await read.evaluate(el => el === document.activeElement), true)
+      await read.click()
+      await page.getByRole('button', { name: 'Close transcript' }).click()
+      assert.equal(await dialog.isVisible(), false)
+    })
+
     test('transcript animation survives close during entry and immediate reopening', async (t) => {
       const page = await visit(t, '/off-market/', { reducedMotion: 'no-preference', viewport: { width: 390, height: 844 } })
       await page.locator('[data-transcript-open]').scrollIntoViewIfNeeded()
