@@ -159,16 +159,14 @@ export function initTimeline(scrollerEl) {
      Absolutt posisjonert i innholdskoordinater (utenfor kopi-flexen, så
      loop-målingene ikke påvirkes). Når man har scrollet forbi, fjernes den
      permanent mens den er utenfor skjermen — loopen kommer rundt uten den. */
-  const INTRO_LINE_1 = 'I’m Anders Drage,'
-  const INTRO_REST =
-    'a multidisciplinary designer from Norway. I build identities, interfaces, and visual systems with a focus on craft and clarity.'
+  const INTRO_TEXT =
+    'I’m Anders Drage, a multidisciplinary designer from the fjords of Norway. I design identities, interfaces, and the connections between them.'
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
-  intro.append(
-    document.createTextNode(INTRO_LINE_1),
-    document.createElement('br'),
-    document.createTextNode(INTRO_REST),
-  )
+  const emailLink = document.createElement('a')
+  emailLink.href = 'mailto:anders@dra.ge'
+  emailLink.textContent = 'Email me'
+  intro.append(document.createTextNode(`${INTRO_TEXT} `), emailLink)
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -327,18 +325,19 @@ export function initTimeline(scrollerEl) {
   ) {
     intro.textContent = ''
     const wordSpans = []
-    const appendWords = (text) => {
+    const appendWords = (text, parent = intro) => {
       text.split(' ').forEach((word) => {
         const span = document.createElement('span')
         span.className = 'timeline-intro__word'
         span.textContent = word
-        intro.append(span, document.createTextNode(' '))
+        parent.append(span, document.createTextNode(' '))
         wordSpans.push(span)
       })
     }
-    appendWords(INTRO_LINE_1)
-    intro.append(document.createElement('br'))
-    appendWords(INTRO_REST)
+    appendWords(INTRO_TEXT)
+    emailLink.textContent = ''
+    intro.append(emailLink)
+    appendWords('Email me', emailLink)
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {

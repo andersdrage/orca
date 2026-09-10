@@ -1264,17 +1264,25 @@ body.world-mode {
 }
 
 .timeline-intro {
-  letter-spacing: normal;
+  letter-spacing: -0.04em;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: var(--intro-width);
   margin: 0;
   color: #3f3f46;
-  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
   font-size: 1.0625rem;
   line-height: 1.6;
   text-wrap: pretty;
+}
+
+.timeline-intro a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  white-space: nowrap;
 }
 
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
