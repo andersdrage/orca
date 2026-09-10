@@ -234,7 +234,7 @@ body.world-mode {
   will-change: transform;
 }
 
-.world-page[data-path='/history/'] {
+.world-page[data-path='/timeline/'] {
   grid-column: 1;
   grid-row: 2;
 }
@@ -1277,14 +1277,6 @@ body.world-mode {
   text-wrap: pretty;
 }
 
-.timeline-intro a {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.16em;
-  white-space: nowrap;
-}
-
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
    Fase 1: introteksten linje for linje (90ms mellom linjene).
    Fase 2: tilene i stigende rekkefølge fra ~480ms.
@@ -1577,7 +1569,7 @@ a.timeline-tile.is-returning:focus { outline: none; }
   pointer-events: auto;
 }
 
-.corner-links a[href='/history/'] {
+.corner-links a[href='/timeline/'] {
   left: 30px;
 }
 

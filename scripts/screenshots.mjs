@@ -28,7 +28,7 @@ let targets = [
   { path: '/boligmappa/', name: 'boligmappa', fullPage: true },
   { path: '/about/', name: 'about', world: true },
   { path: '/praise/', name: 'praise', world: true },
-  { path: '/history/', name: 'history', world: true },
+  { path: '/timeline/', name: 'timeline', world: true },
   { path: '/people/', name: 'people', world: true },
   { path: '/archived-work/', name: 'archived-work', world: true },
 ]

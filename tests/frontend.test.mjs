@@ -6,7 +6,7 @@ import sharp from 'sharp'
 import { FEATURED_ORDER } from '../src/case-navigation.js'
 import { loadLazyMedia } from '../scripts/screenshot-media.mjs'
 
-const worldPaths = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
+const worldPaths = ['/', '/about/', '/praise/', '/timeline/', '/people/', '/archived-work/']
 const casePaths = FEATURED_ORDER.map(id => `/${id}/`)
 let server
 let base
@@ -302,7 +302,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     })
 
     test('shared secondary text keeps readable contrast at rest and during hover', async (t) => {
-      const page = await visit(t, '/history/')
+      const page = await visit(t, '/timeline/')
       const ratio = async (selector) => page.locator(selector).evaluateAll((nodes) => nodes.map((el) => {
         const rgb = (s) => s.match(/[\d.]+/g).slice(0, 3).map(Number)
         const luminance = (color) => color.map((v) => v / 255).map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0)
@@ -323,7 +323,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
         for (const [path, selector, hover] of [
-          ['/history/', '.archive-year, .archive-type', '.archive-list li'],
+          ['/timeline/', '.archive-year, .archive-type', '.archive-list li'],
           ['/finn/', '.case-title-block dt, .case-title-block dd', '.title-block__cell'],
           ['/about/', '.employments-table td', '.employments-table tr'],
           ['/praise/', '.text-secondary', null],
@@ -429,7 +429,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('returning to a world page resets its scroll before the camera transition', async (t) => {
       for (const reducedMotion of ['reduce', 'no-preference']) {
         const page = await visit(t, '/about/', { reducedMotion })
-        await ready(page, '/history/')
+        await ready(page, '/timeline/')
         const scrollToBottom = async () => {
           const top = await page.locator('.world-page:not([inert])').evaluate((el) => {
             el.scrollTo({ top: el.scrollHeight, behavior: 'instant' })
@@ -438,11 +438,11 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           assert.ok(top > 100, 'the page really was scrolled')
         }
         await scrollToBottom()
-        await page.locator('.corner-links a[href="/history/"]').click()
-        await activeWorld(page, '/history/')
+        await page.locator('.corner-links a[href="/timeline/"]').click()
+        await activeWorld(page, '/timeline/')
         await scrollToBottom()
         const positions = await page.evaluate(() => {
-          const from = document.querySelector('.world-page[data-path="/history/"]')
+          const from = document.querySelector('.world-page[data-path="/timeline/"]')
           const to = document.querySelector('.world-page[data-path="/about/"]')
           const fromBefore = from.scrollTop
           const toBefore = to.scrollTop
@@ -455,7 +455,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await activeWorld(page, '/about/')
         await scrollToBottom()
         await page.goBack()
-        await activeWorld(page, '/history/')
+        await activeWorld(page, '/timeline/')
         assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
         await page.goForward()
         await activeWorld(page, '/about/')
@@ -481,28 +481,38 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('History uses the new route and keeps only the English NSB entry', async (t) => {
-      const page = await visit(t, '/history/')
-      await ready(page, '/history/')
-      assert.equal(await page.getByRole('main').getAttribute('aria-label'), 'History')
+    test('legacy History URLs redirect to Timeline without losing query or fragment', async (t) => {
+      for (const path of ['/history', '/history/', '/history/index.html']) {
+        const page = await visit(t, `${path}?source=bookmark#innhold`)
+        await page.waitForURL('**/timeline/?source=bookmark#innhold')
+        await ready(page, '/timeline/')
+        assert.equal(await page.getByRole('main').getAttribute('aria-label'), 'Timeline')
+        assert.equal(await page.locator('a[href="/history/"]').count(), 0)
+      }
+    })
+
+    test('Timeline uses the new route and keeps only the English NSB entry', async (t) => {
+      const page = await visit(t, '/timeline/')
+      await ready(page, '/timeline/')
+      assert.equal(await page.getByRole('main').getAttribute('aria-label'), 'Timeline')
       assert.equal(await page.locator('.archive-name').filter({ hasText: 'NSB' }).count(), 1)
       assert.equal(await page.locator('.archive-name').filter({ hasText: 'NSB' }).textContent(), 'NSB Yearly Report')
       assert.equal(await page.locator('a[href="/archive/"]').count(), 0)
       await page.locator('.site-header a[href="/about/"]').click()
       await activeWorld(page, '/about/')
-      await page.locator('.corner-links a[href="/history/"]').click()
-      await activeWorld(page, '/history/')
+      await page.locator('.corner-links a[href="/timeline/"]').click()
+      await activeWorld(page, '/timeline/')
       await page.goBack()
       await activeWorld(page, '/about/')
       await page.goForward()
-      await activeWorld(page, '/history/')
+      await activeWorld(page, '/timeline/')
     })
 
     test('interrupted camera trips preserve world and card transforms through pan and landing', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await ready(page, '/praise/')
       await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
-      for (const [path, elapsed] of [['/history/', 300], ['/people/', 850], ['/about/', 80]]) {
+      for (const [path, elapsed] of [['/timeline/', 300], ['/people/', 850], ['/about/', 80]]) {
         await page.waitForTimeout(elapsed)
         const jump = await page.evaluate(async (path) => {
           const nodes = [document.querySelector('.world'), ...document.querySelectorAll('.world-page')]
@@ -611,7 +621,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390, reducedMotion: 'no-preference' }, () => {
           const fetchPage = window.fetch
           window.fetch = async (url, options) => {
-            if (/^\/(about|praise|history|people|archived-work)\/$/.test(String(url))) await new Promise(resolve => setTimeout(resolve, 500))
+            if (/^\/(about|praise|timeline|people|archived-work)\/$/.test(String(url))) await new Promise(resolve => setTimeout(resolve, 500))
             return fetchPage(url, options)
           }
           const animate = Element.prototype.animate
@@ -1793,7 +1803,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await ready(page, '/praise/')
       await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
-      await page.locator('.corner-links a[href="/history/"]').click()
+      await page.locator('.corner-links a[href="/timeline/"]').click()
       await page.locator('.site-header a[href="/about/"]').click()
       await activeWorld(page, '/about/')
       await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling'))
@@ -2114,7 +2124,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     })
 
     test('an explicit world entry is preserved through a featured case chain and reload', async (t) => {
-      const page = await visit(t, '/history/')
+      const page = await visit(t, '/timeline/')
       // The gallery intentionally opens a lightbox; supply a test link to exercise
       // the supported same-origin case entry without changing production content.
       await page.evaluate(() => {
@@ -2129,7 +2139,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForURL('**/boligmappa/')
       await page.reload({ waitUntil: 'domcontentloaded' })
       await page.keyboard.press('Escape')
-      await page.waitForURL('**/history/')
+      await page.waitForURL('**/timeline/')
     })
 
     test('selected case close restores the timeline and transcript Escape stays in the case', async (t) => {

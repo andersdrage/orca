@@ -6,7 +6,7 @@ import { mountCase } from './case-view.js'
 import { revealProject, returnProjectThumbnail } from './project-reveal.js'
 import { syncVisibleMedia } from './visible-media.js'
 
-const OVERVIEWS = ['/', '/about/', '/praise/', '/history/', '/people/', '/archived-work/']
+const OVERVIEWS = ['/', '/about/', '/praise/', '/timeline/', '/people/', '/archived-work/']
 let initialized = false
 
 export function initProjectNavigation() {

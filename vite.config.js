@@ -20,7 +20,8 @@ function notFoundPage() {
         const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname)
         const redirect = deployment.redirects?.find(rule => rule.source.replace(/\/$/, '') === pathname.replace(/\/$/, ''))
         if (redirect) {
-          response.writeHead(redirect.permanent ? 308 : 307, { location: redirect.destination })
+          const search = new URL(request.url, 'http://localhost').search
+          response.writeHead(redirect.permanent ? 308 : 307, { location: redirect.destination + search })
           return response.end()
         }
         const candidate = resolve(root, `.${pathname}`)
@@ -71,7 +72,8 @@ export default defineConfig({
         notFound: resolve(__dirname, '404.html'),
         about: resolve(__dirname, 'about/index.html'),
         praise: resolve(__dirname, 'praise/index.html'),
-        history: resolve(__dirname, 'history/index.html'),
+        timeline: resolve(__dirname, 'timeline/index.html'),
+        historyRedirect: resolve(__dirname, 'history/index.html'),
         people: resolve(__dirname, 'people/index.html'),
         micromilspec: resolve(__dirname, 'micromilspec/index.html'),
         houeland: resolve(__dirname, 'houeland/index.html'),

@@ -20,6 +20,8 @@
     }
   ],
   "redirects": [
+    { "source": "/history", "destination": "/timeline/", "permanent": true },
+    { "source": "/history/", "destination": "/timeline/", "permanent": true },
     {
       "source": "/hmkg",
       "destination": "/archived-work/",

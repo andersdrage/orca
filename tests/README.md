@@ -22,7 +22,7 @@ a working home link even when JavaScript is disabled. The full two-engine run
 currently contains 77 tests. Vite dev/preview serves the same 404.html that Vercel
 uses from the build output.
 
-History checks cover the current route, camera navigation, Back/Forward and the single
+Timeline checks cover the current route, camera navigation, Back/Forward and the single
 English NSB entry. Retired /archive and /misc routes return 404 without redirects,
 as requested before launch. Uber country tabs cover all ten panels, arrow/Home/End
 keys, focus, reduced motion, marker geometry on resize and mobile overflow.
@@ -73,11 +73,11 @@ Optional exact comma-separated filters: `SCREENSHOT_ROUTES` and `SCREENSHOT_VIEW
 For example:
 
 ```sh
-SCREENSHOT_BASE=http://127.0.0.1:4176 SCREENSHOT_ROUTES=/history/,/archived-work/ SCREENSHOT_VIEWPORTS=mobile npm run screenshots -- history-check
+SCREENSHOT_BASE=http://127.0.0.1:4176 SCREENSHOT_ROUTES=/timeline/,/archived-work/ SCREENSHOT_VIEWPORTS=mobile npm run screenshots -- timeline-check
 ```
 
-World routes produce overlapping viewport frames (`history-mobile.png`,
-`history-mobile-02.png`, etc.). A long element screenshot would enlarge the viewport,
+World routes produce overlapping viewport frames (`timeline-mobile.png`,
+`timeline-mobile-02.png`, etc.). A long element screenshot would enlarge the viewport,
 change the camera world's layout and reveal neighboring cells. Dedicated cases retain
 full-page screenshots; the homepage retains a single viewport. Capture uses reduced
 motion and waits for fonts and decoded images. A failed image or timeout fails the

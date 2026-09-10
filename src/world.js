@@ -22,7 +22,7 @@ const PAGES = [
   { path: '/', title: 'Selected work', x: 0, y: 0 },
   { path: '/about/', title: 'About', x: 1, y: 0 },
   { path: '/praise/', title: 'Praise', x: 2, y: 0 },
-  { path: '/history/', title: 'History', x: 0, y: 1 },
+  { path: '/timeline/', title: 'Timeline', x: 0, y: 1 },
   { path: '/people/', title: 'People', x: 1, y: 1 },
   /* Kjelleren: arkivert arbeid ligger en etasje UNDER arkivet — kameraet
      stiger ned forbi arkivlisten for å nå det. */

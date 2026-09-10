@@ -159,14 +159,11 @@ export function initTimeline(scrollerEl) {
      Absolutt posisjonert i innholdskoordinater (utenfor kopi-flexen, så
      loop-målingene ikke påvirkes). Når man har scrollet forbi, fjernes den
      permanent mens den er utenfor skjermen — loopen kommer rundt uten den. */
-  const INTRO_TEXT =
-    'I’m Anders Drage, a multidisciplinary designer from the fjords of Norway. I design identities, interfaces, and the connections between them.'
+  const INTRO_LINE_1 = 'I’m Anders Drage, a multidisciplinary designer from the fjords of Norway.'
+  const INTRO_LINE_2 = 'I design identities, interfaces, and the connections between them.'
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
-  const emailLink = document.createElement('a')
-  emailLink.href = 'mailto:anders@dra.ge'
-  emailLink.textContent = 'Email me'
-  intro.append(document.createTextNode(`${INTRO_TEXT} `), emailLink)
+  intro.append(document.createTextNode(INTRO_LINE_1), document.createElement('br'), document.createTextNode(INTRO_LINE_2))
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -334,10 +331,9 @@ export function initTimeline(scrollerEl) {
         wordSpans.push(span)
       })
     }
-    appendWords(INTRO_TEXT)
-    emailLink.classList.add('timeline-intro__word')
-    intro.append(emailLink)
-    wordSpans.push(emailLink)
+    appendWords(INTRO_LINE_1)
+    intro.append(document.createElement('br'))
+    appendWords(INTRO_LINE_2)
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {
