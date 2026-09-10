@@ -879,7 +879,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('project reveal moves one thumbnail over a fully drawn stationary case', async (t) => {
+    test('project reveal combines the thumbnail drop with an intro scale and fade', async (t) => {
       for (const width of [1440, 390]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {
           const start = document.startViewTransition.bind(document)
@@ -914,7 +914,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           const intro = document.querySelector('.case-lead__intro').getBoundingClientRect().toJSON()
           const block = document.querySelector('.case-title-block').getBoundingClientRect().toJSON()
           return { transform: image.transform, opacity: image.opacity, width: group.width, height: group.height,
-            caseOpacity: getComputedStyle(document.querySelector('.case-lead__intro')).opacity, caseTransform: getComputedStyle(document.querySelector('[data-case-root]')).transform,
+            caseOpacity: getComputedStyle(document.querySelector('.case-lead__copy')).opacity, introScale: new DOMMatrixReadOnly(getComputedStyle(document.querySelector('.case-lead__copy')).transform).a, caseTransform: getComputedStyle(document.querySelector('[data-case-root]')).transform,
             rootSnapshot: getComputedStyle(document.documentElement).viewTransitionName, intro, block }
         })
         assert.equal(await page.locator('html.project-reveal-active').count(), 1, 'arrival resize events must not cancel the reveal')
@@ -922,8 +922,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(await details.count(), 2)
         assert.deepEqual(await details.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).visibility)), ['hidden', 'hidden'], 'notes and project imagery wait for the thumbnail')
         const start = await frame()
-        assert.equal(start.rootSnapshot, 'none', 'only the thumbnail is captured; the case remains interactive')
-        assert.equal(start.caseOpacity, '1')
+        assert.equal(start.rootSnapshot, 'none', 'the case remains live beneath the independent thumbnail snapshots')
+        assert.equal(start.caseOpacity, '0')
+        assert.equal(start.introScale, 0.95)
         assert.equal(start.caseTransform, 'none')
         const pixels = await sharp(await page.screenshot()).stats()
         assert.ok(pixels.channels.slice(0, 3).some(channel => channel.stdev > 25), 'the held thumbnail is painted, not an empty layer')
@@ -936,8 +937,10 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(middle.opacity, '1')
         assert.equal(middle.width, start.width)
         assert.equal(middle.height, start.height)
-        assert.deepEqual(middle.intro, start.intro)
-        assert.deepEqual(middle.block, start.block)
+        assert.ok(middle.introScale > start.introScale && middle.introScale < 1)
+        assert.ok(Number(middle.caseOpacity) > 0 && Number(middle.caseOpacity) < 1)
+        assert.ok(middle.intro.width > start.intro.width)
+        assert.ok(middle.block.width > start.block.width)
         const travel = await page.evaluate(() => {
           const matrix = new DOMMatrixReadOnly(getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform)
           return { x: matrix.m41, y: matrix.m42, scale: matrix.a }
@@ -948,17 +951,80 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await page.evaluate(() => window.revealAnimations.forEach(animation => animation.finish()))
         await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
         await page.evaluate(() => document.getAnimations().filter(a => a.id === 'project-details-enter').forEach(a => { a.pause(); a.currentTime = 100 }))
+        const settled = await frame()
+        assert.equal(settled.introScale, 1)
+        assert.equal(settled.caseOpacity, '1')
         const fading = await details.evaluateAll(nodes => nodes.map(node => Number(getComputedStyle(node).opacity)))
         assert.ok(fading.every(opacity => opacity > 0 && opacity < 1), 'both sections fade only after the reveal finishes')
         await page.evaluate(() => document.getAnimations().filter(a => a.id === 'project-details-enter').forEach(a => a.finish()))
         assert.deepEqual(await details.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).opacity)), ['1', '1'])
-        assert.deepEqual((await frame()).intro, start.intro, 'fading the lower sections does not move the intro')
+        assert.deepEqual((await frame()).intro, settled.intro, 'fading the lower sections does not move the settled intro')
         await page.reload()
         assert.deepEqual(await details.evaluateAll(nodes => nodes.map(node => getComputedStyle(node).opacity)), ['1', '1'], 'direct visits show the content immediately')
         assert.equal(await page.locator('html.project-reveal-active').count(), 0, 'reload cannot replay the consumed reveal')
         await page.locator('.case-close').click()
         await page.waitForURL(base + '/')
         assert.equal(await page.locator('[data-project-reveal-source]').count(), 0)
+      }
+    })
+
+    test('partly visible project clicks move neighbouring tiles outward without losing their snapshots', async (t) => {
+      for (const width of [1440, 390]) {
+        for (const selected of ['off-market', 'hjemla']) {
+          const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {
+            const start = document.startViewTransition.bind(document)
+            document.startViewTransition = update => {
+              window.neighbourSources = [...document.querySelectorAll('a.timeline-tile')]
+                .filter(node => node.style.viewTransitionName.startsWith('project-neighbour-'))
+                .map(node => ({ name: node.style.viewTransitionName, bounds: node.getBoundingClientRect().toJSON(), scale: node.getBoundingClientRect().width / node.offsetWidth }))
+              const transition = start(update)
+              transition.ready.then(() => {
+                window.openAnimations = document.getAnimations()
+                window.openAnimations.forEach(a => { a.pause(); a.currentTime = 0 })
+              }, () => {})
+              return transition
+            }
+          })
+          await ready(page, '/')
+          await page.emulateMedia({ reducedMotion: 'no-preference' })
+          await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+          const tile = page.locator(`[data-copy="1"] [data-tile-id="${selected}"]`)
+          await tile.evaluate((el, selected) => {
+            el.closest('[data-timeline]').scrollLeft = selected === 'off-market'
+              ? el.offsetLeft - innerWidth * .58
+              : el.offsetLeft + el.offsetWidth - innerWidth * .42
+          }, selected)
+          await page.waitForTimeout(650)
+          const bounds = await tile.locator('img').boundingBox()
+          const x = (Math.max(0, bounds.x) + Math.min(width, bounds.x + bounds.width)) / 2
+          if (width === 390) await page.touchscreen.tap(x, bounds.y + bounds.height / 2)
+          else await page.mouse.click(x, bounds.y + bounds.height / 2)
+          await page.waitForURL(`**/${selected}/`)
+          await page.waitForFunction(() => window.openAnimations?.some(a => a.animationName === 'project-thumbnail-reveal'))
+          const sources = await page.evaluate(() => window.neighbourSources)
+          assert.ok(sources.length > 0, 'the neighbouring project is captured even when the selected tile is mostly offscreen')
+          const frame = () => page.evaluate(() => window.neighbourSources.map(({ name }) => {
+            const style = getComputedStyle(document.documentElement, `::view-transition-old(${name})`)
+            const transform = new DOMMatrixReadOnly(style.transform)
+            return { x: transform.m41, y: transform.m42, opacity: style.opacity, animation: style.animationName }
+          }))
+          assert.ok((await frame()).every(item => item.x === 0 && item.opacity === '1' && item.animation === 'project-neighbour-exit'))
+          await page.evaluate(() => window.openAnimations.forEach(a => a.currentTime = 220))
+          const middle = await frame()
+          assert.ok(middle.every(item => item.y === 0 && item.opacity === '1'))
+          assert.ok(middle.every(item => selected === 'off-market' ? item.x < 0 : item.x > 0), 'neighbours leave away from the selected project')
+          await page.evaluate(() => window.openAnimations.forEach(a => a.currentTime = 580))
+          const end = await frame()
+          sources.forEach((source, index) => {
+            const displacement = end[index].x * source.scale
+            assert.ok(selected === 'off-market' ? source.bounds.right + displacement < 0 : source.bounds.left + displacement > width, 'the entire neighbour clears the viewport')
+          })
+          await page.locator('.case-close').click()
+          await page.waitForURL(base + '/')
+          await page.waitForFunction(() => !document.documentElement.classList.contains('project-reveal-active'))
+          assert.equal(await page.locator('[data-project-neighbour-styles]').count(), 0)
+          assert.equal(await page.locator('[style*="view-transition-name"]').count(), 0)
+        }
       }
     })
 

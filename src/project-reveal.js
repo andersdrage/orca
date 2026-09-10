@@ -1,7 +1,7 @@
 import { sessionState } from './session-state.js'
 
-// A same-document transition captures just the clicked image. The update
-// callback mounts the real case beneath it; the root never becomes a snapshot.
+// Capture the selected image and visible neighbours independently. The update
+// mounts the real case beneath them; the root never becomes a snapshot.
 export function revealProject(tile, update, { animate = true } = {}) {
   const image = tile?.querySelector('img')
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
@@ -17,6 +17,28 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const html = document.documentElement
   const listeners = new AbortController()
   let details = []
+  const neighbours = [...tile.closest('[data-timeline]').querySelectorAll('a.timeline-tile')]
+    .filter(node => node !== tile)
+    .map(node => ({ node, bounds: node.getBoundingClientRect() }))
+    .filter(({ bounds }) => bounds.width > 0 && bounds.height > 0
+      && bounds.right > 0 && bounds.left < innerWidth && bounds.bottom > 0 && bounds.top < innerHeight)
+  const neighbourStyles = document.createElement('style')
+  neighbourStyles.dataset.projectNeighbourStyles = ''
+  neighbourStyles.textContent = neighbours.map(({ node, bounds }, index) => {
+    const name = `project-neighbour-${index}`
+    node.style.viewTransitionName = name
+    const left = bounds.left + bounds.width / 2 < rect.left + rect.width / 2
+    // Snapshot transforms retain the timeline's magnification. Convert the
+    // distance to the edge into local coordinates, including clipped tiles.
+    const distance = (left ? -bounds.right - 32 : innerWidth - bounds.left + 32) / (bounds.width / node.offsetWidth)
+    return `html.project-reveal-active::view-transition-group(${name}) { animation: none; z-index: 0; }
+      html.project-reveal-active::view-transition-old(${name}) {
+        --project-neighbour-distance: ${distance}px;
+        mix-blend-mode: normal;
+        animation: project-neighbour-exit 540ms 40ms cubic-bezier(.4, 0, .2, 1) both;
+      }`
+  }).join('\n')
+  document.head.append(neighbourStyles)
   image.style.viewTransitionName = 'project-thumbnail'
   image.dataset.projectRevealSource = ''
   const snapshotScale = rect.height / image.offsetHeight
@@ -25,6 +47,7 @@ export function revealProject(tile, update, { animate = true } = {}) {
   const clearSource = () => {
     image.style.viewTransitionName = ''
     delete image.dataset.projectRevealSource
+    neighbours.forEach(({ node }) => { node.style.viewTransitionName = '' })
   }
   const transition = document.startViewTransition(() => {
     clearSource()
@@ -33,6 +56,7 @@ export function revealProject(tile, update, { animate = true } = {}) {
   })
   const cleanup = () => {
     clearSource()
+    neighbourStyles.remove()
     html.classList.remove('project-reveal-active')
     html.style.removeProperty('--project-reveal-distance')
     listeners.abort()
