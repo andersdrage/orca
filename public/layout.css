@@ -1284,6 +1284,25 @@ body.world-mode {
 .timeline-intro__paragraph { display: block; }
 .timeline-intro__paragraph + .timeline-intro__paragraph { margin-top: 29px; }
 
+.timeline-intro__chevrons {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 4px;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+.timeline-intro__chevrons > span { opacity: 0.5; }
+@media (prefers-reduced-motion: no-preference) {
+  .timeline-intro__chevrons > span {
+    animation: intro-chevron-pulse 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    animation-delay: calc(1.2s + var(--chevron) * 120ms);
+  }
+}
+@keyframes intro-chevron-pulse {
+  0%, 45%, 100% { opacity: 0.5; transform: translateX(0); }
+  22% { opacity: 1; transform: translateX(2px); }
+}
+
 /* ── Entré-koreografi (kun frisk last av forsiden; JS setter .is-entering-home) ──
    Fase 1: introteksten linje for linje (90ms mellom linjene).
    Fase 2: tilene i stigende rekkefølge fra ~480ms.

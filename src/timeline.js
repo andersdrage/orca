@@ -160,16 +160,27 @@ export function initTimeline(scrollerEl) {
      loop-målingene ikke påvirkes). Når man har scrollet forbi, fjernes den
      permanent mens den er utenfor skjermen — loopen kommer rundt uten den. */
   const INTRO_LINE_1 = 'I’m Anders Drage, a multidisciplinary designer from the fjords of Norway.'
-  const INTRO_LINE_2 = 'I design identities, interfaces, and the connections between them.'
+  const INTRO_LINE_2 = 'I design identities, interfaces, and the space between them.'
+  const INTRO_LINE_3 = 'Here’s a selection of work'
   const intro = document.createElement('p')
   intro.className = 'timeline-intro'
-  const introParagraphs = [INTRO_LINE_1, INTRO_LINE_2].map(text => {
+  const introParagraphs = [INTRO_LINE_1, INTRO_LINE_2, INTRO_LINE_3].map(text => {
     const paragraph = document.createElement('span')
     paragraph.className = 'timeline-intro__paragraph'
     paragraph.textContent = text
     intro.append(paragraph)
     return paragraph
   })
+  const chevrons = document.createElement('span')
+  chevrons.className = 'timeline-intro__chevrons'
+  chevrons.setAttribute('aria-hidden', 'true')
+  for (let index = 0; index < 3; index += 1) {
+    const chevron = document.createElement('span')
+    chevron.textContent = '›'
+    chevron.style.setProperty('--chevron', String(index))
+    chevrons.append(chevron)
+  }
+  introParagraphs[2].append(' ', chevrons)
   scroller.append(intro)
   const firstTileEl = copies[1].querySelector('.timeline-tile')
   let introContentLeft = 0
@@ -339,6 +350,12 @@ export function initTimeline(scrollerEl) {
     }
     appendWords(INTRO_LINE_1, introParagraphs[0])
     appendWords(INTRO_LINE_2, introParagraphs[1])
+    appendWords(INTRO_LINE_3, introParagraphs[2])
+    const chevronEntrance = document.createElement('span')
+    chevronEntrance.className = 'timeline-intro__word'
+    chevronEntrance.append(chevrons)
+    introParagraphs[2].append(chevronEntrance)
+    wordSpans.push(chevronEntrance)
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {
