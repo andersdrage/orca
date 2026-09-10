@@ -286,7 +286,7 @@ function projectAudioHtml(singleCase) {
         <img class="project-transcript-modal__close-icon" src="${closeIconUrl}" alt="" width="20" height="20" aria-hidden="true" />
       </button>
       <div class="project-transcript-modal__content">
-        <p id="${transcriptId}" class="project-transcript-modal__eyebrow">${escapeHtmlText(audio.title)}</p>
+        <p id="${transcriptId}" class="project-transcript-modal__heading"><img src="/images/personal-notes.png" alt="${escapeAttr(audio.title)}" width="1699" height="337" /></p>
         <div class="project-transcript-modal__body">
           ${transcriptBody}
         </div>
