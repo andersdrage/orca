@@ -119,6 +119,7 @@ export function returnProjectThumbnail(tile, { fromTop } = {}) {
   if (distance < 1) return null
   const duration = Math.max(160, 420 * Math.sqrt(distance / Math.max(1, fullDistance)))
   const base = restingTransform === 'none' ? '' : ` ${restingTransform}`
+  tile.classList.add('is-returning')
   const animation = image.animate([
     { transform: `translateY(${distance / parentScale}px)${base}` },
     { transform: restingTransform },
@@ -134,7 +135,7 @@ export function returnProjectThumbnail(tile, { fromTop } = {}) {
   }, options)
   document.addEventListener('visibilitychange', () => { if (document.hidden) cancel() }, options)
   reduced.addEventListener('change', cancel, options)
-  const cleanup = () => { listeners.abort(); animation.cancel() }
+  const cleanup = () => { listeners.abort(); animation.cancel(); tile.classList.remove('is-returning') }
   animation.finished.then(cleanup, cleanup)
   return animation
 }

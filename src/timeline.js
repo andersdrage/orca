@@ -702,6 +702,12 @@ export function initTimeline(scrollerEl) {
   window.addEventListener(THUMBNAIL_CHANGE, updateThumbnails)
   window.addEventListener('pageshow', updateThumbnails)
 
+  window.addEventListener('keydown', event => {
+    if (['Tab', 'ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(event.key)) {
+      scroller.querySelectorAll('.is-pointer-return').forEach(tile => tile.classList.remove('is-pointer-return'))
+    }
+  })
+
   scroller.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
     event.preventDefault()

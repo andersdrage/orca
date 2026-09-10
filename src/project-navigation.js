@@ -33,6 +33,7 @@ export function initProjectNavigation() {
   let returningThumbnail = null
   let revision = 0
   let returnFocus = null
+  let returnFocusWasKeyboard = false
   let pendingLink = null
   const caseScroll = new Map()
   let currentScrollKey = history.state?.projectView?.key ?? crypto.randomUUID()
@@ -109,7 +110,10 @@ export function initProjectNavigation() {
     window.scrollTo({ top: 0, behavior: 'instant' })
     currentPath = location.pathname
     syncVisibleMedia()
-    if (location.pathname === overview && returnFocus?.isConnected) returnFocus.focus({ preventScroll: true })
+    if (location.pathname === overview && returnFocus?.isConnected) {
+      if (returnFocus.matches('a.timeline-tile')) returnFocus.classList.toggle('is-pointer-return', !returnFocusWasKeyboard)
+      returnFocus.focus({ preventScroll: true })
+    }
     else document.querySelector(`.world-page[data-path="${location.pathname}"] main`)?.focus({ preventScroll: true })
     if (animate && location.pathname === '/' && returnFocus?.matches('a.timeline-tile')) {
       returningThumbnail = returnProjectThumbnail(returnFocus, { fromTop })
@@ -132,7 +136,7 @@ export function initProjectNavigation() {
     syncVisibleMedia(root)
   }
 
-  async function navigate(href, { tile = null, animate = false, push = true, trigger = null } = {}) {
+  async function navigate(href, { tile = null, animate = false, push = true, trigger = null, keyboard = false } = {}) {
     const url = new URL(href, location.href)
     const request = ++revision
     const previousTransition = transition
@@ -157,7 +161,7 @@ export function initProjectNavigation() {
       const depth = fromOverview ? 1 : (history.state?.projectView?.depth ?? 0) + 1
       const update = () => {
         if (request !== revision) return
-        if (fromOverview) { returnFocus = trigger ?? document.activeElement; suspendOverview() }
+        if (fromOverview) { returnFocus = trigger ?? document.activeElement; returnFocusWasKeyboard = keyboard; suspendOverview() }
         removeCase()
         currentScrollKey = push ? crypto.randomUUID() : history.state?.projectView?.key ?? crypto.randomUUID()
         if (push) history.pushState({ caseOverview: overview, projectView: { session, depth, key: currentScrollKey } }, '', url.pathname)
@@ -201,7 +205,7 @@ export function initProjectNavigation() {
     if (!isSameTabNavigation(event, link)) return
     if (isCasePath(link.pathname)) {
       event.preventDefault()
-      navigate(link.href, { tile: link.matches('a.timeline-tile') ? link : null, animate: event.detail > 0, trigger: link })
+      navigate(link.href, { tile: link.matches('a.timeline-tile') ? link : null, animate: event.detail > 0, trigger: link, keyboard: event.detail === 0 })
     } else if (layout && hasWorld && OVERVIEWS.includes(link.pathname)) {
       event.preventDefault()
       if (link.pathname === overview) close()

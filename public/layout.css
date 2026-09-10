@@ -14,12 +14,17 @@
 
 .text-secondary { color: var(--text-secondary); }
 
-/* A visible Uber color trial; one inherited surface keeps all page layers in sync. */
+/* One inherited surface keeps case intros, image gaps and footers in sync. */
+body[data-case-theme="houeland"],
+body[data-case-theme="boligmappa"],
+body[data-case-theme="nettavisen"],
 body[data-case-theme="uber"] {
-  --page-surface: #ffe45c;
   transition-duration: 900ms;
   transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
+body[data-case-theme="houeland"], body[data-case-theme="uber"] { --page-surface: #e9e9e9; }
+body[data-case-theme="boligmappa"] { --page-surface: #9e9e9e; }
+body[data-case-theme="nettavisen"] { --page-surface: #dadada; }
 @media (prefers-reduced-motion: reduce) {
   body:not([data-case-theme]), body[data-case-theme] { transition: none; }
 }
@@ -1394,12 +1399,7 @@ body.world-mode {
 .timeline-tile--image .timeline-tile__image {
   border-radius: inherit;
   z-index: 1;
-  /* Keyboard focus animates the image; scroll magnification belongs to the tile. */
-  transition: transform 260ms cubic-bezier(0.32, 0.08, 0.24, 1);
-}
-
-a.timeline-tile:focus-visible .timeline-tile__image {
-  transform: scale(1.03);
+  /* Scroll magnification belongs to the tile; focus must not resize the image. */
 }
 
 /* Preserve the image's current transform while the destination loads. */
@@ -1434,7 +1434,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   transition: none;
 }
 
-a.timeline-tile:focus-visible .timeline-tile__hover-label {
+a.timeline-tile:focus-visible:not(.is-pointer-return) .timeline-tile__hover-label {
   transform: translate(-50%, 0);
   opacity: 1;
 }
@@ -1458,10 +1458,13 @@ a.timeline-tile.is-navigating .timeline-tile__hover-label {
 /* NB: ingen transition/hover-transform på tilene — elastisk scroll skriver
    transform per frame (rAF), og en alltid-på transition ville retargetet
    hvert frame og flimret i WebKit. Hover-løftet er derfor fjernet. */
-a.timeline-tile:focus-visible {
+a.timeline-tile:focus-visible:not(.is-pointer-return):not(.is-returning) {
   outline: 2px solid #18181b;
   outline-offset: 4px;
 }
+
+a.timeline-tile.is-pointer-return:focus,
+a.timeline-tile.is-returning:focus { outline: none; }
 
 .timeline-tile__title {
   position: absolute;
