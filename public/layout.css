@@ -1757,6 +1757,41 @@ a.timeline-tile.is-returning:focus { outline: none; }
   }
 }
 
+/* Speaking and Press share one compact Maison table. */
+.timeline-meta-section {
+  font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
+}
+.timeline-meta-section + .timeline-meta-section { margin-top: 2.5rem; }
+.timeline-meta-section > h2 {
+  padding-bottom: .5rem;
+  border-bottom: 1px solid #e4e4e7;
+}
+.timeline-meta-section .archive-list { padding-top: .75rem; }
+.timeline-meta-section .archive-list li {
+  grid-template-columns: 8rem minmax(0, 1fr) fit-content(40%);
+  padding: .5rem 0;
+  line-height: 1.5;
+}
+.timeline-meta-section .archive-list li::after { left: 9.5rem; }
+.timeline-meta-section .archive-list li.is-year-start:not(:first-child) { margin-top: .75rem; }
+.timeline-meta-section .archive-list--speaking li.is-year-start:not(:first-child) { margin-top: 0; }
+.timeline-meta-section .archive-list li > span {
+  min-width: 0;
+  font-family: inherit;
+  font-size: 1rem;
+}
+.timeline-meta-section .archive-type { text-align: right; }
+@media (max-width: 640px) {
+  .timeline-meta-section .archive-list li {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: .25rem 1rem;
+  }
+  .timeline-meta-section .archive-list li::after { left: 0; }
+  .timeline-meta-section .archive-year { grid-column: 1 / -1; }
+  .timeline-meta-section .archive-year:empty { display: none; }
+  .timeline-meta-section .archive-type { grid-column: 2; margin-top: 0; }
+}
+
 /* Frame statistics live inside the animation inspector. */
 .fps-meter {
   margin-top: 10px;
