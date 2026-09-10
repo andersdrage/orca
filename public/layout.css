@@ -1065,6 +1065,7 @@ body.world-mode {
 }
 
 .t-tab[aria-selected="true"] { color: #0f0f0f; }
+.case-tabs .t-tab { text-transform: uppercase; }
 @media (hover: hover) and (pointer: fine) {
   .t-tab:hover { color: #0f0f0f; }
 }
