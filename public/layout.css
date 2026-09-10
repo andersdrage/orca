@@ -655,6 +655,10 @@ body.world-mode {
   margin-inline: auto;
 }
 
+@media screen {
+  .content-page--top-space { margin-top: 250px; }
+}
+
 @media (max-width: 767px) {
   .content-page--spacious { padding-top: 150px; }
   /* The fixed mobile header is 56px tall; leave 150px below it. */
