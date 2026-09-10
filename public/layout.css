@@ -2811,11 +2811,10 @@ body.world-map-intro .archived-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 52px;
+  min-height: 64px;
   padding: 9px 8px;
   border-right: 1px solid #aaa;
 }
-.title-block__header > .title-block__cell { min-height: 64px; }
 .case-title-block dt {
   flex: none;
   text-align: left;
@@ -2835,7 +2834,8 @@ body.world-map-intro .archived-card {
   align-content: center;
   align-items: center;
   column-gap: 12px;
-  padding-top: 6px;
+  /* Centered values move up 2px when their top padding shrinks by 4px. */
+  padding-top: 2px;
   font-family: DragePlantin, Georgia, serif;
   font-size: 14px;
   font-weight: 400;
@@ -2845,7 +2845,7 @@ body.world-map-intro .archived-card {
   overflow-wrap: anywhere;
 }
 .title-block__signature { display: grid; place-items: center; }
-.title-block__signature img { width: 28px; height: auto; opacity: 0.35; }
+.title-block__signature img { width: 28px; height: auto; }
 .title-block__contributors {
   display: flex;
   flex-wrap: wrap;
@@ -2868,7 +2868,6 @@ body.world-map-intro .archived-card {
   .title-block__project { grid-column: 1 / 3; }
   .title-block__signature { grid-column: 3; grid-row: 1; }
   .title-block__header > :is(.title-block__year, .title-block__role) {
-    min-height: 52px;
     border-top: 1px solid #aaa;
   }
   .title-block__year { grid-row: 2; }
@@ -2902,8 +2901,7 @@ body.world-map-intro .archived-card {
 @media (max-height: 500px) {
   #work :is(.case-lead, .case-legacy-lead)[data-layout="presentation"] { padding-block: 12px; }
   .title-block__cell { min-height: 40px; padding-block: 5px; }
-  .title-block__header > .title-block__cell { min-height: 52px; }
-  .case-title-block dd { padding-top: 4px; }
+  .case-title-block dd { padding-top: 0; }
 }
 
 /* Press feedback is immediate and independent of the horizontal scroll spring. */
