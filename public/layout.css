@@ -659,6 +659,7 @@ body.world-mode {
 
 @media screen {
   .content-page--top-space { margin-top: 250px; }
+  .content-page--about { margin-top: 80px; }
 }
 
 @media (max-width: 767px) {
