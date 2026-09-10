@@ -1589,6 +1589,12 @@ a.timeline-tile:focus-visible {
   color: var(--text-secondary);
 }
 
+/* Names can use the affiliation column when there is no affiliation. */
+.archive-list--people li:has(> .archive-type:empty) > .archive-name {
+  grid-column: 2 / -1;
+}
+.archive-list--people .archive-type:empty { display: none; }
+
 /* People-lista: gjennomstreket = møtt. */
 .archive-name.is-met {
   color: var(--text-secondary);
