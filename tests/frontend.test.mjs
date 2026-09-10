@@ -937,7 +937,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.waitForFunction(() => getComputedStyle(document.body).backgroundColor === 'rgb(250, 250, 250)')
       assert.equal(await page.locator('body').getAttribute('data-case-theme'), null)
       await page.emulateMedia({ reducedMotion: 'reduce' })
-      for (const [id, color] of [['houeland', 'rgb(233, 233, 233)'], ['boligmappa', 'rgb(158, 158, 158)'], ['nettavisen', 'rgb(218, 218, 218)']]) {
+      for (const [id, color] of [['houeland', 'rgb(233, 233, 233)'], ['boligmappa', 'rgb(218, 218, 218)'], ['nettavisen', 'rgb(218, 218, 218)']]) {
         await page.goto(base + '/' + id + '/')
         assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).backgroundColor), color)
         assert.equal(await page.locator('#site-layout .site-footer').evaluate(el => getComputedStyle(el).backgroundColor), color)

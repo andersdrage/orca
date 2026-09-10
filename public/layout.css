@@ -23,7 +23,7 @@ body[data-case-theme="uber"] {
   transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
 body[data-case-theme="houeland"], body[data-case-theme="uber"] { --page-surface: #e9e9e9; }
-body[data-case-theme="boligmappa"] { --page-surface: #9e9e9e; }
+body[data-case-theme="boligmappa"] { --page-surface: #dadada; }
 body[data-case-theme="nettavisen"] { --page-surface: #dadada; }
 @media (prefers-reduced-motion: reduce) {
   body:not([data-case-theme]), body[data-case-theme] { transition: none; }
