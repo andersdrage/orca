@@ -105,7 +105,7 @@ function collectMedia() {
 const CARD_HTML = `<div class="archived-grid__cell">
     <div class="archived-card">
       <h2 class="archived-card__title" id="archived-intro-title">Work<br />archive</h2>
-      <p class="archived-card__meta">Miscellaneous work (2012–Present)</p>
+      <p class="archived-card__meta">Miscellaneous work <span class="archived-card__dates">(2012–Present)</span></p>
     </div>
   </div>`
 

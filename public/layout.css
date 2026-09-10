@@ -1513,7 +1513,7 @@ a.timeline-tile.is-returning:focus { outline: none; }
   display: none;
 }
 
-/* A plain close icon with a generous invisible tap target. */
+/* An opaque surface keeps the close control legible over any case image. */
 .case-close {
   position: fixed;
   top: 30px;
@@ -1525,9 +1525,10 @@ a.timeline-tile.is-returning:focus { outline: none; }
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid rgba(24, 24, 27, 0.1);
+  border-radius: var(--site-radius);
+  background: var(--page-surface);
+  box-shadow: 0 2px 8px rgba(24, 24, 27, 0.08);
   cursor: pointer;
   transition: transform 160ms ease;
 }
@@ -1543,7 +1544,7 @@ a.timeline-tile.is-returning:focus { outline: none; }
 
 .case-close img {
   display: block;
-  opacity: 0.75;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1610,6 +1611,19 @@ a.timeline-tile.is-returning:focus { outline: none; }
 }
 
 .corner-links a[aria-current='page'] { color: #c9363e; }
+
+@media (max-width: 767px) {
+  .corner-links::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 104px;
+    background: linear-gradient(to bottom, transparent, var(--page-surface) 50%);
+    pointer-events: none;
+  }
+
+  .corner-links a { z-index: 1; }
+}
 
 /* Arkivlista: år | prosjekt | type. Nytt år får ekstra luft over —
    det binder gruppen til året sitt. */
@@ -2409,6 +2423,8 @@ body.world-map-intro .archived-card {
   line-height: 1.4;
   text-transform: uppercase;
 }
+
+.archived-card__dates { display: block; white-space: nowrap; }
 
 .archived-grid__name {
   display: block;
