@@ -325,19 +325,19 @@ export function initTimeline(scrollerEl) {
   ) {
     intro.textContent = ''
     const wordSpans = []
-    const appendWords = (text, parent = intro) => {
+    const appendWords = (text) => {
       text.split(' ').forEach((word) => {
         const span = document.createElement('span')
         span.className = 'timeline-intro__word'
         span.textContent = word
-        parent.append(span, document.createTextNode(' '))
+        intro.append(span, document.createTextNode(' '))
         wordSpans.push(span)
       })
     }
     appendWords(INTRO_TEXT)
-    emailLink.textContent = ''
+    emailLink.classList.add('timeline-intro__word')
     intro.append(emailLink)
-    appendWords('Email me', emailLink)
+    wordSpans.push(emailLink)
     let lineIndex = -1
     let lastTop = null
     wordSpans.forEach((span) => {
