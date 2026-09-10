@@ -896,6 +896,55 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('Uber background interpolates across page layers and resets on close', async (t) => {
+      const page = await visit(t, '/', {}, () => {
+        const start = document.startViewTransition.bind(document)
+        document.startViewTransition = update => {
+          const transition = start(update)
+          transition.ready.then(() => {
+            window.surfaceAnimations = document.getAnimations()
+            window.surfaceAnimations.forEach(a => { a.pause(); a.currentTime = 0 })
+          }, () => {})
+          return transition
+        }
+      })
+      await ready(page, '/')
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaY: 0 })
+      await page.locator('[data-copy="1"] [data-tile-id="uber"]').evaluate(el => {
+        el.closest('[data-timeline]').scrollLeft = el.offsetLeft + el.offsetWidth / 2 - innerWidth / 2
+      })
+      await page.waitForTimeout(500)
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      const tiles = page.locator('[data-tile-id="uber"]')
+      const visible = await tiles.evaluateAll(els => els.findIndex(el => {
+        const r = el.getBoundingClientRect(); return r.left < innerWidth && r.right > 0
+      }))
+      await tiles.nth(visible).click()
+      await page.waitForFunction(() => window.surfaceAnimations?.some(a => a.transitionProperty === '--page-surface'))
+      await page.evaluate(() => window.surfaceAnimations.forEach(a => { a.currentTime = 450 }))
+      const surfaces = await page.evaluate(() => [
+        getComputedStyle(document.body).backgroundColor,
+        getComputedStyle(document.querySelector('#site-layout > main'), '::before').backgroundColor,
+        getComputedStyle(document.querySelector('.case-below.work-media')).backgroundColor,
+        getComputedStyle(document.querySelector('#site-layout .site-footer')).backgroundColor,
+      ])
+      assert.equal(new Set(surfaces).size, 1, `all page surfaces share the same intermediate color: ${surfaces.join(', ')}`)
+      assert.notEqual(surfaces[0], 'rgb(250, 250, 250)')
+      assert.notEqual(surfaces[0], 'rgb(255, 228, 92)')
+      // Close while the thumbnail and color are still entering.
+      await page.locator('.case-close').click()
+      await page.waitForURL(base + '/')
+      await page.waitForFunction(() => getComputedStyle(document.body).backgroundColor === 'rgb(250, 250, 250)')
+      assert.equal(await page.locator('body').getAttribute('data-case-theme'), null)
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto(base + '/uber/')
+      assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 228, 92)')
+      assert.equal(await page.locator('body').evaluate(el => el.getAnimations().length), 0)
+      await page.keyboard.press('ArrowRight')
+      await page.waitForURL(url => url.pathname !== '/uber/')
+      assert.equal(await page.locator('body').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(250, 250, 250)')
+    })
+
     test('project reveal staggers actual intro lines before media enters', async (t) => {
       for (const width of [1440, 390]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390 }, () => {

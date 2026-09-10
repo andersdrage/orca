@@ -93,6 +93,7 @@ export function initProjectNavigation() {
     stopTransition()
     clearPending()
     removeCase()
+    delete document.body.dataset.caseTheme
     document.body.classList.remove('page-case')
     if (suspended) {
       overviewScroll = overviewScroll.map(({ node }) => ({ node, left: node.scrollLeft, top: node.scrollTop }))
@@ -120,6 +121,7 @@ export function initProjectNavigation() {
     else location.assign(overview)
   }
   function activateCase(root) {
+    document.body.dataset.caseTheme = root.dataset.caseId
     disposeCase = mountCase(root, { overview, navigate: href => navigate(href, { animate: false }), close })
     const header = layout.querySelector('.site-header')
     const updateHeader = () => header?.classList.toggle('is-scrolled', scrollY > 8)

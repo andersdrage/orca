@@ -1,6 +1,12 @@
 /* Lastes direkte fra /layout.css (ikke gjennom Tailwind).
    #site-layout er 800px; Work-media bryter ut til opptil 1500px. */
 
+@property --page-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fafafa;
+}
+
 :root {
   --site-radius: 8px;
   --text-secondary: #666670;
@@ -8,10 +14,22 @@
 
 .text-secondary { color: var(--text-secondary); }
 
+/* A visible Uber color trial; one inherited surface keeps all page layers in sync. */
+body[data-case-theme="uber"] {
+  --page-surface: #ffe45c;
+  transition-duration: 900ms;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  body:not([data-case-theme]), body[data-case-theme] { transition: none; }
+}
+
 /* Unngå default body-margin før Tailwind base laster — kan gi «hopp» i bredde/layout. */
 body {
   margin: 0;
-  background-color: #fafafa;
+  --page-surface: #fafafa;
+  background-color: var(--page-surface);
+  transition: --page-surface 300ms ease-out;
   color: #3f3f46;
   /* Plantin (grunnfonten) settes -4 % tettere, som i Figma. Sans-øyene
      (Maison/Supply) nullstiller eller setter egen sporing selv. */
@@ -126,6 +144,11 @@ body {
     box-shadow 180ms ease;
 }
 
+.page-case .site-header.is-scrolled {
+  background-color: var(--page-surface);
+  transition: box-shadow 180ms ease;
+}
+
 .site-header.is-scrolled {
   background-color: rgba(250, 250, 250, 0.85);
   -webkit-backdrop-filter: blur(12px);
@@ -234,7 +257,7 @@ body.world-mode {
   height: 100svh;
   overflow-y: auto;
   overflow-x: hidden;
-  background: #fafafa;
+  background: var(--page-surface);
 }
 
 /* Under reisen er sidene kort: avrundede hjørner mens de står nedskalert. */
@@ -274,7 +297,7 @@ body.world-mode {
   top: 0;
   bottom: 0;
   z-index: -1;
-  background: #fafafa;
+  background: var(--page-surface);
   clip-path: inset(0 -4rem -4rem -4rem);
   content: '';
   pointer-events: none;
@@ -707,7 +730,7 @@ body.world-mode {
   top: 0;
   bottom: 0;
   z-index: -1;
-  background: #fafafa;
+  background: var(--page-surface);
   clip-path: inset(0 -4rem -4rem -4rem);
   content: '';
   pointer-events: none;
@@ -722,7 +745,7 @@ body.world-mode {
   padding: clamp(4rem, 8vw, 7rem) 1.5rem clamp(4rem, 9vw, 7rem);
   position: relative;
   z-index: 0;
-  background: #fafafa;
+  background: var(--page-surface);
   color: #3f3f46;
 }
 
@@ -2675,7 +2698,7 @@ body.world-map-intro .archived-card {
 #work .case-presentation-sticky > [data-layout="presentation"] + .case-below {
   position: relative;
   z-index: 1;
-  background: #fafafa;
+  background: var(--page-surface);
 }
 
 /* Project title blocks: fixed label insets, flexible space for every team. */
@@ -2818,7 +2841,7 @@ a.timeline-tile.is-navigating .timeline-tile__image {
   transition: none;
 }
 
-.page-case .case-below { background: #fafafa; }
+.page-case .case-below { background: var(--page-surface); }
 
 /* The selected thumbnail drops while its visible neighbours clear sideways.
    The live intro enters line by line behind these independent snapshots. */
