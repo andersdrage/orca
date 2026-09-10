@@ -49,6 +49,1741 @@
       "source": "/brathwait",
       "destination": "/archived-work/",
       "permanent": true
+    },
+    {
+      "source": "/images/houeland-web.mp4",
+      "destination": "/images/andersdrage-houeland-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-web-poster.jpg",
+      "destination": "/images/andersdrage-houeland-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-1.jpg",
+      "destination": "/images/andersdrage-houeland-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-2.jpg",
+      "destination": "/images/andersdrage-houeland-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-3.jpg",
+      "destination": "/images/andersdrage-houeland-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-4.jpg",
+      "destination": "/images/andersdrage-houeland-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland5.jpg",
+      "destination": "/images/andersdrage-houeland-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houeland-6.jpg",
+      "destination": "/images/andersdrage-houeland-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-cover-white.jpg",
+      "destination": "/images/andersdrage-micromilspec-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-1-full.mp4",
+      "destination": "/images/andersdrage-micromilspec-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-1-full-poster.jpg",
+      "destination": "/images/andersdrage-micromilspec-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-3-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-4-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-5-full.jpg",
+      "destination": "/images/andersdrage-micromilspec-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-7-half.mp4",
+      "destination": "/images/andersdrage-micromilspec-005.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-7-half-poster.jpg",
+      "destination": "/images/andersdrage-micromilspec-005-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-8-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-2-full.mp4",
+      "destination": "/images/andersdrage-micromilspec-007.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-2-full-poster.jpg",
+      "destination": "/images/andersdrage-micromilspec-007-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-9-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-10-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-11-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-1-full.jpg",
+      "destination": "/images/andersdrage-hjemla-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-2-full.jpg",
+      "destination": "/images/andersdrage-hjemla-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-3-full.jpg",
+      "destination": "/images/andersdrage-hjemla-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-4-full.jpg",
+      "destination": "/images/andersdrage-hjemla-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-5-full.jpg",
+      "destination": "/images/andersdrage-hjemla-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hjemla-6-full.jpg",
+      "destination": "/images/andersdrage-hjemla-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-cover-1.jpg",
+      "destination": "/images/andersdrage-off-market-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-1-full.jpg",
+      "destination": "/images/andersdrage-off-market-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-2-full.jpg",
+      "destination": "/images/andersdrage-off-market-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-3-full.jpg",
+      "destination": "/images/andersdrage-off-market-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-4-full.jpg",
+      "destination": "/images/andersdrage-off-market-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-5-full.jpg",
+      "destination": "/images/andersdrage-off-market-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-6-full.jpg",
+      "destination": "/images/andersdrage-off-market-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-7-full.mp4",
+      "destination": "/images/andersdrage-off-market-007.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-7-full-poster.jpg",
+      "destination": "/images/andersdrage-off-market-007-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/offmarket-8-full.jpg",
+      "destination": "/images/andersdrage-off-market-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-cover.jpg",
+      "destination": "/images/andersdrage-nettavisen-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-nettavisen.jpg",
+      "destination": "/images/andersdrage-nettavisen-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-tumblr-overview.jpg",
+      "destination": "/images/andersdrage-nettavisen-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/na-03.mp4",
+      "destination": "/images/andersdrage-nettavisen-003.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/na-03-poster.jpg",
+      "destination": "/images/andersdrage-nettavisen-003-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-23.png",
+      "destination": "/images/andersdrage-nettavisen-004.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-02.png",
+      "destination": "/images/andersdrage-nettavisen-005.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-08.png",
+      "destination": "/images/andersdrage-nettavisen-006.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-26.png",
+      "destination": "/images/andersdrage-nettavisen-007.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-09.png",
+      "destination": "/images/andersdrage-nettavisen-008.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-10.png",
+      "destination": "/images/andersdrage-nettavisen-009.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-12.png",
+      "destination": "/images/andersdrage-nettavisen-010.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-13.png",
+      "destination": "/images/andersdrage-nettavisen-011.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-15.png",
+      "destination": "/images/andersdrage-nettavisen-012.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-16.png",
+      "destination": "/images/andersdrage-nettavisen-013.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-19.png",
+      "destination": "/images/andersdrage-nettavisen-014.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-21.png",
+      "destination": "/images/andersdrage-nettavisen-015.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-24.png",
+      "destination": "/images/andersdrage-nettavisen-016.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-01.png",
+      "destination": "/images/andersdrage-nettavisen-017.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-5.jpg",
+      "destination": "/images/andersdrage-finn-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-home-imac-v1.jpg",
+      "destination": "/images/andersdrage-finn-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-film.mp4",
+      "destination": "/images/andersdrage-finn-002.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-film-poster.jpg",
+      "destination": "/images/andersdrage-finn-002-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-13.jpg",
+      "destination": "/images/andersdrage-finn-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-type-weights.mp4",
+      "destination": "/images/andersdrage-finn-004.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-type-weights-poster.jpg",
+      "destination": "/images/andersdrage-finn-004-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-1.jpg",
+      "destination": "/images/andersdrage-finn-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-2.jpg",
+      "destination": "/images/andersdrage-finn-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-3.jpg",
+      "destination": "/images/andersdrage-finn-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-4.jpg",
+      "destination": "/images/andersdrage-finn-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-6.jpg",
+      "destination": "/images/andersdrage-finn-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-7.jpg",
+      "destination": "/images/andersdrage-finn-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-8.jpg",
+      "destination": "/images/andersdrage-finn-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-9.png",
+      "destination": "/images/andersdrage-finn-012.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-14.jpg",
+      "destination": "/images/andersdrage-finn-013.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-15.jpg",
+      "destination": "/images/andersdrage-finn-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-16.jpg",
+      "destination": "/images/andersdrage-finn-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-17.jpg",
+      "destination": "/images/andersdrage-finn-016.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-chat-ipad-v1.jpg",
+      "destination": "/images/andersdrage-finn-017.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-digital-overview-v1.jpg",
+      "destination": "/images/andersdrage-finn-018.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/1-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-019.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/2-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-020.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/3-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-021.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/4-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-022.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/5-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-023.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-lokaler/6-half-v1.jpg",
+      "destination": "/images/andersdrage-finn-024.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-cover-1.jpg",
+      "destination": "/images/andersdrage-uber-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-uber.mp4",
+      "destination": "/images/andersdrage-uber-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-uber-poster.jpg",
+      "destination": "/images/andersdrage-uber-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-china-full.jpg",
+      "destination": "/images/andersdrage-uber-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-france-full.jpg",
+      "destination": "/images/andersdrage-uber-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-india-full.jpg",
+      "destination": "/images/andersdrage-uber-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-ireland-full.jpg",
+      "destination": "/images/andersdrage-uber-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-mexico-full.jpg",
+      "destination": "/images/andersdrage-uber-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-morocco-full.jpg",
+      "destination": "/images/andersdrage-uber-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-nl-full.jpg",
+      "destination": "/images/andersdrage-uber-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-singapore-full.jpg",
+      "destination": "/images/andersdrage-uber-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-usa-full.jpg",
+      "destination": "/images/andersdrage-uber-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-australia-full.jpg",
+      "destination": "/images/andersdrage-uber-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-hero-full.mp4",
+      "destination": "/images/andersdrage-uber-012.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-hero-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-012-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-headers-full.mp4",
+      "destination": "/images/andersdrage-uber-013.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-headers-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-013-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-ubercity-original.jpg",
+      "destination": "/images/andersdrage-uber-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-rider-original.jpg",
+      "destination": "/images/andersdrage-uber-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-wheel-original.jpg",
+      "destination": "/images/andersdrage-uber-016.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-career-1-2x.jpg",
+      "destination": "/images/andersdrage-uber-017.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-career-2-original.jpg",
+      "destination": "/images/andersdrage-uber-018.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa-cover-2.jpg",
+      "destination": "/images/andersdrage-boligmappa-hero.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.000.jpeg",
+      "destination": "/images/andersdrage-boligmappa-001.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.005-before.jpeg",
+      "destination": "/images/andersdrage-boligmappa-002.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.006-after.jpeg",
+      "destination": "/images/andersdrage-boligmappa-003.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.001.jpeg",
+      "destination": "/images/andersdrage-boligmappa-004.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.002.jpeg",
+      "destination": "/images/andersdrage-boligmappa-005.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.003.jpeg",
+      "destination": "/images/andersdrage-boligmappa-006.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.004.jpeg",
+      "destination": "/images/andersdrage-boligmappa-007.jpeg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.007.webp",
+      "destination": "/images/andersdrage-boligmappa-008.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.008.webp",
+      "destination": "/images/andersdrage-boligmappa-009.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.010.webp",
+      "destination": "/images/andersdrage-boligmappa-010.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/agens-1.png",
+      "destination": "/images/andersdrage-agens-001.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-agens-1.jpg",
+      "destination": "/images/andersdrage-agens-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-agens-2.jpg",
+      "destination": "/images/andersdrage-agens-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-agens-3.jpg",
+      "destination": "/images/andersdrage-agens-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-aprila.jpg",
+      "destination": "/images/andersdrage-aprila-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/aprilabank-website.jpg",
+      "destination": "/images/andersdrage-aprila-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/aprilabank-website-2.jpg",
+      "destination": "/images/andersdrage-aprila-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/aprilabank-website-3.jpg",
+      "destination": "/images/andersdrage-aprila-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/aprilabank-website-4.jpg",
+      "destination": "/images/andersdrage-aprila-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-1-full.jpg",
+      "destination": "/images/andersdrage-humming-people-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-2-full.jpg",
+      "destination": "/images/andersdrage-humming-people-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-3-half.jpg",
+      "destination": "/images/andersdrage-humming-people-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-4-half.jpg",
+      "destination": "/images/andersdrage-humming-people-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-5-full.jpg",
+      "destination": "/images/andersdrage-humming-people-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-6-half.jpg",
+      "destination": "/images/andersdrage-humming-people-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-7-half.jpg",
+      "destination": "/images/andersdrage-humming-people-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-8-full.jpg",
+      "destination": "/images/andersdrage-humming-people-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-9-half.jpg",
+      "destination": "/images/andersdrage-humming-people-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-10-half.jpg",
+      "destination": "/images/andersdrage-humming-people-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hp-11-full.jpg",
+      "destination": "/images/andersdrage-humming-people-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-brevio.jpg",
+      "destination": "/images/andersdrage-brevio-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-logo-animation.mp4",
+      "destination": "/images/andersdrage-brevio-002.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-logo-animation-poster.jpg",
+      "destination": "/images/andersdrage-brevio-002-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-01.jpg",
+      "destination": "/images/andersdrage-brevio-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-02.jpg",
+      "destination": "/images/andersdrage-brevio-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-03.jpg",
+      "destination": "/images/andersdrage-brevio-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-04.jpg",
+      "destination": "/images/andersdrage-brevio-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-05.jpg",
+      "destination": "/images/andersdrage-brevio-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-06.jpg",
+      "destination": "/images/andersdrage-brevio-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-07.jpg",
+      "destination": "/images/andersdrage-brevio-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-08.jpg",
+      "destination": "/images/andersdrage-brevio-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-09.jpg",
+      "destination": "/images/andersdrage-brevio-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-10.jpg",
+      "destination": "/images/andersdrage-brevio-012.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-11.jpg",
+      "destination": "/images/andersdrage-brevio-013.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/Presentasjon_Brevio-12.jpg",
+      "destination": "/images/andersdrage-brevio-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-dashboard.1.jpg",
+      "destination": "/images/andersdrage-brevio-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-interaction.mp4",
+      "destination": "/images/andersdrage-brevio-016.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-interaction-poster.jpg",
+      "destination": "/images/andersdrage-brevio-016-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-animation-film.mp4",
+      "destination": "/images/andersdrage-brevio-017.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/brevio-animation-film-poster.jpg",
+      "destination": "/images/andersdrage-brevio-017-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-web-1.jpg",
+      "destination": "/images/andersdrage-klp-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-web-2.jpg",
+      "destination": "/images/andersdrage-klp-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-site-demo.mp4",
+      "destination": "/images/andersdrage-klp-003.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-site-demo-poster.jpg",
+      "destination": "/images/andersdrage-klp-003-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-case-film.mp4",
+      "destination": "/images/andersdrage-klp-004.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/klp-case-film-poster.jpg",
+      "destination": "/images/andersdrage-klp-004-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-logo-letters-2-610.mp4",
+      "destination": "/images/andersdrage-just-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-logo-letters-2-610-poster.jpg",
+      "destination": "/images/andersdrage-just-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-logo-loader-103.mp4",
+      "destination": "/images/andersdrage-just-002.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-logo-loader-103-poster.jpg",
+      "destination": "/images/andersdrage-just-002-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-1.jpg",
+      "destination": "/images/andersdrage-just-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/just-2.jpg",
+      "destination": "/images/andersdrage-just-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/abelee-Logo_intro.mp4",
+      "destination": "/images/andersdrage-abelee-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/abelee-Logo_intro-poster.jpg",
+      "destination": "/images/andersdrage-abelee-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/abelee-Logo_animasjon.mp4",
+      "destination": "/images/andersdrage-abelee-002.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/abelee-Logo_animasjon-poster.jpg",
+      "destination": "/images/andersdrage-abelee-002-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-pressworks.jpg",
+      "destination": "/images/andersdrage-pressworks-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/pressworks-mobile-v1.jpg",
+      "destination": "/images/andersdrage-pressworks-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/kindly-logo-1_1.mp4",
+      "destination": "/images/andersdrage-kindly-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/kindly-logo-1_1-poster.jpg",
+      "destination": "/images/andersdrage-kindly-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/kindly-emotions.mp4",
+      "destination": "/images/andersdrage-kindly-002.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/kindly-emotions-poster.jpg",
+      "destination": "/images/andersdrage-kindly-002-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/all-emojis-kindly.mp4",
+      "destination": "/images/andersdrage-kindly-003.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/all-emojis-kindly-poster.jpg",
+      "destination": "/images/andersdrage-kindly-003-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-1.jpg",
+      "destination": "/images/andersdrage-changemaker-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-2.jpg",
+      "destination": "/images/andersdrage-changemaker-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-3.jpg",
+      "destination": "/images/andersdrage-changemaker-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-4.jpg",
+      "destination": "/images/andersdrage-changemaker-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-5.jpg",
+      "destination": "/images/andersdrage-changemaker-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-6.jpg",
+      "destination": "/images/andersdrage-changemaker-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-7.jpg",
+      "destination": "/images/andersdrage-changemaker-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/changemaker-8.jpg",
+      "destination": "/images/andersdrage-changemaker-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-nike.jpg",
+      "destination": "/images/andersdrage-nike-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/01.jpg",
+      "destination": "/images/andersdrage-houelandek-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/02.jpg",
+      "destination": "/images/andersdrage-houelandek-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/03.jpg",
+      "destination": "/images/andersdrage-houelandek-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/04.jpg",
+      "destination": "/images/andersdrage-houelandek-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/06.jpg",
+      "destination": "/images/andersdrage-houelandek-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/07.jpg",
+      "destination": "/images/andersdrage-houelandek-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/08.jpg",
+      "destination": "/images/andersdrage-houelandek-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/11.jpg",
+      "destination": "/images/andersdrage-houelandek-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/12.jpg",
+      "destination": "/images/andersdrage-houelandek-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/14.jpg",
+      "destination": "/images/andersdrage-houelandek-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/17.jpg",
+      "destination": "/images/andersdrage-houelandek-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/20.jpg",
+      "destination": "/images/andersdrage-houelandek-012.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/21.jpg",
+      "destination": "/images/andersdrage-houelandek-013.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/22.jpg",
+      "destination": "/images/andersdrage-houelandek-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/23.jpg",
+      "destination": "/images/andersdrage-houelandek-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/houelandek/24.jpg",
+      "destination": "/images/andersdrage-houelandek-016.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/43.jpg",
+      "destination": "/images/andersdrage-kaos-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/44.jpg",
+      "destination": "/images/andersdrage-kaos-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/45.jpg",
+      "destination": "/images/andersdrage-kaos-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/46.jpg",
+      "destination": "/images/andersdrage-kaos-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/47.jpg",
+      "destination": "/images/andersdrage-kaos-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/48.jpg",
+      "destination": "/images/andersdrage-kaos-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/49.jpg",
+      "destination": "/images/andersdrage-kaos-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/50.jpg",
+      "destination": "/images/andersdrage-kaos-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/51.jpg",
+      "destination": "/images/andersdrage-kaos-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/52.jpg",
+      "destination": "/images/andersdrage-kaos-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/53.jpg",
+      "destination": "/images/andersdrage-kaos-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/54.jpg",
+      "destination": "/images/andersdrage-kaos-012.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/55.jpg",
+      "destination": "/images/andersdrage-kaos-013.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/56.jpg",
+      "destination": "/images/andersdrage-kaos-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-cover.jpg",
+      "destination": "/images/andersdrage-brathwait-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-1.jpg",
+      "destination": "/images/andersdrage-brathwait-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-2.jpg",
+      "destination": "/images/andersdrage-brathwait-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-3.jpg",
+      "destination": "/images/andersdrage-brathwait-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-4.jpg",
+      "destination": "/images/andersdrage-brathwait-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-5.jpg",
+      "destination": "/images/andersdrage-brathwait-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-6.jpg",
+      "destination": "/images/andersdrage-brathwait-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-7.jpg",
+      "destination": "/images/andersdrage-brathwait-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-8.jpg",
+      "destination": "/images/andersdrage-brathwait-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-9.jpg",
+      "destination": "/images/andersdrage-brathwait-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-10.jpg",
+      "destination": "/images/andersdrage-brathwait-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-11.jpg",
+      "destination": "/images/andersdrage-brathwait-012.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-12.jpg",
+      "destination": "/images/andersdrage-brathwait-013.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-13.jpg",
+      "destination": "/images/andersdrage-brathwait-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-14.jpg",
+      "destination": "/images/andersdrage-brathwait-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-15.jpg",
+      "destination": "/images/andersdrage-brathwait-016.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-16.jpg",
+      "destination": "/images/andersdrage-brathwait-017.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-17.jpg",
+      "destination": "/images/andersdrage-brathwait-018.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-18.jpg",
+      "destination": "/images/andersdrage-brathwait-019.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-19.jpg",
+      "destination": "/images/andersdrage-brathwait-020.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-20.jpg",
+      "destination": "/images/andersdrage-brathwait-021.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-21.jpg",
+      "destination": "/images/andersdrage-brathwait-022.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/brathwait-22.jpg",
+      "destination": "/images/andersdrage-brathwait-023.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/tone-1.png",
+      "destination": "/images/andersdrage-tone-001.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/tone-2.png",
+      "destination": "/images/andersdrage-tone-002.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/tone-3.png",
+      "destination": "/images/andersdrage-tone-003.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/tone-4.png",
+      "destination": "/images/andersdrage-tone-004.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/37.jpg",
+      "destination": "/images/andersdrage-godt-levert-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/38.jpg",
+      "destination": "/images/andersdrage-godt-levert-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/39.jpg",
+      "destination": "/images/andersdrage-godt-levert-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/40.jpg",
+      "destination": "/images/andersdrage-godt-levert-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/41.jpg",
+      "destination": "/images/andersdrage-godt-levert-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/42.jpg",
+      "destination": "/images/andersdrage-godt-levert-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/68.jpg",
+      "destination": "/images/andersdrage-hellstrom-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/69.jpg",
+      "destination": "/images/andersdrage-hellstrom-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hmkg-1-full.jpg",
+      "destination": "/images/andersdrage-hmkg-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hmkg-2-full.jpg",
+      "destination": "/images/andersdrage-hmkg-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hmkg-3-full.jpg",
+      "destination": "/images/andersdrage-hmkg-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/hmkg-4-full.jpg",
+      "destination": "/images/andersdrage-hmkg-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/26.jpg",
+      "destination": "/images/andersdrage-pelp-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/27.jpg",
+      "destination": "/images/andersdrage-pelp-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/28.jpg",
+      "destination": "/images/andersdrage-pelp-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/29.jpg",
+      "destination": "/images/andersdrage-pelp-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/30.jpg",
+      "destination": "/images/andersdrage-pelp-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/31.jpg",
+      "destination": "/images/andersdrage-pelp-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/32.jpg",
+      "destination": "/images/andersdrage-pelp-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/33.jpg",
+      "destination": "/images/andersdrage-pelp-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/34.jpg",
+      "destination": "/images/andersdrage-pelp-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/35.jpg",
+      "destination": "/images/andersdrage-pelp-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/lego-1.jpg",
+      "destination": "/images/andersdrage-lego-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/lego-2.jpg",
+      "destination": "/images/andersdrage-lego-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/lego-3.jpg",
+      "destination": "/images/andersdrage-lego-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-1.jpg",
+      "destination": "/images/andersdrage-mountain-milk-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-2.jpg",
+      "destination": "/images/andersdrage-mountain-milk-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-3.jpg",
+      "destination": "/images/andersdrage-mountain-milk-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-4-1-3.jpg",
+      "destination": "/images/andersdrage-mountain-milk-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-4-2-3.jpg",
+      "destination": "/images/andersdrage-mountain-milk-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/mm-4-3-3.jpg",
+      "destination": "/images/andersdrage-mountain-milk-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/58.jpg",
+      "destination": "/images/andersdrage-daccord-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/59.jpg",
+      "destination": "/images/andersdrage-daccord-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/60.jpg",
+      "destination": "/images/andersdrage-daccord-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/61.jpg",
+      "destination": "/images/andersdrage-daccord-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/62.jpg",
+      "destination": "/images/andersdrage-daccord-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/63.jpg",
+      "destination": "/images/andersdrage-daccord-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/64.jpg",
+      "destination": "/images/andersdrage-daccord-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/65.jpg",
+      "destination": "/images/andersdrage-daccord-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/66.jpg",
+      "destination": "/images/andersdrage-daccord-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/71.jpg",
+      "destination": "/images/andersdrage-poster-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/72.jpg",
+      "destination": "/images/andersdrage-yearly-report-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/showreel/74.jpg",
+      "destination": "/images/andersdrage-lettering-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/capa-vignette.mp4",
+      "destination": "/images/andersdrage-capa-001.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/capa-vignette-poster.jpg",
+      "destination": "/images/andersdrage-capa-001-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-logos.jpg",
+      "destination": "/images/andersdrage-logos-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-houeland.webp",
+      "destination": "/images/andersdrage-houeland-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-micro.webp",
+      "destination": "/images/andersdrage-micromilspec-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-hjemla.webp",
+      "destination": "/images/andersdrage-hjemla-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-offmarket.webp",
+      "destination": "/images/andersdrage-off-market-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-boligmappa.webp",
+      "destination": "/images/andersdrage-boligmappa-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-finn.webp",
+      "destination": "/images/andersdrage-finn-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-nettavisen.webp",
+      "destination": "/images/andersdrage-nettavisen-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/new-covers/cover-ratio-uber.webp",
+      "destination": "/images/andersdrage-uber-cover.webp",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-6-half.jpg",
+      "destination": "/images/andersdrage-micromilspec-cover-alternative-2.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/micromilspec-cover-black.jpg",
+      "destination": "/images/andersdrage-micromilspec-cover-alternative-3.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/hmkg-4-full.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/hp-5-full.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/micromilspec-6-half.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/micromilspec-cover-white.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/mm-4-1-3.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/00 logo-test/uber-cover-1.jpg",
+      "destination": "/images/andersdrage-logo-experiment-extra-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.007.jpg",
+      "destination": "/images/andersdrage-boligmappa-extra-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.008.png",
+      "destination": "/images/andersdrage-boligmappa-extra-002.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/boligmappa.010.png",
+      "destination": "/images/andersdrage-boligmappa-extra-003.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-10.jpg",
+      "destination": "/images/andersdrage-finn-extra-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-11.jpg",
+      "destination": "/images/andersdrage-finn-extra-002.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-12.jpg",
+      "destination": "/images/andersdrage-finn-extra-003.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-18.jpg",
+      "destination": "/images/andersdrage-finn-extra-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/finn-property-viewing-v1.jpg",
+      "destination": "/images/andersdrage-finn-extra-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/misc-agens-4.jpg",
+      "destination": "/images/andersdrage-agens-extra-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-07.png",
+      "destination": "/images/andersdrage-nettavisen-extra-001.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-11.png",
+      "destination": "/images/andersdrage-nettavisen-extra-002.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-17.png",
+      "destination": "/images/andersdrage-nettavisen-extra-003.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-18.png",
+      "destination": "/images/andersdrage-nettavisen-extra-004.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-22.png",
+      "destination": "/images/andersdrage-nettavisen-extra-005.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/nettavisen-mindjek-25.png",
+      "destination": "/images/andersdrage-nettavisen-extra-006.png",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-2-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-001.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-3-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-extra-003-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-3-full.mp4",
+      "destination": "/images/andersdrage-uber-extra-003.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-career-1-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-004.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-career-2-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-005.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-carousel-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-006.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-hero-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-007.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-home-top-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-008.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-homepage-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-009.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-ipad-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-010.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-iphone-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-011.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-menu-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-extra-013-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-menu-full.mp4",
+      "destination": "/images/andersdrage-uber-extra-013.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-menu-still-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-014.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-rider-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-015.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step1-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-extra-017-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step1-full.mp4",
+      "destination": "/images/andersdrage-uber-extra-017.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step2-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-extra-019-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step2-full.mp4",
+      "destination": "/images/andersdrage-uber-extra-019.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step4-full-poster.jpg",
+      "destination": "/images/andersdrage-uber-extra-021-poster.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-step4-full.mp4",
+      "destination": "/images/andersdrage-uber-extra-021.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-ubercity-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-022.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/images/uber-ueno-wheel-full.jpg",
+      "destination": "/images/andersdrage-uber-extra-023.jpg",
+      "permanent": true
     }
   ],
   "framework": "vite",

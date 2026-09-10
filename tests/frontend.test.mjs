@@ -1447,15 +1447,15 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await toggle.check()
       const sizes = await tiles.evaluateAll(tiles => tiles.map(tile => ({ width: tile.offsetWidth, height: tile.offsetHeight, image: tile.querySelector('img').getAttribute('src') })))
       assert.equal(new Set(sizes.map(size => `${size.width}/${size.height}`)).size, 1)
-      assert.ok(sizes.every(size => size.image.startsWith('/images/new-covers/')))
-      const selected = tiles.filter({ has: page.locator('img[src$="cover-ratio-hjemla.webp"]') })
+      assert.ok(sizes.every(size => size.image.startsWith('/images/andersdrage-')))
+      const selected = tiles.filter({ has: page.locator('img[src$="andersdrage-hjemla-cover.webp"]') })
       await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
       await selected.evaluate(tile => tile.closest('[data-timeline]').scrollTo({ left: tile.offsetLeft - (innerWidth - tile.offsetWidth) / 2, behavior: 'instant' }))
       await selected.click()
       await page.waitForURL('**/hjemla/')
       await page.locator('.case-close').click()
       await ready(page, '/')
-      assert.ok((await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))).every(src => src.startsWith('/images/new-covers/')))
+      assert.ok((await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))).every(src => src.startsWith('/images/andersdrage-')))
       await page.keyboard.press('s')
       assert.equal(await toggle.isChecked(), true)
       await toggle.uncheck()
@@ -1636,16 +1636,16 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       for (const [id, year] of [['agens', '2025'], ['kaos', '2016'], ['hellstrom', '2015'], ['aprila', '2018'], ['brevio', '2017'], ['abelee', '2017'], ['humming-people', '2018'], ['hmkg', '2014'], ['pelp', '2014'], ['godt-levert', '2015'], ['klp', '2017'], ['just', '2017'], ['kindly', '2016'], ['changemaker', '2016'], ['tone', '2015'], ['lego', '2012'], ['nike', '2016'], ['pressworks', '2017'], ['mountain-milk', '2011']]) {
         assert.ok((await grid.locator(`[data-project="${id}"] .archived-grid__meta`).textContent()).includes(year))
       }
-      for (const file of ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg', 'misc-agens-4.jpg', 'misc-aprila.jpg', 'misc-brevio.jpg', 'misc-logos.jpg', 'misc-nike.jpg', 'misc-pressworks.jpg', 'pressworks-mobile-v1.jpg']) {
+      for (const file of ['andersdrage-agens-001.png', 'andersdrage-agens-002.jpg', 'andersdrage-agens-003.jpg', 'andersdrage-agens-004.jpg', 'andersdrage-agens-extra-001.jpg', 'andersdrage-aprila-001.jpg', 'andersdrage-brevio-001.jpg', 'andersdrage-logos-001.jpg', 'andersdrage-nike-001.jpg', 'andersdrage-pressworks-001.jpg', 'andersdrage-pressworks-002.jpg']) {
         assert.equal(await grid.locator(`img[data-media-src="/images/${file}"]`).count(), 1)
       }
-      assert.equal(await grid.locator('img[src="/images/misc-nettavisen.jpg"]').count(), 0)
+      assert.equal(await grid.locator('img[src="/images/andersdrage-nettavisen-001.jpg"]').count(), 0)
       await page.goto(base + '/nettavisen/')
-      const moved = page.locator('img[src="/images/misc-nettavisen.jpg"]')
+      const moved = page.locator('img[src="/images/andersdrage-nettavisen-001.jpg"]')
       assert.equal(await moved.count(), 1)
       await page.locator('.portfolio-item').filter({ has: moved }).scrollIntoViewIfNeeded()
       await page.waitForFunction(() => {
-        const img = document.querySelector('img[src="/images/misc-nettavisen.jpg"]')
+        const img = document.querySelector('img[src="/images/andersdrage-nettavisen-001.jpg"]')
         return img.complete && img.naturalWidth > 0
       })
       assert.equal(await page.locator('.site-footer__dragon img').getAttribute('src'), '/images/footer-dragon-still.png')
@@ -1655,7 +1655,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       for (const width of [1440, 390]) {
         const page = await visit(t, '/boligmappa/', { viewport: { width, height: width === 390 ? 844 : 900 } })
         const items = page.locator('.case-below.work-media > .portfolio-item')
-        assert.equal(await items.first().locator('img').getAttribute('src'), '/images/boligmappa.000.jpeg')
+        assert.equal(await items.first().locator('img').getAttribute('src'), '/images/andersdrage-boligmappa-001.jpeg')
         assert.equal(await items.nth(1).locator('[data-case-comparison]').count(), 1)
         const frame = page.locator('[data-case-comparison]')
         const slider = page.getByRole('slider', { name: 'Boligmappa website before and after' })
@@ -1713,8 +1713,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       const page = await visit(t, '/uber/')
       const thumbs = page.locator('[data-case-image]')
       assert.equal(await thumbs.count(), 5)
-      assert.equal(await page.locator('img[src="/images/uber-2-full.jpg"]').count(), 0)
-      assert.equal(await page.locator('img[src="/images/uber-ueno-home-top-full.jpg"]').count(), 0)
+      assert.equal(await page.locator('img[src="/images/andersdrage-uber-extra-001.jpg"]').count(), 0)
+      assert.equal(await page.locator('img[src="/images/andersdrage-uber-extra-008.jpg"]').count(), 0)
       for (const width of [1440, 390]) {
         await page.setViewportSize({ width, height: 900 })
         for (let i = 0; i < 5; i++) {
@@ -1769,7 +1769,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.keyboard.press('End')
       await page.keyboard.press('Tab')
       assert.equal(await page.evaluate(() => document.activeElement.getAttribute('role')), 'tabpanel')
-      assert.equal(await gallery.locator('img[src="/images/uber-ueno-australia-full.jpg"]').count(), 1)
+      assert.equal(await gallery.locator('img[src="/images/andersdrage-uber-011.jpg"]').count(), 1)
       assert.equal(await page.locator('img[src$=".svg"][src*="uber-ueno"]').count(), 0)
       assert.equal(await gallery.locator('.t-tabs-pill').evaluate((pill) => getComputedStyle(pill).transitionDuration), '0s')
     })
@@ -2101,9 +2101,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await image.scrollIntoViewIfNeeded()
       await image.evaluate(el => el.decode())
       assert.ok(await image.isVisible())
-      const movie = page.locator('video[data-media-src="/images/houeland-web.mp4"]')
+      const movie = page.locator('video[data-media-src="/images/andersdrage-houeland-001.mp4"]')
       assert.equal(await movie.count(), 1)
-      assert.equal(await page.locator('[data-case-root] img[src="/images/new-covers/cover-ratio-houeland.webp"]').count(), 0)
+      assert.equal(await page.locator('[data-case-root] img[src="/images/andersdrage-houeland-cover.webp"]').count(), 0)
       await page.keyboard.press('p')
       assert.equal(await movie.evaluate(el => !!el.closest('.case-cover-hero')), true, 'alternate layout uses the video as its lead')
       await page.keyboard.press('p')

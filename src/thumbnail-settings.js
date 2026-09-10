@@ -5,18 +5,18 @@ export const THUMBNAIL_CHANGE = 'thumbnails:change'
 export const sameSizeThumbnails = () => sessionState.getItem(THUMBNAIL_SETTING) !== '0'
 
 const covers = {
-  houeland: 'houeland',
-  micromilspec: 'micro',
-  hjemla: 'hjemla',
-  'off-market': 'offmarket',
-  boligmappa: 'boligmappa',
-  finn: 'finn',
-  nettavisen: 'nettavisen',
-  uber: 'uber',
+  "houeland": "andersdrage-houeland-cover.webp",
+  "micromilspec": "andersdrage-micromilspec-cover.webp",
+  "hjemla": "andersdrage-hjemla-cover.webp",
+  "off-market": "andersdrage-off-market-cover.webp",
+  "boligmappa": "andersdrage-boligmappa-cover.webp",
+  "finn": "andersdrage-finn-cover.webp",
+  "nettavisen": "andersdrage-nettavisen-cover.webp",
+  "uber": "andersdrage-uber-cover.webp"
 }
 
 export function thumbnailAppearance(tile) {
   if (!sameSizeThumbnails() || !covers[tile.id]) return { ...tile, h: `calc(${tile.h} * 1.3)` }
-  return { ...tile, image: `/images/new-covers/cover-ratio-${covers[tile.id]}.webp`,
+  return { ...tile, image: `/images/${covers[tile.id]}`,
     ratio: '13 / 10', h: 'calc(min(43svh, calc((100vw - 48px) / 1.3)) * 1.3)' }
 }

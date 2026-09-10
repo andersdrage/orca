@@ -13,7 +13,7 @@ const TILES = [
     id: 'houeland',
     title: 'Houeland',
     href: '/houeland/',
-    image: '/images/new-covers/cover-ratio-houeland.webp',
+    image: '/images/andersdrage-houeland-cover.webp',
     color: '#e3d9c5',
     ratio: '13 / 10',
     h: '43svh',
@@ -24,7 +24,7 @@ const TILES = [
     href: '/micromilspec/',
     /* Hovedcover = hvit/oransje (micromilspecCovers[0]) — tile og case-hero viser
        identisk utsnitt, så morphen er én og samme flate uten dobbelteksponering. */
-    image: '/images/micromilspec-cover-white.jpg',
+    image: '/images/andersdrage-micromilspec-hero.jpg',
     color: '#e8862b',
     ratio: '1331 / 2000',
     h: '56svh',
@@ -33,7 +33,7 @@ const TILES = [
     id: 'hjemla',
     title: 'Hjemla',
     href: '/hjemla/',
-    image: '/images/hjemla-1-full.jpg',
+    image: '/images/andersdrage-hjemla-hero.jpg',
     color: '#f5c542',
     /* Samme aspekt som bildet (2400×1600) — identisk utsnitt i tile og hero. */
     ratio: '3 / 2',
@@ -43,7 +43,7 @@ const TILES = [
     id: 'off-market',
     title: 'Off Market',
     href: '/off-market/',
-    image: '/images/offmarket-cover-1.jpg',
+    image: '/images/andersdrage-off-market-hero.jpg',
     color: '#a67c52',
     /* Samme aspekt som coveret (1299×1003) — identisk utsnitt i tile og hero. */
     ratio: '1299 / 1003',
@@ -54,7 +54,7 @@ const TILES = [
     title: 'Boligmappa',
     href: '/boligmappa/',
     /* Cover-duellens vinner: de to svevende telefonene. */
-    image: '/images/boligmappa-cover-2.jpg',
+    image: '/images/andersdrage-boligmappa-hero.jpg',
     color: '#e8511f',
     /* Samme aspekt som coveret (1600×2494). */
     ratio: '1600 / 2494',
@@ -64,7 +64,7 @@ const TILES = [
     id: 'nettavisen',
     title: 'Nettavisen',
     href: '/nettavisen/',
-    image: '/images/nettavisen-cover.jpg',
+    image: '/images/andersdrage-nettavisen-hero.jpg',
     color: '#31406f',
     /* Samme aspekt som coveret (1147×1190). */
     ratio: '1147 / 1190',
@@ -74,7 +74,7 @@ const TILES = [
     id: 'finn',
     title: 'FINN.no',
     href: '/finn/',
-    image: '/images/finn-5.jpg',
+    image: '/images/andersdrage-finn-hero.jpg',
     color: '#c9a227',
     /* Samme aspekt som bildet (1920×1080). */
     ratio: '16 / 9',
@@ -84,7 +84,7 @@ const TILES = [
     id: 'uber',
     title: 'Uber',
     href: '/uber/',
-    image: '/images/uber-cover-1.jpg',
+    image: '/images/andersdrage-uber-hero.jpg',
     color: '#c99b6a',
     /* Samme aspekt som coveret (1376×1139) — identisk utsnitt i tile og hero. */
     ratio: '1376 / 1139',

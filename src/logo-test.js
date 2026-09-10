@@ -40,12 +40,12 @@ const COLOR_STOPS = [
    kortfrontene som duotone: gråtoneversjonen multipliseres med kortets
    spektrumfarge, så fargen beholdes og bildet blender inn i den. */
 const CARD_IMAGES = [
-  'hmkg-4-full.jpg',
-  'hp-5-full.jpg',
-  'micromilspec-6-half.jpg',
-  'micromilspec-cover-white.jpg',
-  'mm-4-1-3.jpg',
-  'uber-cover-1.jpg',
+  'andersdrage-hmkg-004.jpg',
+  'andersdrage-humming-people-005.jpg',
+  'andersdrage-micromilspec-cover-alternative-2.jpg',
+  'andersdrage-micromilspec-hero.jpg',
+  'andersdrage-mountain-milk-004.jpg',
+  'andersdrage-uber-hero.jpg',
 ]
 
 let cardTextures = []

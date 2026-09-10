@@ -6,83 +6,366 @@
 import { mediaSize } from './media-dimensions.js'
 import { syncVisibleMedia } from './visible-media.js'
 
-const showreelSlides = (first, last = first) =>
-  Array.from({ length: last - first + 1 }, (_, index) => `showreel/${first + index}.jpg`)
-
+// Explicit ordered media names preserve the project boundaries approved by Anders.
 const ARCHIVED = [
-  { id: 'agens', title: 'AGENS', year: 2025, files: ['agens-1.png', 'misc-agens-1.jpg', 'misc-agens-2.jpg', 'misc-agens-3.jpg'] },
-  { id: 'aprila', title: 'Aprila Bank', year: 2018, files: ['misc-aprila.jpg', 'aprilabank-website.jpg', 'aprilabank-website-2.jpg', 'aprilabank-website-3.jpg', 'aprilabank-website-4.jpg'] },
-  { id: 'brevio', title: 'Brevio', service: 'Brand + UX design', year: 2017, files: [
-    'misc-brevio.jpg', 'brevio-logo-animation.mp4',
-    ...Array.from({ length: 12 }, (_, i) => `Presentasjon_Brevio-${String(i + 1).padStart(2, '0')}.jpg`),
-    'brevio-dashboard.1.jpg', 'brevio-interaction.mp4', 'brevio-animation-film.mp4',
-  ] },
-  { id: 'klp', title: 'KLP', service: 'UX design', year: 2017, files: ['klp-web-1.jpg', 'klp-web-2.jpg', 'klp-site-demo.mp4', 'klp-case-film.mp4'] },
-  { id: 'just', title: 'GoJust', service: 'Brand + UX design', year: 2017, files: ['just-logo-letters-2-610.mp4', 'just-logo-loader-103.mp4', 'just-1.jpg', 'just-2.jpg'] },
-  { id: 'kindly', title: 'Kindly', service: 'Brand + UX design', year: 2016, files: ['kindly-logo-1_1.mp4', 'kindly-emotions.mp4', 'all-emojis-kindly.mp4'] },
-  { id: 'changemaker', title: 'Changemaker', service: 'Brand + UX design', year: 2016, files: Array.from({ length: 8 }, (_, i) => `changemaker-${i + 1}.jpg`) },
-  { id: 'abelee', title: 'Abelee', service: 'Brand + marketing', year: 2017, files: ['abelee-Logo_intro.mp4', 'abelee-Logo_animasjon.mp4'] },
-  { id: 'nike', title: 'Nike app', year: 2016, files: ['misc-nike.jpg'] },
-  { id: 'pressworks', title: 'Pressworks', year: 2017, files: ['misc-pressworks.jpg', 'pressworks-mobile-v1.jpg'] },
-  { id: 'hmkg', service: 'Print design', year: 2014, title: 'HMKG', files: [
-    'hmkg-1-full.jpg', 'hmkg-2-full.jpg', 'hmkg-3-full.jpg',
-    'hmkg-4-full.jpg',
-  ] },
-  { id: 'humming-people', service: 'LP & booklet design', year: 2018, title: 'Humming People', files: [
-    'hp-1-full.jpg', 'hp-2-full.jpg', 'hp-3-half.jpg',
-    'hp-4-half.jpg', 'hp-5-full.jpg', 'hp-6-half.jpg',
-    'hp-7-half.jpg', 'hp-8-full.jpg', 'hp-9-half.jpg',
-    'hp-10-half.jpg', 'hp-11-full.jpg',
-  ] },
-  { id: 'brathwait', service: 'Brand + UX design', year: 2015, title: 'Brathwait', files: [
-    'brathwait-cover.jpg', 'brathwait-1.jpg', 'brathwait-2.jpg',
-    'brathwait-3.jpg', 'brathwait-4.jpg', 'brathwait-5.jpg',
-    'brathwait-6.jpg', 'brathwait-7.jpg', 'brathwait-8.jpg',
-    'brathwait-9.jpg', 'brathwait-10.jpg', 'brathwait-11.jpg',
-    'brathwait-12.jpg', 'brathwait-13.jpg', 'brathwait-14.jpg',
-    'brathwait-15.jpg', 'brathwait-16.jpg', 'brathwait-17.jpg',
-    'brathwait-18.jpg', 'brathwait-19.jpg', 'brathwait-20.jpg',
-    'brathwait-21.jpg', 'brathwait-22.jpg',
-  ] },
-  { id: 'tone', title: 'Tone Damli', service: 'Webdesign', year: 2015, files: ['tone-1.png', 'tone-2.png', 'tone-3.png', 'tone-4.png'] },
-  { id: 'lego', title: 'Lego', service: 'UX design', year: 2012, files: ['lego-1.jpg', 'lego-2.jpg', 'lego-3.jpg'] },
-  { id: 'mountain-milk', service: 'Packaging design', year: 2011, title: 'Mountain Milk', files: [
-    'mm-1.jpg', 'mm-2.jpg', 'mm-3.jpg',
-    'mm-4-1-3.jpg', 'mm-4-2-3.jpg', 'mm-4-3-3.jpg',
-  ] },
   {
-    /* Har ingen case — filene listes direkte. */
-    id: 'houelandek',
-    title: 'Houeland-EK',
-    service: 'Brand design',
-    year: 2016,
-    files: ['01', '02', '03', '04', '06', '07', '08', '11', '12', '14', '17', '20', '21', '22', '23', '24'].map(
-      (n) => `houelandek/${n}.jpg`,
-    ),
+    "id": "agens",
+    "title": "AGENS",
+    "year": 2025,
+    "files": [
+      "andersdrage-agens-001.png",
+      "andersdrage-agens-002.jpg",
+      "andersdrage-agens-003.jpg",
+      "andersdrage-agens-004.jpg"
+    ]
   },
-  /* Project boundaries confirmed by Anders. Divider slides 36, 57, 67, 70
-     and 73 are omitted; typography specimens and UI layouts remain work. */
-  { id: 'pelp', title: 'Pelp', year: 2014, files: showreelSlides(26, 35) },
-  { id: 'godt-levert', title: 'Godt Levert iOS apps', year: 2015, files: showreelSlides(37, 42) },
-  { id: 'kaos', title: 'Shopify theme', year: 2016, files: showreelSlides(43, 56) },
-  { id: 'daccord', title: 'D’accord', files: showreelSlides(58, 66) },
-  { id: 'hellstrom', title: 'Hellstrøm', year: 2015, files: showreelSlides(68, 69) },
-  { id: 'poster', title: 'Poster', files: showreelSlides(71) },
-  { id: 'yearly-report', title: 'Yearly report', files: showreelSlides(72) },
-  { id: 'lettering', title: 'Lettering', files: showreelSlides(74) },
-].sort((a, b) => (b.year ?? 0) - (a.year ?? 0))
+  {
+    "id": "aprila",
+    "title": "Aprila Bank",
+    "year": 2018,
+    "files": [
+      "andersdrage-aprila-001.jpg",
+      "andersdrage-aprila-002.jpg",
+      "andersdrage-aprila-003.jpg",
+      "andersdrage-aprila-004.jpg",
+      "andersdrage-aprila-005.jpg"
+    ]
+  },
+  {
+    "id": "humming-people",
+    "service": "LP & booklet design",
+    "year": 2018,
+    "title": "Humming People",
+    "files": [
+      "andersdrage-humming-people-001.jpg",
+      "andersdrage-humming-people-002.jpg",
+      "andersdrage-humming-people-003.jpg",
+      "andersdrage-humming-people-004.jpg",
+      "andersdrage-humming-people-005.jpg",
+      "andersdrage-humming-people-006.jpg",
+      "andersdrage-humming-people-007.jpg",
+      "andersdrage-humming-people-008.jpg",
+      "andersdrage-humming-people-009.jpg",
+      "andersdrage-humming-people-010.jpg",
+      "andersdrage-humming-people-011.jpg"
+    ]
+  },
+  {
+    "id": "brevio",
+    "title": "Brevio",
+    "service": "Brand + UX design",
+    "year": 2017,
+    "files": [
+      "andersdrage-brevio-001.jpg",
+      "andersdrage-brevio-002.mp4",
+      "andersdrage-brevio-003.jpg",
+      "andersdrage-brevio-004.jpg",
+      "andersdrage-brevio-005.jpg",
+      "andersdrage-brevio-006.jpg",
+      "andersdrage-brevio-007.jpg",
+      "andersdrage-brevio-008.jpg",
+      "andersdrage-brevio-009.jpg",
+      "andersdrage-brevio-010.jpg",
+      "andersdrage-brevio-011.jpg",
+      "andersdrage-brevio-012.jpg",
+      "andersdrage-brevio-013.jpg",
+      "andersdrage-brevio-014.jpg",
+      "andersdrage-brevio-015.jpg",
+      "andersdrage-brevio-016.mp4",
+      "andersdrage-brevio-017.mp4"
+    ]
+  },
+  {
+    "id": "klp",
+    "title": "KLP",
+    "service": "UX design",
+    "year": 2017,
+    "files": [
+      "andersdrage-klp-001.jpg",
+      "andersdrage-klp-002.jpg",
+      "andersdrage-klp-003.mp4",
+      "andersdrage-klp-004.mp4"
+    ]
+  },
+  {
+    "id": "just",
+    "title": "GoJust",
+    "service": "Brand + UX design",
+    "year": 2017,
+    "files": [
+      "andersdrage-just-001.mp4",
+      "andersdrage-just-002.mp4",
+      "andersdrage-just-003.jpg",
+      "andersdrage-just-004.jpg"
+    ]
+  },
+  {
+    "id": "abelee",
+    "title": "Abelee",
+    "service": "Brand + marketing",
+    "year": 2017,
+    "files": [
+      "andersdrage-abelee-001.mp4",
+      "andersdrage-abelee-002.mp4"
+    ]
+  },
+  {
+    "id": "pressworks",
+    "title": "Pressworks",
+    "year": 2017,
+    "files": [
+      "andersdrage-pressworks-001.jpg",
+      "andersdrage-pressworks-002.jpg"
+    ]
+  },
+  {
+    "id": "kindly",
+    "title": "Kindly",
+    "service": "Brand + UX design",
+    "year": 2016,
+    "files": [
+      "andersdrage-kindly-001.mp4",
+      "andersdrage-kindly-002.mp4",
+      "andersdrage-kindly-003.mp4"
+    ]
+  },
+  {
+    "id": "changemaker",
+    "title": "Changemaker",
+    "service": "Brand + UX design",
+    "year": 2016,
+    "files": [
+      "andersdrage-changemaker-001.jpg",
+      "andersdrage-changemaker-002.jpg",
+      "andersdrage-changemaker-003.jpg",
+      "andersdrage-changemaker-004.jpg",
+      "andersdrage-changemaker-005.jpg",
+      "andersdrage-changemaker-006.jpg",
+      "andersdrage-changemaker-007.jpg",
+      "andersdrage-changemaker-008.jpg"
+    ]
+  },
+  {
+    "id": "nike",
+    "title": "Nike app",
+    "year": 2016,
+    "files": [
+      "andersdrage-nike-001.jpg"
+    ]
+  },
+  {
+    "id": "houelandek",
+    "title": "Houeland-EK",
+    "service": "Brand design",
+    "year": 2016,
+    "files": [
+      "andersdrage-houelandek-001.jpg",
+      "andersdrage-houelandek-002.jpg",
+      "andersdrage-houelandek-003.jpg",
+      "andersdrage-houelandek-004.jpg",
+      "andersdrage-houelandek-005.jpg",
+      "andersdrage-houelandek-006.jpg",
+      "andersdrage-houelandek-007.jpg",
+      "andersdrage-houelandek-008.jpg",
+      "andersdrage-houelandek-009.jpg",
+      "andersdrage-houelandek-010.jpg",
+      "andersdrage-houelandek-011.jpg",
+      "andersdrage-houelandek-012.jpg",
+      "andersdrage-houelandek-013.jpg",
+      "andersdrage-houelandek-014.jpg",
+      "andersdrage-houelandek-015.jpg",
+      "andersdrage-houelandek-016.jpg"
+    ]
+  },
+  {
+    "id": "kaos",
+    "title": "Shopify theme",
+    "year": 2016,
+    "files": [
+      "andersdrage-kaos-001.jpg",
+      "andersdrage-kaos-002.jpg",
+      "andersdrage-kaos-003.jpg",
+      "andersdrage-kaos-004.jpg",
+      "andersdrage-kaos-005.jpg",
+      "andersdrage-kaos-006.jpg",
+      "andersdrage-kaos-007.jpg",
+      "andersdrage-kaos-008.jpg",
+      "andersdrage-kaos-009.jpg",
+      "andersdrage-kaos-010.jpg",
+      "andersdrage-kaos-011.jpg",
+      "andersdrage-kaos-012.jpg",
+      "andersdrage-kaos-013.jpg",
+      "andersdrage-kaos-014.jpg"
+    ]
+  },
+  {
+    "id": "brathwait",
+    "service": "Brand + UX design",
+    "year": 2015,
+    "title": "Brathwait",
+    "files": [
+      "andersdrage-brathwait-001.jpg",
+      "andersdrage-brathwait-002.jpg",
+      "andersdrage-brathwait-003.jpg",
+      "andersdrage-brathwait-004.jpg",
+      "andersdrage-brathwait-005.jpg",
+      "andersdrage-brathwait-006.jpg",
+      "andersdrage-brathwait-007.jpg",
+      "andersdrage-brathwait-008.jpg",
+      "andersdrage-brathwait-009.jpg",
+      "andersdrage-brathwait-010.jpg",
+      "andersdrage-brathwait-011.jpg",
+      "andersdrage-brathwait-012.jpg",
+      "andersdrage-brathwait-013.jpg",
+      "andersdrage-brathwait-014.jpg",
+      "andersdrage-brathwait-015.jpg",
+      "andersdrage-brathwait-016.jpg",
+      "andersdrage-brathwait-017.jpg",
+      "andersdrage-brathwait-018.jpg",
+      "andersdrage-brathwait-019.jpg",
+      "andersdrage-brathwait-020.jpg",
+      "andersdrage-brathwait-021.jpg",
+      "andersdrage-brathwait-022.jpg",
+      "andersdrage-brathwait-023.jpg"
+    ]
+  },
+  {
+    "id": "tone",
+    "title": "Tone Damli",
+    "service": "Webdesign",
+    "year": 2015,
+    "files": [
+      "andersdrage-tone-001.png",
+      "andersdrage-tone-002.png",
+      "andersdrage-tone-003.png",
+      "andersdrage-tone-004.png"
+    ]
+  },
+  {
+    "id": "godt-levert",
+    "title": "Godt Levert iOS apps",
+    "year": 2015,
+    "files": [
+      "andersdrage-godt-levert-001.jpg",
+      "andersdrage-godt-levert-002.jpg",
+      "andersdrage-godt-levert-003.jpg",
+      "andersdrage-godt-levert-004.jpg",
+      "andersdrage-godt-levert-005.jpg",
+      "andersdrage-godt-levert-006.jpg"
+    ]
+  },
+  {
+    "id": "hellstrom",
+    "title": "Hellstrøm",
+    "year": 2015,
+    "files": [
+      "andersdrage-hellstrom-001.jpg",
+      "andersdrage-hellstrom-002.jpg"
+    ]
+  },
+  {
+    "id": "hmkg",
+    "service": "Print design",
+    "year": 2014,
+    "title": "HMKG",
+    "files": [
+      "andersdrage-hmkg-001.jpg",
+      "andersdrage-hmkg-002.jpg",
+      "andersdrage-hmkg-003.jpg",
+      "andersdrage-hmkg-004.jpg"
+    ]
+  },
+  {
+    "id": "pelp",
+    "title": "Pelp",
+    "year": 2014,
+    "files": [
+      "andersdrage-pelp-001.jpg",
+      "andersdrage-pelp-002.jpg",
+      "andersdrage-pelp-003.jpg",
+      "andersdrage-pelp-004.jpg",
+      "andersdrage-pelp-005.jpg",
+      "andersdrage-pelp-006.jpg",
+      "andersdrage-pelp-007.jpg",
+      "andersdrage-pelp-008.jpg",
+      "andersdrage-pelp-009.jpg",
+      "andersdrage-pelp-010.jpg"
+    ]
+  },
+  {
+    "id": "lego",
+    "title": "Lego",
+    "service": "UX design",
+    "year": 2012,
+    "files": [
+      "andersdrage-lego-001.jpg",
+      "andersdrage-lego-002.jpg",
+      "andersdrage-lego-003.jpg"
+    ]
+  },
+  {
+    "id": "mountain-milk",
+    "service": "Packaging design",
+    "year": 2011,
+    "title": "Mountain Milk",
+    "files": [
+      "andersdrage-mountain-milk-001.jpg",
+      "andersdrage-mountain-milk-002.jpg",
+      "andersdrage-mountain-milk-003.jpg",
+      "andersdrage-mountain-milk-004.jpg",
+      "andersdrage-mountain-milk-005.jpg",
+      "andersdrage-mountain-milk-006.jpg"
+    ]
+  },
+  {
+    "id": "daccord",
+    "title": "D’accord",
+    "files": [
+      "andersdrage-daccord-001.jpg",
+      "andersdrage-daccord-002.jpg",
+      "andersdrage-daccord-003.jpg",
+      "andersdrage-daccord-004.jpg",
+      "andersdrage-daccord-005.jpg",
+      "andersdrage-daccord-006.jpg",
+      "andersdrage-daccord-007.jpg",
+      "andersdrage-daccord-008.jpg",
+      "andersdrage-daccord-009.jpg"
+    ]
+  },
+  {
+    "id": "poster",
+    "title": "Poster",
+    "files": [
+      "andersdrage-poster-001.jpg"
+    ]
+  },
+  {
+    "id": "yearly-report",
+    "title": "Yearly report",
+    "files": [
+      "andersdrage-yearly-report-001.jpg"
+    ]
+  },
+  {
+    "id": "lettering",
+    "title": "Lettering",
+    "files": [
+      "andersdrage-lettering-001.jpg"
+    ]
+  }
+]
 
 function collectMedia() {
   const media = [
     {
       type: 'video',
-      src: '/images/capa-vignette.mp4',
-      poster: '/images/capa-vignette-poster.jpg',
+      src: '/images/andersdrage-capa-001.mp4',
+      poster: '/images/andersdrage-capa-001-poster.jpg',
       alt: 'Capa vignette',
       title: 'Capa',
       projectId: 'capa',
     },
-    { type: 'image', src: '/images/misc-logos.jpg', alt: 'Logo overview', title: 'Logos', projectId: 'logos' },
+    { type: 'image', src: '/images/andersdrage-logos-001.jpg', alt: 'Logo overview', title: 'Logos', projectId: 'logos' },
   ]
   ARCHIVED.forEach((project) => {
     const { title, files } = project

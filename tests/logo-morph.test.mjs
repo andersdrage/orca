@@ -34,9 +34,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         const page = await visit(t, { viewport })
         const group = page.locator('[data-logo-morph]')
         const stack = page.locator('.case-media-stack').last()
-        assert.equal(await stack.locator(':scope > :first-child img').getAttribute('src'), '/images/finn-home-imac-v1.jpg')
+        assert.equal(await stack.locator(':scope > :first-child img').getAttribute('src'), '/images/andersdrage-finn-001.jpg')
         assert.equal(await stack.locator(':scope > :nth-child(2) [data-logo-morph]').count(), 1)
-        assert.equal(await page.locator('img[src$="finn-18.jpg"], img[src$="finn-property-viewing-v1.jpg"]').count(), 0)
+        assert.equal(await page.locator('img[src$="andersdrage-finn-extra-004.jpg"], img[src$="andersdrage-finn-extra-005.jpg"]').count(), 0)
         await group.scrollIntoViewIfNeeded()
         assert.equal(await state(page), 'original')
         const layout = await group.evaluate(el => {
