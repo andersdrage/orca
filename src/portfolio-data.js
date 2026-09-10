@@ -162,7 +162,7 @@ export const portfolioCases = [
     year: '2016',
     title: 'FINN.no',
     intro:
-      'Helped shape a new visual identity and future vision for FINN.no at Brandlab — a design language that has evolved over a decade to connect everything from digital experiences and advertising to physical office spaces.',
+      'Helped shape a new visual identity and future vision for FINN.no at Brandlab — a design language that has lasted over a decade and connects everything from digital experiences and advertising to physical office spaces.',
     credits: [
       { role: 'Creative Director', names: 'Miriam Skovholt Mortensen' },
       { role: 'Designers', names: 'Anders Drage, Ludvig Bruneau Rossow and Truong Vu Pham' },
