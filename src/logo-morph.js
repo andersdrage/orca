@@ -7,6 +7,9 @@ const LABELS = ['Original', 'New', 'Mobile']
 const morphEase = cubicBezier(0.77, 0, 0.175, 1)
 const directEase = cubicBezier(0.22, 1, 0.36, 1)
 
+// Illustrator may drop data-name on re-save and retain only suffixed IDs.
+const layerName = el => el.dataset.name || el.id.replace(/\d+$/, '')
+
 const pathData = el => el.tagName.toLowerCase() === 'rect'
   ? `M${el.x.baseVal.value},${el.y.baseVal.value}h${el.width.baseVal.value}v${el.height.baseVal.value}h-${el.width.baseVal.value}Z`
   : el.getAttribute('d')
@@ -22,16 +25,12 @@ function readStates(group) {
       const cx = box.x + box.width / 2
       const cy = box.y + box.height / 2
       const normalize = (x, y) => [(x - cx) * scale, (y - cy) * scale]
-      const ns = [...logo.children].filter(el => (el.dataset.name ?? el.id) === 'n')
+      // Match repeated letters spatially, regardless of Illustrator's ID suffix.
+      const ns = [...logo.children].filter(el => layerName(el) === 'n')
         .sort((a, b) => a.getBBox().x - b.getBBox().x)
-      // Illustrator disambiguates repeated n IDs; match the two letters spatially.
-      if (ns.length < 2) {
-        ns.splice(0, ns.length, ...[...logo.children].filter(el => /^n\d*$/.test(el.id))
-          .sort((a, b) => a.getBBox().x - b.getBBox().x))
-      }
       return KEYS.map(key => {
         const el = key.startsWith('n-') ? ns[key === 'n-left' ? 0 : 1]
-          : [...logo.children].find(el => (el.dataset.name ?? el.id) === key)
+          : [...logo.children].find(el => layerName(el) === key)
         if (!el) return null
         let d = pathData(el)
         // Pockets cover the frame's inner cutouts. Morph only its outer contour,
@@ -43,7 +42,7 @@ function readStates(group) {
           : glyphGeometry(key, el.getBBox(), normalize, version)
         const hex = el.getAttribute('fill').replace('#', '')
         const color = (hex.length === 3 ? [...hex].map(c => c + c).join('') : hex).match(/../g).map(c => parseInt(c, 16))
-        const left = [...logo.children].find(el => (el.dataset.name ?? el.id) === 'left-pocket')
+        const left = [...logo.children].find(el => layerName(el) === 'left-pocket')
         const border = key === 'outer-frame-white' ? (left.getBBox().x - box.x) * scale * 2 : 0
         return { d, transform: `matrix(${scale} 0 0 ${scale} ${-cx * scale} ${-cy * scale})`, geometry, color, opacity: 1, border }
       })
