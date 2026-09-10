@@ -53,7 +53,6 @@ export const portfolioCases = [
       { role: 'Co-founder', names: 'Henrik Rye' },
       { role: 'Co-founder', names: 'Martin S' },
       { role: 'Development', names: 'Kim Ellefsen' },
-      { role: 'Development', names: 'Mark Larratt' },
       { role: '3D', names: 'Alexander Kadim' },
       { role: 'Creative Director', names: 'Anders Drage' },
     ],
