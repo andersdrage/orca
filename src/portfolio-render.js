@@ -302,14 +302,14 @@ function caseSection(singleCase) {
         .map((item) => `<div class="portfolio-third min-w-0">${wrapFigure(item, eager)}</div>`)
         .join('')
       return `<div class="w-full">
-        <div class="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">${cells}</div>
+        <div class="case-media-grid grid grid-cols-3">${cells}</div>
       </div>`
     }
     const cells = row.items
       .map((item) => `<div class="portfolio-half min-w-0">${wrapFigure(item, eager)}</div>`)
       .join('')
     return `<div class="w-full">
-      <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 md:gap-4">${cells}</div>
+      <div class="case-media-grid grid grid-cols-1 md:grid-cols-2">${cells}</div>
     </div>`
   })
 
@@ -328,13 +328,13 @@ function caseSection(singleCase) {
         </div>
         <div class="case-cover-hero">${firstBlock}</div>
       </div>
-      <div class="case-below work-media mt-10 flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
+      <div class="case-below work-media mt-10 case-media-stack flex flex-col">${restBlocks.join('\n')}</div>
     </section>`
   }
 
   return `<section id="${singleCase.id}" class="scroll-mt-24 pt-8" aria-labelledby="title-${singleCase.id}">
     <div class="case-legacy-lead">
-    <div class="work-media case-cover-hero flex flex-col gap-3 sm:gap-4 md:gap-6">${firstBlock}</div>
+    <div class="work-media case-cover-hero case-media-stack flex flex-col">${firstBlock}</div>
     <div class="case-legacy-copy case-below work-narrow mt-10 mb-8 w-full md:mt-14">
       <h2 id="title-${singleCase.id}" class="case-legacy-title font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="case-legacy-intro mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
@@ -342,7 +342,7 @@ function caseSection(singleCase) {
       ${titleBlockHtml(singleCase)}
     </div>
     </div>
-    <div class="case-below work-media flex flex-col gap-3 sm:gap-4 md:gap-6">${restBlocks.join('\n')}</div>
+    <div class="case-below work-media case-media-stack flex flex-col">${restBlocks.join('\n')}</div>
   </section>`
 }
 
