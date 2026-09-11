@@ -676,6 +676,7 @@ body.world-mode {
 
 @media (max-width: 767px) {
   .content-page--top-space { --content-top-gap: 50px; }
+  .content-page--top-space:not(.content-page--about) { margin-top: 150px; }
   .content-page--spacious { padding-top: var(--content-top-gap, 150px); }
   /* Account for the fixed 56px mobile header in the world layout. */
   .world-column > .content-page--spacious { padding-top: calc(56px + var(--content-top-gap, 150px)); }
@@ -1685,7 +1686,7 @@ a.timeline-tile.is-returning:focus { outline: none; }
     position: absolute;
     inset: auto 0 0;
     height: 104px;
-    background: linear-gradient(to bottom, transparent, var(--page-surface) 50%);
+    background: linear-gradient(to bottom, transparent, var(--page-surface));
     pointer-events: none;
   }
 
