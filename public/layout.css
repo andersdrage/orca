@@ -362,7 +362,7 @@ body.world-mode {
 }
 
 @supports (position-anchor: --nav-item) {
-  .site-header nav a:is(:hover, :focus-visible) {
+  .site-header nav a:not([aria-current='page']):focus-visible {
     anchor-name: --nav-item;
   }
 
@@ -386,8 +386,18 @@ body.world-mode {
       height 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .site-header nav:has(a:is(:hover, :focus-visible))::before {
+  .site-header nav:has(a:not([aria-current='page']):focus-visible)::before {
     opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .site-header nav a:not([aria-current='page']):hover {
+      anchor-name: --nav-item;
+    }
+
+    .site-header nav:has(a:not([aria-current='page']):hover)::before {
+      opacity: 1;
+    }
   }
 
   /* Under kamera-reisen: hover-pillen ankres i layoutboksen (som allerede står
@@ -663,9 +673,10 @@ body.world-mode {
 }
 
 @media (max-width: 767px) {
-  .content-page--spacious { padding-top: 150px; }
-  /* The fixed mobile header is 56px tall; leave 150px below it. */
-  .world-column > .content-page--spacious { padding-top: calc(56px + 150px); }
+  .content-page--top-space { --content-top-gap: 50px; }
+  .content-page--spacious { padding-top: var(--content-top-gap, 150px); }
+  /* Account for the fixed 56px mobile header in the world layout. */
+  .world-column > .content-page--spacious { padding-top: calc(56px + var(--content-top-gap, 150px)); }
   .content-page--spacious > header > div:first-child { margin-top: 0; }
 }
 
@@ -1641,9 +1652,9 @@ a.timeline-tile.is-returning:focus { outline: none; }
   transition: opacity 160ms ease;
 }
 
-.corner-links a:focus-visible::before { opacity: 1; }
+.corner-links a:not([aria-current='page']):focus-visible::before { opacity: 1; }
 @media (hover: hover) and (pointer: fine) {
-  .corner-links a:hover::before { opacity: 1; }
+  .corner-links a:not([aria-current='page']):hover::before { opacity: 1; }
 }
 
 .corner-links a[aria-current='page'] { color: #c9363e; }
