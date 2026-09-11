@@ -189,10 +189,10 @@ export function initWorld(header) {
       section.style.transform = `scale(${TRAVEL_SCALE})`
     })
 
-    /* Fit the three-row world into the current visible viewport. */
+    /* Center the four primary pages as a 2 × 2 opening map. */
     const MAP_SCALE = 0.25
     // Lay out the overview at its displayed resolution, then composite the
-    // camera zoom. Six full-resolution page textures are wasteful at 25% size.
+    // camera zoom. Full-resolution page textures are wasteful at 25% size.
     mapRasterScale = CSS.supports('zoom', String(MAP_SCALE)) ? MAP_SCALE : 1
     if (mapRasterScale !== 1) {
       world.style.zoom = String(mapRasterScale)
@@ -211,7 +211,7 @@ export function initWorld(header) {
     world.before(mapCamera)
     mapCamera.append(world)
     world.style.transform = 'none'
-    mapCamera.style.transform = `translate3d(12.5vw, calc(var(--viewport-height) * ${matchMedia('(max-width: 600px)').matches ? 0.18 : 0.125}), 0) scale(${MAP_SCALE / mapRasterScale})`
+    mapCamera.style.transform = `translate3d(25vw, calc(var(--viewport-height) * 0.25), 0) scale(${MAP_SCALE / mapRasterScale})`
 
     const HOLD_MS = 1200
     const ZOOM_MS = 1400

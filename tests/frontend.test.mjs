@@ -742,8 +742,8 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
           if (load) await page.reload({ waitUntil: 'domcontentloaded' })
           await page.waitForFunction(() => window.heldMapAnimations.length === 2)
           assert.equal(await page.locator('.world').evaluate(el => el.style.zoom), '')
-          const cards = await page.locator('.world-page').evaluateAll(elements => elements.map(el => el.getBoundingClientRect().toJSON()))
-          assert.equal(cards.length, 6)
+          const cards = await page.locator('.world-page').evaluateAll(elements => elements.filter(el => getComputedStyle(el).visibility !== 'hidden').map(el => el.getBoundingClientRect().toJSON()))
+          assert.equal(cards.length, 4)
           for (const card of cards) {
             assert.ok(Math.abs(card.width / width - .2125) < .005, 'cards remain at quarter scale')
             assert.ok(card.x >= 0 && card.y >= 0 && card.right <= width && card.bottom <= page.viewportSize().height)
@@ -756,7 +756,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('opening map paints all six pages inside desktop and phone viewports on a slow connection', async (t) => {
+    test('opening map centers four primary pages and hides secondary pages only during opening', async (t) => {
       for (const width of [390, 1440]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390, reducedMotion: 'no-preference' }, () => {
           const fetchPage = window.fetch
@@ -781,13 +781,18 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         assert.equal(await loading.count(), 5)
         assert.equal(await loading.locator('.page-state__mark, .page-state__story').count(), 0, 'loading cards do not reuse the error branding')
         assert.ok(await loading.locator('.page-state__content').evaluateAll(elements => elements.every(el => getComputedStyle(el).visibility === 'hidden')), 'inactive loading cards are plain')
-        const cards = await page.locator('.world-page').evaluateAll(elements => elements.map(el => {
+        const cards = await page.locator('.world-page').evaluateAll(elements => elements.filter(el => getComputedStyle(el).visibility !== 'hidden').map(el => {
           const r = el.getBoundingClientRect()
           return { path: el.dataset.path, x: r.x, y: r.y, width: r.width, height: r.height, right: r.right, bottom: r.bottom }
         }))
-        assert.equal(cards.length, 6)
-        assert.ok(Math.abs(cards[0].x / width - .14375) < .01, 'map begins at the left inset')
-        assert.ok(Math.abs(cards[0].y / page.viewportSize().height - (width === 390 ? .19875 : .14375)) < .01, 'map begins in the marked upper area')
+        assert.deepEqual(cards.map(card => card.path), ['/', '/about/', '/timeline/', '/people/'])
+        const left = Math.min(...cards.map(card => card.x)), right = Math.max(...cards.map(card => card.right))
+        const top = Math.min(...cards.map(card => card.y)), bottom = Math.max(...cards.map(card => card.bottom))
+        assert.ok(Math.abs((left + right) / 2 - width / 2) < 1, 'map is horizontally centered')
+        assert.ok(Math.abs((top + bottom) / 2 - page.viewportSize().height / 2) < 1, 'map is vertically centered')
+        for (const path of ['/praise/', '/archived-work/']) {
+          assert.equal(await page.locator(`.world-page[data-path="${path}"]`).evaluate(el => getComputedStyle(el).visibility), 'hidden')
+        }
         const screenshot = await page.screenshot()
         for (const card of cards) {
           assert.ok(card.x >= 0 && card.y >= 0 && card.right <= width && card.bottom <= page.viewportSize().height, `${engine} ${width}: ${JSON.stringify(card)}`)
@@ -797,6 +802,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         await page.evaluate(() => window.heldMapAnimations.forEach(animation => animation.play()))
         await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
         assert.equal(await page.evaluate(() => innerWidth), width)
+        for (const path of ['/praise/', '/archived-work/']) {
+          assert.equal(await page.locator(`.world-page[data-path="${path}"]`).evaluate(el => getComputedStyle(el).visibility), 'visible', 'secondary pages are restored after landing')
+        }
         await page.locator('.site-header nav a[href="/about/"]').click()
         await activeWorld(page, '/about/')
       }
