@@ -1,3 +1,4 @@
+import { track } from '@vercel/analytics'
 import { sessionState } from './session-state.js'
 import { isCasePath } from './case-navigation.js'
 import { isSameTabNavigation } from './link-navigation.js'
@@ -138,6 +139,9 @@ export function initProjectNavigation() {
 
   async function navigate(href, { tile = null, animate = false, push = true, trigger = null, keyboard = false } = {}) {
     const url = new URL(href, location.href)
+    // Count deliberate selections, including keyboard navigation, but not
+    // direct visits, preloading, or Back/Forward restoration. Keep to Pro's two properties.
+    if (push) track('Case clicked', { case: url.pathname.replaceAll('/', ''), source: location.pathname })
     const request = ++revision
     const previousTransition = transition
     stopTransition()

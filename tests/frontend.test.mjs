@@ -50,6 +50,34 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.world-page:not([inert])').count(), 1)
     }
 
+    test('case analytics count selections once without counting preload or history restoration', async (t) => {
+      const page = await visit(t, '/', {}, () => {
+        window.caseEvents = []
+        window.va = (type, payload) => { if (type === 'event') window.caseEvents.push({ name: payload.name, data: payload.data }) }
+      })
+      await page.route('**/_vercel/insights/**', route => route.abort())
+      await ready(page, '/')
+      const tile = page.locator('a.timeline-tile[href="/micromilspec/"]').first()
+      await tile.dispatchEvent('pointerenter')
+      assert.deepEqual(await page.evaluate(() => window.caseEvents), [])
+      await tile.focus()
+      await page.keyboard.press('Enter')
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      await page.keyboard.press('ArrowRight')
+      await page.waitForSelector('[data-case-id="hjemla"]')
+      const expected = [
+        { name: 'Case clicked', data: { case: 'micromilspec', source: '/' } },
+        { name: 'Case clicked', data: { case: 'hjemla', source: '/micromilspec/' } },
+      ]
+      assert.deepEqual(await page.evaluate(() => window.caseEvents), expected)
+      await page.goBack()
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      assert.deepEqual(await page.evaluate(() => window.caseEvents), expected)
+      await page.goto(base + '/uber/')
+      await page.waitForSelector('[data-case-id="uber"]')
+      assert.deepEqual(await page.evaluate(() => window.caseEvents), [])
+    })
+
     test('reduced motion makes timeline keys immediate and responds to preference changes', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')
