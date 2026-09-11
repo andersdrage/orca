@@ -844,6 +844,23 @@ body.world-mode {
   outline-offset: 4px;
 }
 
+@media (max-width: 767px) {
+  .site-footer,
+  .page-case:has(> .project-audio) .site-footer {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom));
+  }
+
+  .site-footer__contact {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .site-footer__contact a {
+    box-sizing: border-box;
+    width: min(224px, 100%);
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .site-footer__contact a:hover,
   .page-state__action:hover {
