@@ -13,8 +13,8 @@ const ARCHIVED = [
     "title": "AGENS",
     "year": 2025,
     "files": [
-      "andersdrage-agens-001.png",
       "andersdrage-agens-002.jpg",
+      "andersdrage-agens-001.png",
       "andersdrage-agens-003.jpg",
       "andersdrage-agens-004.jpg"
     ]
