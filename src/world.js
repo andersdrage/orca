@@ -14,6 +14,7 @@ import { initTimeline } from './timeline.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { syncVisibleMedia } from './visible-media.js'
 import { createPageStateContent } from './page-state.js'
+import { initViewportHeight } from './viewport-height.js'
 
 /* Verdenskartet er 2D: About/Praise ligger mot øst, arkivet ligger UNDER
    forsiden — lenken bor i nedre venstre hjørne, og kameraet panorerer nedover
@@ -37,6 +38,7 @@ export function initWorld(header) {
   const layout = document.getElementById('site-layout')
   const ownMain = layout?.querySelector('main')
   if (!layout || !ownMain) return
+  initViewportHeight()
 
   /* Chrome ut av kolonnen, verden inn. */
   document.body.prepend(header)
@@ -107,7 +109,7 @@ export function initWorld(header) {
 
   const setTransform = (index) => {
     const { x, y } = PAGES[index]
-    world.style.transform = `translate3d(${-x * 100}vw, ${-y * 100}svh, 0)`
+    world.style.transform = `translate3d(${-x * 100}vw, calc(var(--viewport-height) * ${-y}), 0)`
   }
   document.body.dataset.camera = String(cameraIndex)
   setTransform(cameraIndex)
@@ -185,7 +187,7 @@ export function initWorld(header) {
       section.style.transform = `scale(${TRAVEL_SCALE})`
     })
 
-    /* Kartet: hele 300vw × 300svh-verdenen skalert inn i viewporten, sentrert. */
+    /* Fit the three-row world into the current visible viewport. */
     const MAP_SCALE = 0.25
     // Lay out the overview at its displayed resolution, then composite the
     // camera zoom. Six full-resolution page textures are wasteful at 25% size.
@@ -207,7 +209,7 @@ export function initWorld(header) {
     world.before(mapCamera)
     mapCamera.append(world)
     world.style.transform = 'none'
-    mapCamera.style.transform = `translate3d(12.5vw, ${matchMedia('(max-width: 600px)').matches ? 18 : 12.5}svh, 0) scale(${MAP_SCALE / mapRasterScale})`
+    mapCamera.style.transform = `translate3d(12.5vw, calc(var(--viewport-height) * ${matchMedia('(max-width: 600px)').matches ? 0.18 : 0.125}), 0) scale(${MAP_SCALE / mapRasterScale})`
 
     const HOLD_MS = 1200
     const ZOOM_MS = 1400
@@ -330,7 +332,7 @@ export function initWorld(header) {
     })
 
     const pan = world.animate(
-      [{ transform: from }, { transform: `translate3d(${-PAGES[index].x * 100}vw, ${-PAGES[index].y * 100}svh, 0)` }],
+      [{ transform: from }, { transform: `translate3d(${-PAGES[index].x * 100}vw, calc(var(--viewport-height) * ${-PAGES[index].y}), 0)` }],
       { duration: panMs, delay: panDelay, easing: EASING, fill: 'backwards' },
     )
 

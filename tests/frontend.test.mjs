@@ -663,6 +663,52 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('world and bottom navigation follow the visible viewport through toolbar resizing', async (t) => {
+      const page = await visit(t, '/timeline/', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, () => {
+        // Model the visual viewport changing independently of the layout
+        // viewport, as iOS browser toolbars expand and retract.
+        window.testViewportHeight = 700
+        window.testViewportScale = 1
+        Object.defineProperty(visualViewport, 'height', { get: () => window.testViewportHeight })
+        Object.defineProperty(visualViewport, 'scale', { get: () => window.testViewportScale })
+      })
+      await ready(page, '/timeline/')
+      const check = async (height) => {
+        await page.waitForFunction(height => Math.abs(parseFloat(getComputedStyle(document.body).height) - height) < 1, height)
+        const geometry = await page.evaluate(() => {
+          const active = document.querySelector('.world-page:not([inert])').getBoundingClientRect()
+          const navigation = document.querySelector('.corner-links').getBoundingClientRect()
+          const link = document.querySelector('.corner-links a').getBoundingClientRect()
+          return { top: active.top, bottom: active.bottom, navBottom: navigation.bottom, linkBottom: link.bottom }
+        })
+        assert.ok(Math.abs(geometry.top) < 1, JSON.stringify(geometry))
+        assert.ok(Math.abs(geometry.bottom - height) < 1, JSON.stringify(geometry))
+        assert.ok(Math.abs(geometry.navBottom - height) < 1, JSON.stringify(geometry))
+        assert.ok(Math.abs(geometry.linkBottom - (height - 30)) < 1, JSON.stringify(geometry))
+      }
+      await check(700)
+      for (const height of [844, 620, 844]) {
+        await page.evaluate(height => {
+          window.testViewportHeight = height
+          visualViewport.dispatchEvent(new Event('resize'))
+        }, height)
+        await check(height)
+      }
+      await page.locator('.corner-links a[href="/people/"]').tap()
+      await activeWorld(page, '/people/')
+      await check(844)
+      await page.locator('.site-header nav a[href="/"]').tap()
+      await activeWorld(page, '/')
+      await check(844)
+      await page.evaluate(() => {
+        window.testViewportScale = 2
+        window.testViewportHeight = 422
+        visualViewport.dispatchEvent(new Event('resize'))
+      })
+      await page.waitForTimeout(80)
+      await check(844)
+    })
+
     test('phone thumbnails fit portrait frames and keep the intro clear after opening and rotation', async (t) => {
       const page = await visit(t, '/', { viewport: { width: 390, height: 700 }, isMobile: true, hasTouch: true, reducedMotion: 'no-preference' })
       await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))

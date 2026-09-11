@@ -10,6 +10,7 @@
 :root {
   --site-radius: 8px;
   --text-secondary: #666670;
+  --viewport-height: 100dvh;
 }
 
 .text-secondary { color: var(--text-secondary); }
@@ -201,7 +202,8 @@ body {
 html:has(body.world-mode) { overflow: hidden; }
 
 body.world-mode {
-  height: 100svh;
+  height: var(--viewport-height);
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -222,14 +224,14 @@ body.world-mode {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
   width: 300vw;
-  height: 300svh;
+  height: calc(var(--viewport-height) * 3);
   /* Bakteppet som kommer til syne bak kortene når sidene skalerer ned. */
   background: #e9e6e0;
 }
 
 .world-map-camera {
   width: 100vw;
-  height: 100svh;
+  height: var(--viewport-height);
   transform-origin: 0 0;
   will-change: transform;
 }
@@ -259,7 +261,7 @@ body.world-mode {
 .world-page {
   flex: none;
   width: 100vw;
-  height: 100svh;
+  height: var(--viewport-height);
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--page-surface);
@@ -1232,7 +1234,7 @@ body.world-mode {
 
 /* Forsiden scroller kun horisontalt — vertikal scroll er skrudd av. */
 .page-home {
-  height: 100svh;
+  height: var(--viewport-height);
   overflow: hidden;
 }
 
@@ -1623,7 +1625,8 @@ a.timeline-tile.is-returning:focus { outline: none; }
    på containeren ville ellers gjort den til containing block for fixed barn.) */
 .corner-links {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto;
+  height: var(--viewport-height);
   z-index: 60;
   pointer-events: none;
 }
