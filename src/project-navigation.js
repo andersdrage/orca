@@ -10,11 +10,18 @@ import { syncVisibleMedia } from './visible-media.js'
 const OVERVIEWS = ['/', '/about/', '/praise/', '/timeline/', '/people/', '/archived-work/']
 let initialized = false
 
+// LAN previews use HTTP: randomUUID is secure-context-only, while
+// getRandomValues is also available on the phone's local network address.
+function navigationKey() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
 export function initProjectNavigation() {
   if (initialized) return
   initialized = true
   history.scrollRestoration = 'manual'
-  const session = crypto.randomUUID()
+  const session = navigationKey()
   const hasWorld = Boolean(document.querySelector('.world'))
   let currentPath = location.pathname
   let referrerPath
@@ -37,7 +44,7 @@ export function initProjectNavigation() {
   let returnFocusWasKeyboard = false
   let pendingLink = null
   const caseScroll = new Map()
-  let currentScrollKey = history.state?.projectView?.key ?? crypto.randomUUID()
+  let currentScrollKey = history.state?.projectView?.key ?? navigationKey()
   const metadata = () => [...document.head.querySelectorAll('meta[name="description"], meta[property^="og:"], meta[name^="twitter:"]')]
   const replaceMetadata = nodes => {
     metadata().forEach(node => node.remove())
@@ -80,7 +87,7 @@ export function initProjectNavigation() {
   }
   function restoreOverview({ animate = false } = {}) {
     let fromTop
-    if (document.documentElement.classList.contains('project-reveal-active')) {
+    if (animate && document.documentElement.classList.contains('project-reveal-active')) {
       const transform = getComputedStyle(document.documentElement, '::view-transition-old(project-thumbnail)').transform
       if (transform !== 'none') {
         const groupStyle = getComputedStyle(document.documentElement, '::view-transition-group(project-thumbnail)')
@@ -167,7 +174,7 @@ export function initProjectNavigation() {
         if (request !== revision) return
         if (fromOverview) { returnFocus = trigger ?? document.activeElement; returnFocusWasKeyboard = keyboard; suspendOverview() }
         removeCase()
-        currentScrollKey = push ? crypto.randomUUID() : history.state?.projectView?.key ?? crypto.randomUUID()
+        currentScrollKey = push ? navigationKey() : history.state?.projectView?.key ?? navigationKey()
         if (push) history.pushState({ caseOverview: overview, projectView: { session, depth, key: currentScrollKey } }, '', url.pathname)
         else overview = history.state?.caseOverview ?? overview
         currentPath = url.pathname
@@ -220,13 +227,16 @@ export function initProjectNavigation() {
       }
     }
   })
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', event => {
     if (isCasePath(location.pathname)) {
       navigate(location.href, { push: false })
     } else if (hasWorld && suspended) {
       if (layout) caseScroll.set(currentScrollKey, scrollY)
-      restoreOverview({ animate: true })
-    } else if (pendingLink) {
+      // A trackpad swipe may already have animated the browser's snapshot.
+      restoreOverview({ animate: !event.hasUAVisualTransition })
+    } else {
+      // Forward restoration has no trigger link. Back must still invalidate
+      // its pending fetch/font work, or it can remount a case over the overview.
       ++revision
       stopTransition()
       clearPending()

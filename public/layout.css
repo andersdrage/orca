@@ -800,46 +800,48 @@ body.world-mode {
   text-wrap: pretty;
 }
 
-/* Hver av de tre lenkene er sin egen pille-knapp: avrundet omriss, ingen fyll. */
+/* The footer shares the About page's reading typography and inline links. */
 .site-footer__contact {
-  --pill-color: #52525b;
-  --pill-border: #b4b4ba;
-  --pill-hover-color: #18181b;
-  --pill-hover-border: #52525b;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 2rem 0 0;
+  max-width: 34rem;
+  margin: 2rem auto 0;
   color: #52525b;
+  font-family: DragePlantin, Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1.625;
+  text-wrap: pretty;
 }
 
-.site-footer__contact,
+.site-footer__contact a {
+  color: #18181b;
+  text-decoration: underline;
+  text-decoration-color: #d4d4d8;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 160ms ease;
+}
+
+.site-footer__contact a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
 .page-state__action {
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
-  /* Én felles lenkestørrelse i footeren — samme som Archive/People-hjørnene. */
   font-size: 0.75rem;
   font-weight: 400;
   letter-spacing: 0.12em;
   line-height: 1.4;
   text-transform: uppercase;
-}
-
-.site-footer__contact a,
-.page-state__action {
   display: inline-block;
   padding: 0.7rem 1.4rem;
   color: var(--pill-color);
   text-decoration: none;
   border: 1px solid var(--pill-border);
   border-radius: var(--site-radius);
-  transition:
-    color 160ms ease,
-    border-color 160ms ease;
+  transition: color 160ms ease, border-color 160ms ease;
 }
 
-.site-footer__contact a:focus-visible,
 .page-state__action:focus-visible {
   color: var(--pill-hover-color);
   border-color: var(--pill-hover-border);
@@ -848,24 +850,22 @@ body.world-mode {
 }
 
 @media (max-width: 767px) {
+  .site-footer__contact {
+    font-size: clamp(10px, calc((100vw - 48px) * 0.044), 17px);
+    white-space: nowrap;
+  }
+
   .site-footer,
   .page-case:has(> .project-audio) .site-footer {
     padding-bottom: calc(160px + env(safe-area-inset-bottom));
   }
-
-  .site-footer__contact {
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-
-  .site-footer__contact a {
-    box-sizing: border-box;
-    width: min(224px, 100%);
-  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .site-footer__contact a:hover,
+  .site-footer__contact a:hover {
+    text-decoration-color: #52525b;
+  }
+
   .page-state__action:hover {
     color: var(--pill-hover-color);
     border-color: var(--pill-hover-border);
@@ -1879,7 +1879,7 @@ html[data-rounded-corners="false"] *::after {
 .debug-panel__title {
   margin: 0 0 10px;
   color: #18181b;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .debug-panel__row {
@@ -2101,7 +2101,7 @@ html[data-rounded-corners="false"] *::after {
   text-transform: none;
 }
 
-.case-credits[data-layout="columns"] .case-credits__names { font-weight: 700; }
+.case-credits[data-layout="columns"] .case-credits__names { font-weight: 400; }
 
 @container (max-width: 430px) {
   .case-credits[data-layout="columns"] dl {
@@ -2161,7 +2161,7 @@ html[data-rounded-corners="false"] *::after {
   margin: 0;
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: clamp(1.75rem, 2.4vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.04em;
   text-align: left;
@@ -2204,7 +2204,7 @@ html[data-rounded-corners="false"] *::after {
   letter-spacing: 0;
   text-transform: none;
 }
-.case-credits[data-layout="below"] .case-credits__names { font-weight: 700; }
+.case-credits[data-layout="below"] .case-credits__names { font-weight: 400; }
 
 #work [data-layout="below"] > :is(.case-lead__copy, .case-legacy-copy):not(:has(.case-credits)) {
   grid-template-columns: minmax(0, 1fr);
@@ -2777,7 +2777,7 @@ body.world-map-intro .archived-card {
   margin: 0 0 clamp(2rem, 3.4vw, 3.25rem);
   font-family: MaisonNeueBook, 'Helvetica Neue', Arial, sans-serif;
   font-size: clamp(0.8125rem, 1.15vw, 1.125rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -2856,6 +2856,7 @@ body.world-map-intro .archived-card {
 .case-title-block { display: none; }
 #work :is(.case-lead__title, .case-legacy-title) {
   font-family: PPSupplyMono, ui-monospace, monospace;
+  font-weight: 400;
 }
 [data-layout="presentation"] .case-credits { display: none; }
 /* The title block names the project visually; retain the heading for navigation. */
@@ -3063,3 +3064,71 @@ html.project-reveal-active::view-transition-old(project-thumbnail) {
 .footer-dragon-canvas { cursor: grab; touch-action: none; border-radius: 8px; }
 .footer-dragon-canvas:active { cursor: grabbing; }
 .footer-dragon-canvas:focus-visible { outline: 2px solid #71717a; outline-offset: 3px; }
+
+/* Reuse the archive intro card inside the homepage thumbnail frame. */
+.timeline-tile--archive .archived-card {
+  aspect-ratio: auto;
+}
+
+/* Opt-in navigation introduction: four real links explain the corner layout. */
+body.nav-intro-running.world-map-intro {
+  background-color: var(--page-surface);
+}
+body.nav-intro-running.world-map-intro .world,
+body.nav-intro-running.world-map-intro .site-header__brand {
+  visibility: hidden;
+}
+body.nav-intro-running .site-header,
+body.nav-intro-running .corner-links {
+  opacity: 1;
+  pointer-events: none;
+}
+body.nav-intro-running .site-header nav a {
+  display: inline-block;
+  pointer-events: auto;
+}
+body.nav-intro-running .site-header nav,
+body.nav-intro-running .corner-links,
+body.nav-intro-complete.is-entering-home .site-header nav,
+body.nav-intro-complete.is-entering-home .corner-links {
+  animation: none;
+}
+body.nav-intro-preparing .site-header nav a,
+body.nav-intro-preparing .corner-links a {
+  opacity: 0;
+}
+body.nav-intro-running .corner-links::before {
+  opacity: 0;
+}
+body.nav-intro-running .site-header nav a[aria-current='page'] {
+  color: #18181b;
+  transition: none;
+}
+
+/* These labels belong to the homepage card while the map camera approaches.
+   The live corner links take over at identical positions when it lands. */
+.world-page:has(> .navigation-intro-preview) {
+  position: relative;
+}
+.navigation-intro-preview {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 16.5px;
+  width: min(220px, 44vw);
+  color: #18181b;
+  font-family: PPSupplyMono, ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 19.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.navigation-intro-preview span:nth-child(even) {
+  text-align: right;
+}

@@ -3,6 +3,7 @@
    Første celle er et oransje intro-kort; capa-vignetten ligger som levende
    videocelle. Klikk åpner en lightbox med ‹ ›-navigasjon (og ← → / Esc). */
 
+import { archiveCardContent } from './archive-card.js'
 import { mediaSize } from './media-dimensions.js'
 import { syncVisibleMedia } from './visible-media.js'
 
@@ -387,8 +388,7 @@ function collectMedia() {
 /* Oransje intro-kort — erstatter sidens tekst-header, øverst til venstre. */
 const CARD_HTML = `<div class="archived-grid__cell">
     <div class="archived-card">
-      <h2 class="archived-card__title" id="archived-intro-title">Work<br />archive</h2>
-      <p class="archived-card__meta">Miscellaneous work <span class="archived-card__dates">(2012–Present)</span></p>
+      ${archiveCardContent('archived-intro-title')}
     </div>
   </div>`
 

@@ -8,6 +8,7 @@
    Direktebesøk på /about/ eller /praise/ booter samme verden med kameraet
    stående på riktig side; søsknene hentes og monteres rundt. */
 
+import { createNavigationIntroPreview, playNavigationIntro } from './navigation-intro.js'
 import { initArchivedGrid } from './archived-grid.js'
 import { isCasePath } from './case-navigation.js'
 import { initTimeline } from './timeline.js'
@@ -181,6 +182,7 @@ export function initWorld(header) {
     }
 
     const introJourney = travelId
+    const navigationPreview = createNavigationIntroPreview(sections[cameraIndex])
     document.body.classList.add('world-map-intro')
     world.classList.add('is-travelling', 'is-map')
     sections.forEach((section) => {
@@ -244,8 +246,10 @@ export function initWorld(header) {
         // word/thumbnail entrance; otherwise Safari pays that cost mid-motion.
         requestAnimationFrame(() => requestAnimationFrame(() => {
           if (introJourney !== travelId) return
-          document.body.classList.remove('world-map-intro')
-          document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+          if (!playNavigationIntro(header, navigationPreview)) {
+            document.body.classList.remove('world-map-intro')
+            document.body.dispatchEvent(new CustomEvent('world:map-intro-done'))
+          }
         }))
       }
       Promise.all([zoom.finished, unfold.finished]).then(land, land)
@@ -254,10 +258,11 @@ export function initWorld(header) {
   playMapIntro()
   /* ── slutt PROTOTYP ── */
 
-  function navigateTo(index, { push = true } = {}) {
+  function navigateTo(index, { push = true, animate = true } = {}) {
     if (index === cameraIndex) return
     const journey = ++travelId
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    world.querySelectorAll('.navigation-intro-preview').forEach(preview => preview.remove())
+    const reduced = !animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const dx = PAGES[index].x - PAGES[cameraIndex].x
     const dy = PAGES[index].y - PAGES[cameraIndex].y
     const distance = Math.abs(dx) + Math.abs(dy)
@@ -369,9 +374,9 @@ export function initWorld(header) {
     navigateTo(index)
   })
 
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', event => {
     const index = PAGES.findIndex((page) => page.path === location.pathname)
-    if (index !== -1) navigateTo(index, { push: false })
+    if (index !== -1) navigateTo(index, { push: false, animate: !event.hasUAVisualTransition })
   })
 
   /* Lenker INNE i verdenen som peker på en verdens-side (f.eks. «Archived

@@ -377,7 +377,7 @@ function caseSection(singleCase) {
     <div class="case-legacy-lead">
     <div class="work-media case-cover-hero case-media-stack flex flex-col">${firstBlock}</div>
     <div class="case-legacy-copy case-below work-narrow mt-10 mb-8 w-full md:mt-14">
-      <h2 id="title-${singleCase.id}" class="case-legacy-title font-label text-center text-xl font-semibold uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
+      <h2 id="title-${singleCase.id}" class="case-legacy-title font-label text-center text-xl font-normal uppercase tracking-tight text-zinc-900 md:text-2xl">${singleCase.title}</h2>
       <p class="case-legacy-intro mt-2 text-center text-sm leading-relaxed text-zinc-600 md:text-base">${singleCase.intro}</p>
       ${creditsHtml(singleCase)}
       ${titleBlockHtml(singleCase)}

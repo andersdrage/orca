@@ -50,6 +50,70 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.world-page:not([inert])').count(), 1)
     }
 
+    async function openArchive(page) {
+      if (new URL(page.url()).pathname !== '/') {
+        await page.locator('.site-header__brand').click()
+        await activeWorld(page, '/')
+      }
+      await ready(page, '/')
+      await page.waitForFunction(() => !document.querySelector('.world').classList.contains('is-travelling') && !document.body.matches('.world-map-intro, .is-entering-home'))
+      const tile = page.locator('.timeline-copy[data-copy="1"] [data-tile-id="work-archive"]')
+      await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 1, deltaY: 0 })
+      await tile.evaluate(el => el.closest('[data-timeline]').scrollTo({ left: el.offsetLeft - (innerWidth - el.offsetWidth) / 2, behavior: 'instant' }))
+      // Let the infinite strip finish wrapping, then click the visible copy.
+      await page.waitForTimeout(300)
+      const copy = await page.locator('[data-tile-id="work-archive"]').evaluateAll(tiles => {
+        const tile = tiles.find(el => {
+          const r = el.getBoundingClientRect()
+          return r.left >= 0 && r.right <= innerWidth
+        })
+        return tile?.closest('[data-copy]').dataset.copy
+      })
+      assert.ok(copy !== undefined, 'archive card is visible after scrolling')
+      await page.locator(`[data-copy="${copy}"] [data-tile-id="work-archive"]`).click()
+    }
+
+    test('archive thumbnail opens the gallery and footer social links match About typography', async (t) => {
+      for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+        const page = await visit(t, '/', { viewport })
+        await ready(page, '/')
+        const archive = page.locator('[data-copy="1"] [data-tile-id="work-archive"]')
+        const dimensions = el => [el.offsetWidth, el.offsetHeight]
+        assert.deepEqual(await archive.evaluate(dimensions), await page.locator('[data-copy="1"] .timeline-tile').first().evaluate(dimensions))
+        await archive.focus()
+        await page.keyboard.press('Enter')
+        await activeWorld(page, '/archived-work/')
+        await ready(page, '/archived-work/')
+        assert.equal(await page.locator('[data-case-root]').count(), 0)
+        assert.equal(await page.locator('#archived-intro-title').innerText(), 'Work\narchive')
+        await page.goBack()
+        await activeWorld(page, '/')
+        assert.equal(await archive.evaluate(el => el.classList.contains('is-navigating')), false)
+        await openArchive(page)
+        await activeWorld(page, '/archived-work/')
+        await page.goto(base + '/about/', { waitUntil: 'domcontentloaded' })
+        await ready(page, '/about/')
+        const footer = page.locator('.world-page:not([inert]) .site-footer__contact')
+        assert.equal((await footer.innerText()).replace(/\s+/g, ' ').trim(), 'You can find me on Instagram and X, or send an email.')
+        assert.deepEqual(await footer.locator('a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['https://www.instagram.com/andersdrage', 'https://www.x.com/andersdrage', 'mailto:anders@dra.ge'])
+        const typography = el => { const c = getComputedStyle(el); return [c.fontFamily, c.fontSize, c.lineHeight, c.letterSpacing] }
+        await ready(page, '/about/')
+        const aboutTypography = await page.locator('.world-page[data-path="/about/"] header div p').first().evaluate(typography)
+        if (viewport.width >= 768) assert.deepEqual(await footer.evaluate(typography), aboutTypography)
+        else {
+          assert.equal((await footer.evaluate(typography))[0], aboutTypography[0])
+          assert.ok(await footer.evaluate(el => {
+            const range = document.createRange()
+            range.selectNodeContents(el)
+            const rect = range.getBoundingClientRect()
+            return rect.width <= el.clientWidth && rect.height <= parseFloat(getComputedStyle(el).lineHeight)
+          }), 'mobile footer sentence fits one line')
+        }
+        assert.equal(await footer.locator('a[href^="mailto:"]').innerText(), 'email')
+        assert.equal(await footer.locator('a').first().evaluate(el => getComputedStyle(el).borderTopWidth), '0px')
+      }
+    })
+
     test('case analytics count selections once without counting preload or history restoration', async (t) => {
       const page = await visit(t, '/', {}, () => {
         window.caseEvents = []
@@ -403,13 +467,40 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.world-page:not([inert])').evaluate((el) => el.scrollTop), 0)
     })
 
+    test('HTTP mobile previews render Work and preserve case history without randomUUID', async (t) => {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })
+      t.after(() => context.close())
+      await context.addInitScript(() => Object.defineProperty(crypto, 'randomUUID', { value: undefined }))
+      const page = await context.newPage()
+      const errors = []
+      page.on('pageerror', error => errors.push(error.message))
+      await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+      await page.locator('.timeline-intro').waitFor({ state: 'visible' })
+      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 9)
+      await page.getByRole('link', { name: 'MICROMILSPEC', exact: true }).focus()
+      await page.keyboard.press('Enter')
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      const firstKey = await page.evaluate(() => history.state.projectView.key)
+      await page.keyboard.press('ArrowRight')
+      await page.waitForSelector('[data-case-id="hjemla"]')
+      assert.notEqual(await page.evaluate(() => history.state.projectView.key), firstKey)
+      await page.goBack()
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      assert.equal(await page.evaluate(() => history.state.projectView.key), firstKey)
+      await page.goBack()
+      await page.waitForURL(base + '/')
+      await page.waitForFunction(() => !document.querySelector('.project-overview-suspended'))
+      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 9)
+      assert.deepEqual(errors, [])
+    })
+
     test('selected projects are named once and keyboard activation opens a case', async (t) => {
       const page = await visit(t, '/')
       const links = page.locator('.timeline-copy[data-copy="1"] a')
-      assert.equal(await links.count(), 8)
+      assert.equal(await links.count(), 9)
       const names = await links.evaluateAll((links) => links.map((link) => link.getAttribute('aria-label')))
       assert.ok(names.every(Boolean))
-      assert.equal(new Set(names).size, 8)
+      assert.equal(new Set(names).size, 9)
       for (const name of names) assert.equal(await page.getByRole('link', { name, exact: true }).count(), 1)
       assert.equal(await page.locator('.timeline-copy[aria-hidden="true"] a:not([tabindex="-1"])').count(), 0)
       await page.getByRole('link', { name: 'MICROMILSPEC', exact: true }).focus()
@@ -437,20 +528,20 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
-    test('world links, footer entry and Back/Forward move focus with the camera', async (t) => {
+    test('world links, archive entry and Back/Forward move focus with the camera', async (t) => {
       const page = await visit(t, '/about/')
       await ready(page, '/praise/')
       await page.locator('.world-page[data-path="/about/"] .praise-invitation').click()
       await activeWorld(page, '/praise/')
       await page.locator('.corner-links a[href="/people/"]').click()
       await activeWorld(page, '/people/')
-      await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
+      await openArchive(page)
       await activeWorld(page, '/archived-work/')
       await page.locator('.skip-link').focus()
       await page.keyboard.press('Enter')
       assert.equal(await page.evaluate(() => document.activeElement.id), 'world-archived-work-content')
       await page.goBack()
-      await activeWorld(page, '/people/')
+      await activeWorld(page, '/')
       await page.goForward()
       await activeWorld(page, '/archived-work/')
     })
@@ -563,8 +654,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('world links preserve native modified, targeted and download clicks', async (t) => {
       const page = await visit(t, '/about/')
       await ready(page, '/archived-work/')
+      await ready(page, '/')
       const results = await page.evaluate(() => {
-        const links = [document.querySelector('.world-page[data-path="/about/"] .praise-invitation'), document.querySelector('.site-header a[href="/about/"]'), document.querySelector('.corner-links a'), document.querySelector('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]')]
+        const links = [document.querySelector('.world-page[data-path="/about/"] .praise-invitation'), document.querySelector('.site-header a[href="/about/"]'), document.querySelector('.corner-links a'), document.querySelector('.timeline-copy[data-copy="1"] [data-tile-id="work-archive"]')]
         return links.flatMap((link) => ['metaKey', 'ctrlKey', 'shiftKey', 'altKey', 'middle', 'target', 'download', 'prevented'].map((kind) => {
           if (kind === 'target') link.target = '_blank'
           if (kind === 'download') link.setAttribute('download', '')
@@ -859,7 +951,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(await page.locator('.world-page[data-path="/archived-work/"] .archived-grid__item img[src]').count(), 0)
       assert.ok(!requests.some((path) => /\.(mp4|webm)$/.test(path)))
       assert.ok(!requests.some((path) => casePaths.includes(path)))
-      await page.locator('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]').click()
+      await openArchive(page)
       const video = page.locator('.archived-grid__item video').first()
       await page.waitForFunction(() => document.querySelector('.archived-grid__item video').currentTime > 0)
       assert.ok(await page.locator('.archived-grid__item img[src]').count() < await page.locator('.archived-grid__item img').count())
@@ -1392,6 +1484,62 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await activeWorld(page, '/about/')
     })
 
+    test('Back cancels a pending Forward restoration even without a clicked link', async (t) => {
+      const page = await visit(t, '/')
+      await ready(page, '/')
+      await page.locator('[data-copy="1"] [data-tile-id="micromilspec"]').focus()
+      await page.keyboard.press('Enter')
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      await page.goBack()
+      await page.waitForSelector('.project-overview-suspended', { state: 'detached' })
+      await page.evaluate(() => {
+        const load = document.fonts.load.bind(document.fonts)
+        document.fonts.load = (...args) => new Promise(resolve => {
+          window.releaseHistoryFonts ??= []
+          window.releaseHistoryFonts.push(() => resolve(load(...args)))
+        })
+      })
+      await page.goForward()
+      await page.waitForFunction(() => window.releaseHistoryFonts?.length === 2)
+      await page.goBack()
+      await page.evaluate(() => window.releaseHistoryFonts.forEach(release => release()))
+      await page.waitForTimeout(200)
+      assert.equal(new URL(page.url()).pathname, '/')
+      assert.equal(await page.locator('[data-case-root], .project-overview-suspended').count(), 0, 'a stale Forward cannot remount a case over the overview')
+      await page.locator('.site-header a[href="/about/"]').click()
+      await activeWorld(page, '/about/')
+    })
+
+    test('native history transitions do not also animate the case thumbnail or world camera', async (t) => {
+      const page = await visit(t, '/', {}, () => {
+        window.addEventListener('popstate', event => {
+          Object.defineProperty(event, 'hasUAVisualTransition', { value: true })
+        }, { capture: true })
+        window.returnAnimations = 0
+        const animate = Element.prototype.animate
+        Element.prototype.animate = function (...args) {
+          const animation = animate.apply(this, args)
+          queueMicrotask(() => { if (animation.id === 'project-thumbnail-return') window.returnAnimations++ })
+          return animation
+        }
+      })
+      await ready(page, '/')
+      await page.locator('[data-copy="1"] [data-tile-id="micromilspec"]').focus()
+      await page.keyboard.press('Enter')
+      await page.waitForSelector('[data-case-id="micromilspec"]')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goBack()
+      await page.waitForSelector('.project-overview-suspended', { state: 'detached' })
+      assert.equal(await page.evaluate(() => window.returnAnimations), 0, 'the browser already supplied the return transition')
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.locator('.site-header a[href="/about/"]').click()
+      await activeWorld(page, '/about/')
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goBack()
+      await activeWorld(page, '/')
+      assert.equal(await page.locator('.world.is-travelling').count(), 0, 'the browser already supplied the camera transition')
+    })
+
     test('pending project loads can be cancelled and failed loads retain ordinary navigation', async (t) => {
       const page = await visit(t, '/', {}, () => { window.documentIdentity = 'overview'; document.startViewTransition = undefined })
       await ready(page, '/')
@@ -1521,9 +1669,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await toggle.uncheck()
       const originals = await tiles.locator('img').evaluateAll(images => images.map(image => image.getAttribute('src')))
       await toggle.check()
-      const sizes = await tiles.evaluateAll(tiles => tiles.map(tile => ({ width: tile.offsetWidth, height: tile.offsetHeight, image: tile.querySelector('img').getAttribute('src') })))
+      const sizes = await tiles.evaluateAll(tiles => tiles.map(tile => ({ width: tile.offsetWidth, height: tile.offsetHeight, image: tile.querySelector('img')?.getAttribute('src') })))
       assert.equal(new Set(sizes.map(size => `${size.width}/${size.height}`)).size, 1)
-      assert.ok(sizes.every(size => size.image.startsWith('/images/andersdrage-')))
+      assert.ok(sizes.filter(size => size.image).every(size => size.image.startsWith('/images/andersdrage-')))
       const selected = tiles.filter({ has: page.locator('img[src$="andersdrage-hjemla-cover.webp"]') })
       await page.locator('[data-timeline]').dispatchEvent('wheel', { deltaX: 0, deltaY: 0 })
       await selected.evaluate(tile => tile.closest('[data-timeline]').scrollTo({ left: tile.offsetLeft - (innerWidth - tile.offsetWidth) / 2, behavior: 'instant' }))
@@ -1953,9 +2101,9 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/')
       assert.equal(await page.locator('.timeline-copy').count(), 3)
-      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 8)
+      assert.equal(await page.locator('.timeline-copy[data-copy="1"] a').count(), 9)
       await page.locator('.site-header a[href="/about/"]').click()
-      await page.locator('.world-page:not([inert]) .site-footer a[href="/archived-work/"]').click()
+      await openArchive(page)
       await page.getByRole('button', { name: 'Try again' }).click()
       await ready(page, '/archived-work/')
       assert.equal(await page.locator('.archived-grid__item').count(), 163)
@@ -2094,7 +2242,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       assert.equal(layout.imageLoaded, true)
     })
 
-    test('page focus has no frame and retry uses the footer hover treatment with visible keyboard focus', async (t) => {
+    test('page focus has no frame and retry keeps hover treatment with visible keyboard focus', async (t) => {
       const page = await visit(t, '/about/', { reducedMotion: 'no-preference' })
       await page.route('**/praise/', (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
       await page.reload({ waitUntil: 'domcontentloaded' })
@@ -2109,8 +2257,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
         return { color: css.color, border: css.borderTopColor, transition: css.transition }
       }
       const before = await retry.evaluate(properties)
-      const footer = page.locator('.world-page[data-path="/about/"] .site-footer a[href="/archived-work/"]')
-      assert.equal(before.transition, (await footer.evaluate(properties)).transition)
+      assert.match(before.transition, /color 0.16s/)
       await retry.hover()
       await page.waitForFunction(() => getComputedStyle(document.querySelector('.page-state__action')).color === 'rgb(24, 24, 27)')
       const hovered = await retry.evaluate(properties)
@@ -2168,7 +2315,7 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
     test('Houeland opens with its website video and retains its images and correct neighbours', async (t) => {
       const page = await visit(t, '/')
       await ready(page, '/')
-      assert.deepEqual(await page.locator('.timeline-copy[data-copy="1"] a').evaluateAll(links => links.map(link => new URL(link.href).pathname)), casePaths)
+      assert.deepEqual(await page.locator('.timeline-copy[data-copy="1"] a').evaluateAll(links => links.map(link => new URL(link.href).pathname)), [...casePaths, '/archived-work/'])
       assert.equal(casePaths[3], '/houeland/')
       await page.getByRole('link', { name: 'Houeland', exact: true }).click()
       await page.waitForURL('**/houeland/')

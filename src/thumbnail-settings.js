@@ -16,7 +16,7 @@ const covers = {
 }
 
 export function thumbnailAppearance(tile) {
-  if (!sameSizeThumbnails() || !covers[tile.id]) return { ...tile, h: `calc(${tile.h} * 1.3)` }
-  return { ...tile, image: `/images/${covers[tile.id]}`,
+  if (!sameSizeThumbnails() || (!covers[tile.id] && !tile.archive)) return { ...tile, h: `calc(${tile.h} * 1.3)` }
+  return { ...tile, ...(covers[tile.id] ? { image: `/images/${covers[tile.id]}` } : {}),
     ratio: '13 / 10', h: 'calc(min(43svh, calc((100vw - 48px) / 1.3)) * 1.3)' }
 }

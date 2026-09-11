@@ -2,6 +2,7 @@
    Tre identiske kopier av tilene rendres; scroll holdes alltid i midt-kopien
    (wrap ved 0.5/1.5 × kopibredde) så loopen aldri møter en kant. */
 
+import { archiveCardContent } from './archive-card.js'
 import { micromilspecCovers } from './portfolio-data.js'
 import { isSameTabNavigation } from './link-navigation.js'
 import { sessionState } from './session-state.js'
@@ -91,21 +92,29 @@ const TILES = [
     h: '38svh',
   },
 
-].sort((a, b) => FEATURED_ORDER.indexOf(a.id) - FEATURED_ORDER.indexOf(b.id))
+].sort((a, b) => FEATURED_ORDER.indexOf(a.id) - FEATURED_ORDER.indexOf(b.id)).concat({
+  id: 'work-archive',
+  title: 'Work archive',
+  href: '/archived-work/',
+  archive: true,
+  color: '#ff5c00',
+  ratio: '13 / 10',
+  h: '43svh',
+})
 
 function tileHtml(tile) {
   tile = thumbnailAppearance(tile)
   const style = `--tile-bg: ${tile.color}; --tile-ratio: ${tile.ratio}; --tile-h: ${tile.h}`
   // Image tiles use their cover instead of a colored placeholder.
-  const title = tile.title && !tile.image ? `<span class="timeline-tile__title">${tile.title}</span>` : ''
+  const title = tile.title && !tile.image && !tile.archive ? `<span class="timeline-tile__title">${tile.title}</span>` : ''
   // Decode covers before they scroll into view.
   const image = tile.image
     ? `<img class="timeline-tile__image" src="${tile.image}" alt="" loading="eager" fetchpriority="high" decoding="async" />`
-    : ''
-  const classes = `timeline-tile${tile.image ? ' timeline-tile--image' : ''}`
+    : tile.archive ? `<div class="timeline-tile__image archived-card">${archiveCardContent()}</div>` : ''
+  const classes = `timeline-tile${tile.image || tile.archive ? ' timeline-tile--image' : ''}${tile.archive ? ' timeline-tile--archive' : ''}`
   /* Hover: prosjektnavnet skyves ut fra bildets underkant med fjær-easing. */
   const hoverLabel =
-    tile.href && tile.title && tile.image
+    tile.href && tile.title && (tile.image || tile.archive)
       ? `<span class="timeline-tile__hover-label" aria-hidden="true">${tile.title}</span>`
       : ''
   return tile.href
@@ -706,7 +715,8 @@ export function initTimeline(scrollerEl) {
       const appearance = thumbnailAppearance(tiles.find(item => item.id === tile.dataset.tileId))
       tile.style.setProperty('--tile-h', appearance.h)
       tile.style.setProperty('--tile-ratio', appearance.ratio)
-      tile.querySelector('img').src = appearance.image
+      const image = tile.querySelector('img')
+      if (image) image.src = appearance.image
     }
     copyWidth = copies[1].offsetLeft - copies[0].offsetLeft
     if (!introDismissed) placeIntro()
@@ -771,7 +781,7 @@ export function initTimeline(scrollerEl) {
   scroller.addEventListener('click', (event) => {
     const tile = event.target.closest('a.timeline-tile')
     if (!isSameTabNavigation(event, tile)) return
-    tile.classList.add('is-navigating')
+    if (isCasePath(new URL(tile.href).pathname)) tile.classList.add('is-navigating')
     sessionState.setItem('timeline:last-case', tile.dataset.tileId)
     const rect = tile.getBoundingClientRect()
     sessionState.setItem('timeline:return-position', JSON.stringify({
