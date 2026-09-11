@@ -1,7 +1,8 @@
-// Opt-in opening experiment: /?navintro=1. The actual links travel, so they
+// Default opening; /?navintro=0 retains the original map-only sequence.
+// The actual links travel, so they
 // remain usable and keep their existing navigation and accessibility semantics.
 export function createNavigationIntroPreview(home) {
-  if (new URLSearchParams(location.search).get('navintro') !== '1' || matchMedia('(prefers-reduced-motion: reduce)').matches) return null
+  if (new URLSearchParams(location.search).get('navintro') === '0' || matchMedia('(prefers-reduced-motion: reduce)').matches) return null
   const preview = document.createElement('div')
   preview.className = 'navigation-intro-preview'
   preview.setAttribute('aria-hidden', 'true')
@@ -11,7 +12,7 @@ export function createNavigationIntroPreview(home) {
 }
 
 export function playNavigationIntro(header, preview) {
-  if (new URLSearchParams(location.search).get('navintro') !== '1') return false
+  if (new URLSearchParams(location.search).get('navintro') === '0') return false
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     preview?.remove()
     return false

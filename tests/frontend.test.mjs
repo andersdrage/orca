@@ -698,6 +698,25 @@ for (const engine of (process.env.TEST_BROWSERS ?? 'chromium').split(',')) {
       }
     })
 
+    test('default opening introduces corner links and navintro=0 preserves the original', async (t) => {
+      for (const width of [390, 1440]) {
+        const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, isMobile: width === 390, hasTouch: width === 390, reducedMotion: 'no-preference' })
+        await page.waitForSelector('.navigation-intro-preview')
+        assert.deepEqual(await page.locator('.navigation-intro-preview span').allTextContents(), ['Work', 'About', 'Timeline', 'People'])
+        await page.waitForSelector('body.nav-intro-complete')
+        await page.waitForFunction(() => !document.body.classList.contains('is-entering-home'))
+        assert.ok(await page.locator('.timeline-intro').isVisible())
+        await page.goto(base + '/?navintro=0', { waitUntil: 'domcontentloaded' })
+        assert.equal(await page.locator('.navigation-intro-preview').count(), 0)
+        await page.waitForFunction(() => !document.body.matches('.world-map-intro, .is-entering-home'))
+        assert.equal(await page.locator('.nav-intro-complete').count(), 0)
+        assert.ok(await page.locator('.timeline-intro').isVisible())
+        await page.emulateMedia({ reducedMotion: 'reduce' })
+        await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+        assert.equal(await page.locator('.navigation-intro-preview, .nav-intro-running, .world-map-intro').count(), 0)
+      }
+    })
+
     test('opening map falls back when CSS zoom miscalculates viewport widths', async (t) => {
       for (const width of [390, 1440]) {
         const page = await visit(t, '/', { viewport: { width, height: width === 390 ? 844 : 900 }, reducedMotion: 'no-preference' }, () => {

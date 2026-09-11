@@ -3070,7 +3070,7 @@ html.project-reveal-active::view-transition-old(project-thumbnail) {
   aspect-ratio: auto;
 }
 
-/* Opt-in navigation introduction: four real links explain the corner layout. */
+/* Navigation introduction: four real links explain the corner layout. */
 body.nav-intro-running.world-map-intro {
   background-color: var(--page-surface);
 }
